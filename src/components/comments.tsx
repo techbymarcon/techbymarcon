@@ -13,7 +13,7 @@ import { useAuth } from "@/lib/auth";
 type CommentRow = {
   id: string;
   article_id: string;
-  author_email: string;
+  mine: boolean;
   handle: string;
   display_name: string;
   avatar_url: string;
@@ -54,7 +54,7 @@ export function Comments({ articleId }: { articleId: string }) {
   const submit = async () => {
     if (!session || !body.trim()) return;
     setBusy(true);
-    const res = await addComment({ data: { articleId, email: session.email, body } });
+    const res = await addComment({ data: { articleId, body } });
     setBusy(false);
     if (!res.ok) {
       setError(res.error ?? "Could not post your comment.");
@@ -149,7 +149,7 @@ export function Comments({ articleId }: { articleId: string }) {
                         disabled={!editBody.trim()}
                         onClick={async () => {
                           const res = await editComment({
-                            data: { id: c.id, email: session?.email ?? "", body: editBody },
+                            data: { id: c.id, body: editBody },
                           });
                           if (!res.ok) {
                             setError(res.error ?? "Could not save your edit.");
@@ -170,7 +170,7 @@ export function Comments({ articleId }: { articleId: string }) {
                   </p>
                 )}
               </div>
-              {isDeveloper || session?.email === c.author_email ? (
+              {isDeveloper || c.mine ? (
                 <div className="flex shrink-0 items-center gap-1">
                   <button
                     aria-label="Edit comment"
@@ -186,7 +186,7 @@ export function Comments({ articleId }: { articleId: string }) {
                     aria-label="Delete comment"
                     className="m3-transition grid size-9 place-items-center rounded-full text-muted-foreground hover:bg-foreground/8"
                     onClick={async () => {
-                      await deleteComment({ data: { id: c.id, email: session?.email ?? "" } });
+                      await deleteComment({ data: { id: c.id } });
                       await refresh();
                     }}
                   >

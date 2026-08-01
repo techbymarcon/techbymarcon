@@ -52,10 +52,10 @@ function Login() {
         <Reveal>
           <div className="rounded-[32px] bg-surface-container p-8 elevation-1">
             <div className="flex items-center gap-4">
-              <Avatar src={avatarUrl || undefined} name={displayName || session.email} size={72} />
+              <Avatar src={avatarUrl || undefined} name={displayName || "Member"} size={72} />
               <div className="min-w-0">
                 <h1 className="flex items-center gap-2 font-display text-[26px] font-medium">
-                  <span className="truncate">{displayName || session.email}</span>
+                  <span className="truncate">{displayName || "Member"}</span>
                   <VerifiedBadge tier={profile?.tier ?? "blue"} />
                 </h1>
                 <p className="text-[15px] text-muted-foreground">@{handle || "…"}</p>

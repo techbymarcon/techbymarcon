@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Avatar, VerifiedBadge } from "@/components/verified";
-import { getProfile } from "@/lib/content.functions";
+import { getDeveloperProfile } from "@/lib/content.functions";
 import { cn } from "@/lib/utils";
 
 type DevProfile = {
@@ -18,8 +18,8 @@ export function AuthorByline({ className, size = 40 }: { className?: string; siz
   useEffect(() => {
     if (cached) return;
     let active = true;
-    getProfile({ data: { email: "developer" } })
-      .then((res) => {
+    getDeveloperProfile()
+      .then((res: { profile: DevProfile | null }) => {
         cached = (res.profile as DevProfile) ?? null;
         if (active) setProfile(cached);
       })
