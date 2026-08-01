@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import heroImage from "@/assets/hero.jpg";
+import heroBanner from "@/assets/hero-banner.png.asset.json";
 import { useArticles } from "@/lib/articles";
 import { ArticleCard } from "@/components/article-card";
 import { Icon, M3Button } from "@/components/m3";
