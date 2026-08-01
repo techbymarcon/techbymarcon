@@ -56,6 +56,75 @@ export type Database = {
         }
         Relationships: []
       }
+      comments: {
+        Row: {
+          article_id: string
+          author_email: string
+          avatar_url: string
+          body: string
+          created_at: string
+          display_name: string
+          handle: string
+          id: string
+          tier: string
+          updated_at: string
+        }
+        Insert: {
+          article_id: string
+          author_email: string
+          avatar_url?: string
+          body: string
+          created_at?: string
+          display_name: string
+          handle: string
+          id?: string
+          tier?: string
+          updated_at?: string
+        }
+        Update: {
+          article_id?: string
+          author_email?: string
+          avatar_url?: string
+          body?: string
+          created_at?: string
+          display_name?: string
+          handle?: string
+          id?: string
+          tier?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string
+          created_at: string
+          display_name: string
+          email: string
+          handle: string
+          tier: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string
+          created_at?: string
+          display_name: string
+          email: string
+          handle: string
+          tier?: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string
+          created_at?: string
+          display_name?: string
+          email?: string
+          handle?: string
+          tier?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       site_content: {
         Row: {
           key: string
