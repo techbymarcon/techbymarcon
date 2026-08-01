@@ -38,6 +38,8 @@ export function Comments({ articleId }: { articleId: string }) {
   const [body, setBody] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editBody, setEditBody] = useState("");
 
   const refresh = () =>
     listComments({ data: { articleId } })
