@@ -28,8 +28,10 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const { articles } = useArticles();
+  const { theme } = useTheme();
   const featured = articles.find((a) => a.featured) ?? articles[0];
   const rest = articles.filter((a) => a.id !== featured?.id).slice(0, 4);
+  const bannerSrc = theme === "dark" ? heroBannerDark.url : heroBanner.url;
 
   return (
     <div className="mx-auto max-w-[1200px] px-5 py-10 md:px-12 md:py-20">
