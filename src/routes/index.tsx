@@ -19,7 +19,7 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "Tech by Marcon — Guides, downloads and links" },
       {
         property: "og:description",
-        content: "Find the downloads and links of my guides.",
+        content: "Find the downloads and links of my guides: Android tuning, Material Design, tools and more.",
       },
     ],
   }),
