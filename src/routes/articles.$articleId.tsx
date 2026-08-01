@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { CategoryBadge } from "@/components/article-card";
+import { AuthorByline } from "@/components/author-byline";
 import { ArticleEditor } from "@/components/article-editor";
 import { Comments } from "@/components/comments";
 import { Icon, M3Button } from "@/components/m3";
