@@ -27,7 +27,7 @@ export type SiteContent = {
   };
 };
 
-export const TONES = [
+export const TONES: string[] = [
   "bg-primary-container text-on-primary-container",
   "bg-secondary-container text-on-secondary-container",
   "bg-tertiary-container text-on-tertiary-container",
@@ -75,7 +75,7 @@ export const defaultContent: SiteContent = {
         handle: "@techbymarcon",
         icon: "smart_display",
         url: "https://youtube.com",
-        tone: TONES[2],
+        tone: "bg-tertiary-container text-on-tertiary-container",
       },
       {
         id: "github",
@@ -83,16 +83,16 @@ export const defaultContent: SiteContent = {
         handle: "marcon",
         icon: "code",
         url: "https://github.com",
-        tone: TONES[0],
+        tone: "bg-primary-container text-on-primary-container",
       },
-      { id: "x", name: "X", handle: "@marcon", icon: "tag", url: "https://x.com", tone: TONES[1] },
+      { id: "x", name: "X", handle: "@marcon", icon: "tag", url: "https://x.com", tone: "bg-secondary-container text-on-secondary-container" },
       {
         id: "telegram",
         name: "Telegram",
         handle: "techbymarcon",
         icon: "send",
         url: "https://telegram.org",
-        tone: TONES[3],
+        tone: "bg-accent text-accent-foreground",
       },
     ],
   },
