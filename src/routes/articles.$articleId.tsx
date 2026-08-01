@@ -104,6 +104,8 @@ function ArticlePage() {
           }}
         />
       ) : null}
+
+      <Comments articleId={article.id} />
     </article>
   );
 }
