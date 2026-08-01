@@ -6,6 +6,7 @@ import { useTheme } from "@/lib/theme";
 import { ArticleCard } from "@/components/article-card";
 import { Icon, M3Button } from "@/components/m3";
 import { Reveal } from "@/components/reveal";
+import { VerifiedInfo } from "@/components/verified";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -79,6 +80,27 @@ function Index() {
           </Reveal>
         </section>
       ) : null}
+
+      <section className="mt-20 grid gap-6 md:grid-cols-2">
+        <Reveal>
+          <VerifiedInfo className="h-full" />
+        </Reveal>
+        <Reveal delay={80}>
+          <div className="flex h-full flex-col justify-center rounded-[28px] bg-accent p-6 text-accent-foreground md:p-7">
+            <h3 className="font-display text-[20px] font-medium">Join the conversation</h3>
+            <p className="mt-2 text-[15px] leading-relaxed">
+              Articles are open for comments. Sign in to pick a handle and a profile picture
+              (animated GIFs included) and your blue check appears next to every comment.
+            </p>
+            <div className="mt-5">
+              <Link to="/login">
+                <M3Button variant="filled">Sign in</M3Button>
+              </Link>
+            </div>
+          </div>
+        </Reveal>
+      </section>
+
 
       <section className="mt-20">
         <Reveal>

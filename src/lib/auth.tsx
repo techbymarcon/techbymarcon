@@ -1,24 +1,61 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import { developerSignIn, developerSignOut, getDeveloperStatus } from "./content.functions";
+import {
+  developerSignIn,
+  developerSignOut,
+  ensureProfile,
+  getProfile,
+  updateProfile,
+} from "./content.functions";
 
 export type Session = { email: string; role: "user" | "developer" } | null;
+
+export type Profile = {
+  email: string;
+  handle: string;
+  display_name: string;
+  avatar_url: string;
+  tier: string;
+} | null;
 
 const DEV_EMAIL = "developer";
 
 const AuthCtx = createContext<{
   session: Session;
+  profile: Profile;
   signIn: (email: string, password: string) => Promise<{ ok: boolean; error?: string }>;
   signOut: () => void;
   isDeveloper: boolean;
+  saveProfile: (p: {
+    displayName: string;
+    handle: string;
+    avatarUrl: string;
+  }) => Promise<{ ok: boolean; error?: string }>;
 }>({
   session: null,
+  profile: null,
   signIn: async () => ({ ok: false }),
   signOut: () => {},
   isDeveloper: false,
+  saveProfile: async () => ({ ok: false }),
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session>(null);
+  const [profile, setProfile] = useState<Profile>(null);
+
+  const loadProfile = async (email: string) => {
+    try {
+      const res = await ensureProfile({ data: { email } });
+      setProfile((res.profile as Profile) ?? null);
+    } catch {
+      try {
+        const res = await getProfile({ data: { email } });
+        setProfile((res.profile as Profile) ?? null);
+      } catch {
+        setProfile(null);
+      }
+    }
+  };
 
   useEffect(() => {
     const raw = window.localStorage.getItem("tbm-session");
@@ -31,12 +68,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     }
     // The developer role is decided by the server-side session cookie, not local storage.
-    getDeveloperStatus()
-      .then(({ developer }) => {
-        if (developer) setSession(local ?? { email: DEV_EMAIL, role: "developer" });
-        else setSession(local && local.role === "user" ? local : null);
+    getDeveloperStatusSafe()
+      .then((developer) => {
+        const next = developer
+          ? (local ?? { email: DEV_EMAIL, role: "developer" as const })
+          : local && local.role === "user"
+            ? local
+            : null;
+        setSession(next);
+        if (next) void loadProfile(developer ? DEV_EMAIL : next.email);
       })
-      .catch(() => setSession(local && local.role === "user" ? local : null));
+      .catch(() => setSession(null));
   }, []);
 
   const persist = (s: Session) => {
@@ -52,12 +94,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (normalized === DEV_EMAIL || normalized.startsWith(`${DEV_EMAIL}@`)) {
       const res = await developerSignIn({ data: { password } });
       if (!res.ok) return { ok: false, error: "Wrong developer password." };
-      persist({ email: normalized, role: "developer" });
+      persist({ email: DEV_EMAIL, role: "developer" });
+      await loadProfile(DEV_EMAIL);
       return { ok: true };
     }
 
     if (password.length < 4) return { ok: false, error: "Password must be at least 4 characters." };
     persist({ email: normalized, role: "user" });
+    await loadProfile(normalized);
     return { ok: true };
   };
 
@@ -65,19 +109,41 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     <AuthCtx.Provider
       value={{
         session,
+        profile,
         signIn,
         signOut: () => {
           persist(null);
+          setProfile(null);
           developerSignOut().catch(() => {
             /* ignore */
           });
         },
         isDeveloper: session?.role === "developer",
+        saveProfile: async (p) => {
+          if (!session) return { ok: false, error: "Sign in first." };
+          const res = await updateProfile({
+            data: {
+              email: session.email,
+              displayName: p.displayName,
+              handle: p.handle,
+              avatarUrl: p.avatarUrl,
+            },
+          });
+          if (!res.ok) return { ok: false, error: res.error };
+          setProfile((res.profile as Profile) ?? null);
+          return { ok: true };
+        },
       }}
     >
       {children}
     </AuthCtx.Provider>
   );
+}
+
+async function getDeveloperStatusSafe() {
+  const { getDeveloperStatus } = await import("./content.functions");
+  const res = await getDeveloperStatus();
+  return res.developer;
 }
 
 export const useAuth = () => useContext(AuthCtx);
