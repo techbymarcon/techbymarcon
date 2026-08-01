@@ -53,10 +53,13 @@ function ArticlePage() {
         <h1 className="mt-4 font-display text-[32px] leading-tight font-medium md:text-[48px]">
           {article.title}
         </h1>
-        <div className="mt-4 flex items-center gap-3 text-sm text-muted-foreground">
-          <span>{formatDate(article.date)}</span>
-          <span className="size-1 rounded-full bg-muted-foreground/50" />
-          <span>{article.readingTime}</span>
+        <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-3">
+          <AuthorByline />
+          <div className="flex items-center gap-3 text-sm text-muted-foreground">
+            <span>{formatDate(article.date)}</span>
+            <span className="size-1 rounded-full bg-muted-foreground/50" />
+            <span>{article.readingTime}</span>
+          </div>
         </div>
         <img
           src={article.cover}
