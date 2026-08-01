@@ -25,8 +25,9 @@ type Result = { ok: boolean; error?: string };
 const AuthCtx = createContext<{
   session: Session;
   profile: Profile;
-  signIn: (email: string, password: string) => Promise<Result>;
-  signUp: (email: string, password: string) => Promise<Result>;
+  signIn: (username: string, password: string) => Promise<Result>;
+  signUp: (username: string, password: string) => Promise<Result>;
+
   signOut: () => void;
   isDeveloper: boolean;
   saveProfile: (p: {
