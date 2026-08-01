@@ -1,24 +1,30 @@
-import { Icon } from "@/components/m3";
+import checkBlue from "@/assets/check-blue.png.asset.json";
+import checkGold from "@/assets/check-gold.png.asset.json";
 import { cn } from "@/lib/utils";
 
 export type Tier = string;
 
-export function VerifiedBadge({ tier, className }: { tier: Tier; className?: string }) {
+export function VerifiedBadge({
+  tier,
+  className,
+  size = 18,
+}: {
+  tier: Tier;
+  className?: string;
+  size?: number;
+}) {
   const gold = tier === "gold";
+  const label = gold ? "Verified developer — Tech by Marcon" : "Verified member";
   return (
-    <span
-      title={gold ? "Verified developer — Tech by Marcon" : "Verified member"}
-      aria-label={gold ? "Verified developer" : "Verified member"}
-      className={cn(
-        "inline-grid size-[18px] shrink-0 place-items-center rounded-full",
-        gold
-          ? "bg-[oklch(0.78_0.15_85)] text-[oklch(0.25_0.05_85)]"
-          : "bg-[oklch(0.62_0.16_250)] text-white",
-        className,
-      )}
-    >
-      <Icon name="check" filled className="text-[13px] font-bold" />
-    </span>
+    <img
+      src={gold ? checkGold.url : checkBlue.url}
+      alt={label}
+      title={label}
+      width={size}
+      height={size}
+      style={{ width: size, height: size }}
+      className={cn("inline-block shrink-0 object-contain align-middle", className)}
+    />
   );
 }
 
