@@ -25,7 +25,7 @@ export const developerSignIn = createServerFn({ method: "POST" })
       return { ok: false as const };
     }
     const session = await getGateSession();
-    await session.update({ developer: true });
+    await session.update({ developer: true, email: "developer" });
     return { ok: true as const };
   });
 
