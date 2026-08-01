@@ -61,7 +61,7 @@ function Index() {
 
       <Reveal delay={120} className="mt-12">
         <img
-          src={heroBanner.url}
+          src={bannerSrc}
           alt="Tech by Marcon banner"
           width={1600}
           height={1000}
