@@ -130,21 +130,67 @@ export function Comments({ articleId }: { articleId: string }) {
                   <span className="text-sm text-muted-foreground">@{c.handle}</span>
                   <span className="text-sm text-muted-foreground">· {timeAgo(c.created_at)}</span>
                 </p>
-                <p className="mt-2 whitespace-pre-wrap text-[16px] leading-relaxed text-foreground/90">
-                  {c.body}
-                </p>
+                {editingId === c.id ? (
+                  <div className="mt-2">
+                    <textarea
+                      rows={3}
+                      value={editBody}
+                      onChange={(e) => setEditBody(e.target.value)}
+                      className="w-full resize-y rounded-2xl border border-border bg-surface px-4 py-3 text-[15px] outline-none focus:border-primary"
+                    />
+                    <div className="mt-2 flex justify-end gap-2">
+                      <M3Button variant="text" onClick={() => setEditingId(null)}>
+                        Cancel
+                      </M3Button>
+                      <M3Button
+                        variant="filled"
+                        disabled={!editBody.trim()}
+                        onClick={async () => {
+                          const res = await editComment({
+                            data: { id: c.id, email: session?.email ?? "", body: editBody },
+                          });
+                          if (!res.ok) {
+                            setError(res.error ?? "Could not save your edit.");
+                            return;
+                          }
+                          setError(null);
+                          setEditingId(null);
+                          await refresh();
+                        }}
+                      >
+                        Save
+                      </M3Button>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="mt-2 whitespace-pre-wrap text-[16px] leading-relaxed text-foreground/90">
+                    {c.body}
+                  </p>
+                )}
               </div>
               {isDeveloper || session?.email === c.author_email ? (
-                <button
-                  aria-label="Delete comment"
-                  className="m3-transition grid size-9 shrink-0 place-items-center rounded-full text-muted-foreground hover:bg-foreground/8"
-                  onClick={async () => {
-                    await deleteComment({ data: { id: c.id, email: session?.email ?? "" } });
-                    await refresh();
-                  }}
-                >
-                  <Icon name="delete" className="text-[20px]" />
-                </button>
+                <div className="flex shrink-0 items-center gap-1">
+                  <button
+                    aria-label="Edit comment"
+                    className="m3-transition grid size-9 place-items-center rounded-full text-muted-foreground hover:bg-foreground/8"
+                    onClick={() => {
+                      setEditingId(c.id);
+                      setEditBody(c.body);
+                    }}
+                  >
+                    <Icon name="edit" className="text-[20px]" />
+                  </button>
+                  <button
+                    aria-label="Delete comment"
+                    className="m3-transition grid size-9 place-items-center rounded-full text-muted-foreground hover:bg-foreground/8"
+                    onClick={async () => {
+                      await deleteComment({ data: { id: c.id, email: session?.email ?? "" } });
+                      await refresh();
+                    }}
+                  >
+                    <Icon name="delete" className="text-[20px]" />
+                  </button>
+                </div>
               ) : null}
             </div>
           </div>
