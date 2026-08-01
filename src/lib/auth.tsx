@@ -5,6 +5,7 @@ import {
   ensureProfile,
   getProfile,
   updateProfile,
+  uploadAvatar,
 } from "./content.functions";
 
 export type Session = { email: string; role: "user" | "developer" } | null;
