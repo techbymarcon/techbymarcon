@@ -71,9 +71,7 @@ export function Navigation() {
           <NavItem key={i.to} {...i} active={isActive(i.to)} />
         ))}
         <div className="mt-auto flex flex-col items-center gap-2">
-          <M3Button variant="icon" aria-label="Toggle theme" onClick={toggle}>
-            <Icon name={theme === "dark" ? "light_mode" : "dark_mode"} />
-          </M3Button>
+          <ThemeToggle />
           <Link to="/login" aria-label="Account">
             <span
               className={cn(
