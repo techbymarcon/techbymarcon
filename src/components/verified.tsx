@@ -28,7 +28,7 @@ export function Avatar({
   size = 40,
   className,
 }: {
-  src?: string;
+  src?: string | undefined;
   name: string;
   size?: number;
   className?: string;
