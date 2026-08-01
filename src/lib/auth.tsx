@@ -18,7 +18,7 @@ export type Profile = {
   tier: string;
 } | null;
 
-const DEV_EMAIL = "developer";
+const DEV_USERNAME = "developer";
 
 type Result = { ok: boolean; error?: string };
 
