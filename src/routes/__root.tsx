@@ -14,6 +14,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { ThemeProvider } from "@/lib/theme";
 import { AuthProvider } from "@/lib/auth";
 import { ArticlesProvider } from "@/lib/articles";
+import { SiteContentProvider } from "@/lib/site-content";
 import { Navigation } from "@/components/navigation";
 import { BackToTop } from "@/components/back-to-top";
 
@@ -131,6 +132,7 @@ function RootComponent() {
       <ThemeProvider>
         <AuthProvider>
           <ArticlesProvider>
+           <SiteContentProvider>
             <div className="min-h-screen w-full bg-background">
               <Navigation />
               <main className="pb-28 md:pb-0 md:pl-[90px]">
@@ -139,6 +141,7 @@ function RootComponent() {
               </main>
               <BackToTop />
             </div>
+           </SiteContentProvider>
           </ArticlesProvider>
         </AuthProvider>
       </ThemeProvider>
