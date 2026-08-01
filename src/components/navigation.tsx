@@ -82,7 +82,7 @@ export function Navigation() {
               <span className="relative grid size-12 place-items-center rounded-full hover:bg-foreground/8 m3-transition">
                 <Avatar
                   src={profile?.avatar_url || undefined}
-                  name={profile?.display_name || session.email}
+                  name={profile?.display_name || "Member"}
                   size={36}
                 />
                 <VerifiedBadge
@@ -122,7 +122,7 @@ export function Navigation() {
               <>
                 <Avatar
                   src={profile?.avatar_url || undefined}
-                  name={profile?.display_name || session.email}
+                  name={profile?.display_name || "Member"}
                   size={28}
                 />
                 <VerifiedBadge

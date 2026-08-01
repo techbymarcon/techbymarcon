@@ -102,6 +102,7 @@ export type Database = {
           display_name: string
           email: string
           handle: string
+          password_hash: string | null
           tier: string
           updated_at: string
         }
@@ -111,6 +112,7 @@ export type Database = {
           display_name: string
           email: string
           handle: string
+          password_hash?: string | null
           tier?: string
           updated_at?: string
         }
@@ -120,6 +122,7 @@ export type Database = {
           display_name?: string
           email?: string
           handle?: string
+          password_hash?: string | null
           tier?: string
           updated_at?: string
         }

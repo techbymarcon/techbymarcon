@@ -25,8 +25,9 @@ export const Route = createFileRoute("/login")({
 });
 
 function Login() {
-  const { session, profile, signIn, signOut, isDeveloper, saveProfile, uploadAvatarFile } =
+  const { session, profile, signIn, signUp, signOut, isDeveloper, saveProfile, uploadAvatarFile } =
     useAuth();
+  const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -52,10 +53,10 @@ function Login() {
         <Reveal>
           <div className="rounded-[32px] bg-surface-container p-8 elevation-1">
             <div className="flex items-center gap-4">
-              <Avatar src={avatarUrl || undefined} name={displayName || session.email} size={72} />
+              <Avatar src={avatarUrl || undefined} name={displayName || "Member"} size={72} />
               <div className="min-w-0">
                 <h1 className="flex items-center gap-2 font-display text-[26px] font-medium">
-                  <span className="truncate">{displayName || session.email}</span>
+                  <span className="truncate">{displayName || "Member"}</span>
                   <VerifiedBadge tier={profile?.tier ?? "blue"} />
                 </h1>
                 <p className="text-[15px] text-muted-foreground">@{handle || "…"}</p>
@@ -156,18 +157,20 @@ function Login() {
     <div className="mx-auto max-w-[620px] px-5 py-16 md:py-24">
       <Reveal>
         <h1 className="font-display text-[36px] leading-tight font-medium md:text-[48px]">
-          Sign in
+          {mode === "signin" ? "Sign in" : "Create account"}
         </h1>
         <p className="mt-4 text-[17px] leading-relaxed text-muted-foreground">
-          Sign in or sign up with any email to comment on articles. You instantly get a handle, a
-          profile picture (animated GIFs work) and a blue verified check.
+          Create an account with your email and a password (at least 8 characters) to comment on
+          articles. You get a handle, a profile picture (animated GIFs work) and a blue verified
+          check.
         </p>
 
         <form
           className="mt-8 space-y-4"
           onSubmit={async (e) => {
             e.preventDefault();
-            const res = await signIn(email, password);
+            const res =
+              mode === "signup" ? await signUp(email, password) : await signIn(email, password);
             setError(res.ok ? null : (res.error ?? "Sign in failed."));
           }}
         >
@@ -182,13 +185,24 @@ function Login() {
             className={field}
             type="password"
             placeholder="Password"
-            autoComplete="current-password"
+            autoComplete={mode === "signup" ? "new-password" : "current-password"}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
           {error ? <p className="text-sm text-destructive">{error}</p> : null}
           <M3Button type="submit" variant="filled" className="w-full">
-            Continue
+            {mode === "signin" ? "Sign in" : "Create account"}
+          </M3Button>
+          <M3Button
+            type="button"
+            variant="text"
+            className="w-full"
+            onClick={() => {
+              setError(null);
+              setMode(mode === "signin" ? "signup" : "signin");
+            }}
+          >
+            {mode === "signin" ? "New here? Create an account" : "Already a member? Sign in"}
           </M3Button>
         </form>
 
