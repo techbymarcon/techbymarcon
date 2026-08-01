@@ -1,4 +1,5 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
+import { getSiteContent, saveSiteContent } from "./content.functions";
 
 export type Sprite = { id: string; icon: string; title: string; body: string };
 export type Social = {
@@ -98,31 +99,37 @@ export const defaultContent: SiteContent = {
   },
 };
 
-const KEY = "tbm-site-content";
-
 const Ctx = createContext<{
   content: SiteContent;
   update: (next: SiteContent) => void;
   reset: () => void;
 }>({ content: defaultContent, update: () => {}, reset: () => {} });
 
+const merge = (parsed: Partial<SiteContent>): SiteContent => ({
+  about: { ...defaultContent.about, ...parsed.about },
+  socials: { ...defaultContent.socials, ...parsed.socials },
+});
+
 export function SiteContentProvider({ children }: { children: ReactNode }) {
   const [content, setContent] = useState<SiteContent>(defaultContent);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    const raw = window.localStorage.getItem(KEY);
-    if (raw) {
-      try {
-        const parsed = JSON.parse(raw) as SiteContent;
-        setContent({
-          about: { ...defaultContent.about, ...parsed.about },
-          socials: { ...defaultContent.socials, ...parsed.socials },
-        });
-      } catch {
-        /* ignore */
-      }
-    }
+    getSiteContent()
+      .then((res) => setContent(merge(JSON.parse(res.json) as Partial<SiteContent>)))
+      .catch(() => {
+        /* keep defaults */
+      });
   }, []);
+
+  const push = (next: SiteContent) => {
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = setTimeout(() => {
+      saveSiteContent({ data: { json: JSON.stringify(next) } }).catch(() => {
+        /* not authorised */
+      });
+    }, 500);
+  };
 
   return (
     <Ctx.Provider
@@ -130,11 +137,11 @@ export function SiteContentProvider({ children }: { children: ReactNode }) {
         content,
         update: (next) => {
           setContent(next);
-          window.localStorage.setItem(KEY, JSON.stringify(next));
+          push(next);
         },
         reset: () => {
-          window.localStorage.removeItem(KEY);
           setContent(defaultContent);
+          push(defaultContent);
         },
       }}
     >
