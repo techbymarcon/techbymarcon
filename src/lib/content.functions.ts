@@ -150,13 +150,18 @@ const publicProfile = (row: ProfileRow | null | undefined): PublicProfile | null
       }
     : null;
 
-const isEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+/** Usernames are the only identifier we collect — no email addresses, for privacy. */
+const normalizeUsername = (value: string) =>
+  value.trim().toLowerCase().replace(/^@/, "").replace(/[^a-z0-9_]/g, "");
+const isUsername = (value: string) => /^[a-z0-9_]{3,20}$/.test(value);
 
+/** `email` is the legacy account-key column; it now stores the username. */
 async function profileByEmail(email: string) {
   const supabase = await db();
   const { data } = await supabase.from("profiles").select("*").eq("email", email).maybeSingle();
   return (data as ProfileRow | null) ?? null;
 }
+
 
 /** Session state — identity always comes from the httpOnly cookie, never the client. */
 export const getSessionInfo = createServerFn({ method: "GET" }).handler(async () => {
