@@ -270,3 +270,18 @@ export const deleteComment = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true as const };
   });
+
+export const editComment = createServerFn({ method: "POST" })
+  .inputValidator((data: { id: string; email: string; body: string }) => data)
+  .handler(async ({ data }) => {
+    const body = data.body.trim().slice(0, 2000);
+    if (!body) return { ok: false as const, error: "Write something first." };
+    const supabase = await db();
+    const isDev = await isDeveloperSession();
+    const query = supabase.from("comments").update({ body }).eq("id", data.id);
+    const { error } = isDev
+      ? await query
+      : await query.eq("author_email", data.email.trim().toLowerCase());
+    if (error) return { ok: false as const, error: error.message };
+    return { ok: true as const };
+  });
