@@ -57,8 +57,8 @@ function Index() {
 
       <Reveal delay={120} className="mt-12">
         <img
-          src={heroImage}
-          alt="Pastel Material Design shapes"
+          src={heroBanner.url}
+          alt="Tech by Marcon banner"
           width={1600}
           height={1000}
           className="h-[220px] w-full rounded-[32px] object-cover elevation-2 md:h-[420px]"
