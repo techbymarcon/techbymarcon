@@ -28,7 +28,7 @@ function Login() {
   const { session, profile, signIn, signUp, signOut, isDeveloper, saveProfile, uploadAvatarFile } =
     useAuth();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
 
