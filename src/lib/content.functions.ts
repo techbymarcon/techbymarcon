@@ -301,7 +301,7 @@ export const addComment = createServerFn({ method: "POST" })
       author_email: email,
       handle: profile.handle,
       display_name: profile.display_name,
-      avatar_url: profile.avatar_url,
+      avatar_url: profile.avatar_url ?? "",
       tier: profile.tier,
       body,
     });
