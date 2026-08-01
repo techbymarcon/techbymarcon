@@ -91,17 +91,21 @@ export const getSiteContent = createServerFn({ method: "GET" }).handler(async ()
     .eq("key", "main")
     .maybeSingle();
   if (error) throw new Error(error.message);
-  return (data?.value ?? {}) as Record<string, unknown>;
+  return { json: JSON.stringify(data?.value ?? {}) };
 });
 
 export const saveSiteContent = createServerFn({ method: "POST" })
-  .inputValidator((data: { value: Record<string, unknown> }) => data)
+  .inputValidator((data: { json: string }) => data)
   .handler(async ({ data }) => {
     await requireDeveloper();
     const supabase = await db();
     const { error } = await supabase
       .from("site_content")
-      .upsert({ key: "main", value: data.value, updated_at: new Date().toISOString() });
+      .upsert({
+        key: "main",
+        value: JSON.parse(data.json),
+        updated_at: new Date().toISOString(),
+      });
     if (error) throw new Error(error.message);
     return { ok: true as const };
   });
