@@ -18,15 +18,16 @@ export type Profile = {
   tier: string;
 } | null;
 
-const DEV_EMAIL = "developer";
+const DEV_USERNAME = "developer";
 
 type Result = { ok: boolean; error?: string };
 
 const AuthCtx = createContext<{
   session: Session;
   profile: Profile;
-  signIn: (email: string, password: string) => Promise<Result>;
-  signUp: (email: string, password: string) => Promise<Result>;
+  signIn: (username: string, password: string) => Promise<Result>;
+  signUp: (username: string, password: string) => Promise<Result>;
+
   signOut: () => void;
   isDeveloper: boolean;
   saveProfile: (p: {
@@ -66,30 +67,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     void sync();
   }, []);
 
-  const signIn = async (email: string, password: string) => {
-    const normalized = email.trim().toLowerCase();
-    if (!normalized || !password) return { ok: false, error: "Enter an email and password." };
+  const signIn = async (username: string, password: string) => {
+    const normalized = username.trim().toLowerCase().replace(/^@/, "");
+    if (!normalized || !password) return { ok: false, error: "Enter a username and password." };
 
-    if (normalized === DEV_EMAIL || normalized.startsWith(`${DEV_EMAIL}@`)) {
+    if (normalized === DEV_USERNAME) {
       const res = await developerSignIn({ data: { password } });
       if (!res.ok) return { ok: false, error: "Wrong developer password." };
       await sync();
       return { ok: true };
     }
 
-    const res = await userSignIn({ data: { email: normalized, password } });
+    const res = await userSignIn({ data: { username: normalized, password } });
     if (!res.ok) return { ok: false, error: res.error };
     await sync();
     return { ok: true };
   };
 
-  const signUp = async (email: string, password: string) => {
-    const normalized = email.trim().toLowerCase();
-    const res = await userSignUp({ data: { email: normalized, password } });
+  const signUp = async (username: string, password: string) => {
+    const normalized = username.trim().toLowerCase().replace(/^@/, "");
+    const res = await userSignUp({ data: { username: normalized, password } });
     if (!res.ok) return { ok: false, error: res.error };
     await sync();
     return { ok: true };
   };
+
 
   return (
     <AuthCtx.Provider

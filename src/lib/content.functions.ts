@@ -150,13 +150,18 @@ const publicProfile = (row: ProfileRow | null | undefined): PublicProfile | null
       }
     : null;
 
-const isEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+/** Usernames are the only identifier we collect — no email addresses, for privacy. */
+const normalizeUsername = (value: string) =>
+  value.trim().toLowerCase().replace(/^@/, "").replace(/[^a-z0-9_]/g, "");
+const isUsername = (value: string) => /^[a-z0-9_]{3,20}$/.test(value);
 
+/** `email` is the legacy account-key column; it now stores the username. */
 async function profileByEmail(email: string) {
   const supabase = await db();
   const { data } = await supabase.from("profiles").select("*").eq("email", email).maybeSingle();
   return (data as ProfileRow | null) ?? null;
 }
+
 
 /** Session state — identity always comes from the httpOnly cookie, never the client. */
 export const getSessionInfo = createServerFn({ method: "GET" }).handler(async () => {
@@ -171,33 +176,39 @@ export const getDeveloperProfile = createServerFn({ method: "GET" }).handler(asy
 }));
 
 export const userSignUp = createServerFn({ method: "POST" })
-  .inputValidator((data: { email: string; password: string; displayName?: string }) => data)
+  .inputValidator((data: { username: string; password: string; displayName?: string }) => data)
   .handler(async ({ data }) => {
-    const email = data.email.trim().toLowerCase();
+    const username = normalizeUsername(data.username ?? "");
     const password = data.password ?? "";
-    if (!isEmail(email)) return { ok: false as const, error: "Enter a valid email address." };
+    if (!isUsername(username)) {
+      return {
+        ok: false as const,
+        error: "Username must be 3–20 characters: letters, numbers or underscores.",
+      };
+    }
+    if (username === "developer" || username === "techbymarcon") {
+      return { ok: false as const, error: "That username is reserved." };
+    }
     if (password.length < 8) {
       return { ok: false as const, error: "Password must be at least 8 characters." };
     }
     const supabase = await db();
-    const existing = await profileByEmail(email);
-    if (existing) return { ok: false as const, error: "That email already has an account." };
+    const existing = await profileByEmail(username);
+    if (existing) return { ok: false as const, error: "That username is taken." };
 
-    let handle = slugHandle(email);
-    if (handle === "techbymarcon") handle = `${handle}_fan`;
     const { data: clash } = await supabase
       .from("profiles")
       .select("handle")
-      .eq("handle", handle)
+      .eq("handle", username)
       .maybeSingle();
-    if (clash) handle = `${handle}${Math.floor(Math.random() * 900 + 100)}`;
+    if (clash) return { ok: false as const, error: "That username is taken." };
 
     const { data: created, error } = await supabase
       .from("profiles")
       .insert({
-        email,
-        handle,
-        display_name: data.displayName?.trim().slice(0, 40) || handle,
+        email: username,
+        handle: username,
+        display_name: data.displayName?.trim().slice(0, 40) || username,
         avatar_url: "",
         tier: "blue",
         password_hash: await hashPassword(password),
@@ -205,22 +216,23 @@ export const userSignUp = createServerFn({ method: "POST" })
       .select("*")
       .single();
     if (error) return { ok: false as const, error: "Could not create that account." };
-    await setUserSession(email);
+    await setUserSession(username);
     return { ok: true as const, profile: publicProfile(created as ProfileRow) };
   });
 
 export const userSignIn = createServerFn({ method: "POST" })
-  .inputValidator((data: { email: string; password: string }) => data)
+  .inputValidator((data: { username: string; password: string }) => data)
   .handler(async ({ data }) => {
-    const email = data.email.trim().toLowerCase();
-    const row = await profileByEmail(email);
+    const username = normalizeUsername(data.username ?? "");
+    const row = await profileByEmail(username);
     const ok = row ? await verifyPassword(data.password ?? "", row.password_hash) : false;
     if (!row || !ok || row.tier === "gold") {
-      return { ok: false as const, error: "Wrong email or password." };
+      return { ok: false as const, error: "Wrong username or password." };
     }
-    await setUserSession(email);
+    await setUserSession(username);
     return { ok: true as const, profile: publicProfile(row) };
   });
+
 
 export const updateProfile = createServerFn({ method: "POST" })
   .inputValidator((data: { displayName: string; handle: string; avatarUrl: string }) => data)
