@@ -68,9 +68,9 @@ function Login() {
 
         <form
           className="mt-8 space-y-4"
-          onSubmit={(e) => {
+          onSubmit={async (e) => {
             e.preventDefault();
-            const res = signIn(email, password);
+            const res = await signIn(email, password);
             setError(res.ok ? null : (res.error ?? "Sign in failed."));
           }}
         >
