@@ -1,6 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Icon, M3Button } from "@/components/m3";
-import { useTheme } from "@/lib/theme";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { useAuth } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 
@@ -56,7 +56,6 @@ function NavItem({
 
 export function Navigation() {
   const path = useRouterState({ select: (r) => r.location.pathname });
-  const { theme, toggle } = useTheme();
   const { session, isDeveloper } = useAuth();
   const isActive = (to: string) => (to === "/" ? path === "/" : path.startsWith(to));
 
@@ -71,9 +70,7 @@ export function Navigation() {
           <NavItem key={i.to} {...i} active={isActive(i.to)} />
         ))}
         <div className="mt-auto flex flex-col items-center gap-2">
-          <M3Button variant="icon" aria-label="Toggle theme" onClick={toggle}>
-            <Icon name={theme === "dark" ? "light_mode" : "dark_mode"} />
-          </M3Button>
+          <ThemeToggle />
           <Link to="/login" aria-label="Account">
             <span
               className={cn(
@@ -92,6 +89,7 @@ export function Navigation() {
         {items.map((i) => (
           <NavItem key={i.to} {...i} active={isActive(i.to)} compact />
         ))}
+        <ThemeToggle floating />
         <Link to="/login" className="m3-transition flex flex-1 flex-col items-center gap-1 py-2">
           <span
             className={cn(
