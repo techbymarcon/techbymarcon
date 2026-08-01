@@ -6,6 +6,7 @@ import { useTheme } from "@/lib/theme";
 import { ArticleCard } from "@/components/article-card";
 import { Icon, M3Button } from "@/components/m3";
 import { Reveal } from "@/components/reveal";
+import { VerifiedInfo } from "@/components/verified";
 
 export const Route = createFileRoute("/")({
   head: () => ({
