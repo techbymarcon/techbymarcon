@@ -2,7 +2,12 @@ import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Icon, M3Button } from "@/components/m3";
 import { Avatar, VerifiedBadge } from "@/components/verified";
-import { addComment, deleteComment, listComments } from "@/lib/content.functions";
+import {
+  addComment,
+  deleteComment,
+  editComment,
+  listComments,
+} from "@/lib/content.functions";
 import { useAuth } from "@/lib/auth";
 
 type CommentRow = {
