@@ -160,9 +160,9 @@ function Login() {
           {mode === "signin" ? "Sign in" : "Create account"}
         </h1>
         <p className="mt-4 text-[17px] leading-relaxed text-muted-foreground">
-          Create an account with your email and a password (at least 8 characters) to comment on
-          articles. You get a handle, a profile picture (animated GIFs work) and a blue verified
-          check.
+          Sign up with just a username and a password (at least 8 characters) — no email, no
+          personal details. You get a handle, a profile picture (animated GIFs work) and a blue
+          verified check.
         </p>
 
         <form
@@ -170,17 +170,20 @@ function Login() {
           onSubmit={async (e) => {
             e.preventDefault();
             const res =
-              mode === "signup" ? await signUp(email, password) : await signIn(email, password);
+              mode === "signup"
+                ? await signUp(username, password)
+                : await signIn(username, password);
             setError(res.ok ? null : (res.error ?? "Sign in failed."));
           }}
         >
           <input
             className={field}
-            placeholder="Email"
+            placeholder="Username"
             autoComplete="username"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
           />
+
           <input
             className={field}
             type="password"
