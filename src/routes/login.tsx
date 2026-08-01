@@ -25,7 +25,8 @@ export const Route = createFileRoute("/login")({
 });
 
 function Login() {
-  const { session, profile, signIn, signOut, isDeveloper, saveProfile } = useAuth();
+  const { session, profile, signIn, signOut, isDeveloper, saveProfile, uploadAvatarFile } =
+    useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -89,7 +90,30 @@ function Login() {
               </label>
               <label className="block">
                 <span className="mb-1.5 block text-[13px] font-medium text-muted-foreground">
-                  Profile picture URL (PNG, JPG or animated GIF)
+                  Profile picture — upload from your device (PNG, JPG or animated GIF, max 5 MB)
+                </span>
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/jpg,image/gif,image/webp"
+                  className="w-full rounded-2xl border border-border bg-surface px-5 py-3.5 text-[15px] file:mr-4 file:rounded-full file:border-0 file:bg-secondary-container file:px-4 file:py-2 file:text-[14px] file:font-medium file:text-on-secondary-container"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    setStatus("Uploading picture…");
+                    const res = await uploadAvatarFile(file);
+                    e.target.value = "";
+                    if (!res.ok) {
+                      setStatus(res.error ?? "Could not upload that image.");
+                      return;
+                    }
+                    setAvatarUrl(res.url ?? "");
+                    setStatus("Profile picture updated.");
+                  }}
+                />
+              </label>
+              <label className="block">
+                <span className="mb-1.5 block text-[13px] font-medium text-muted-foreground">
+                  …or paste an image URL
                 </span>
                 <input
                   className={field}

@@ -5,6 +5,7 @@ import {
   ensureProfile,
   getProfile,
   updateProfile,
+  uploadAvatar,
 } from "./content.functions";
 
 export type Session = { email: string; role: "user" | "developer" } | null;
@@ -30,6 +31,7 @@ const AuthCtx = createContext<{
     handle: string;
     avatarUrl: string;
   }) => Promise<{ ok: boolean; error?: string }>;
+  uploadAvatarFile: (file: File) => Promise<{ ok: boolean; url?: string; error?: string }>;
 }>({
   session: null,
   profile: null,
@@ -37,6 +39,7 @@ const AuthCtx = createContext<{
   signOut: () => {},
   isDeveloper: false,
   saveProfile: async () => ({ ok: false }),
+  uploadAvatarFile: async () => ({ ok: false }),
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -132,6 +135,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           if (!res.ok) return { ok: false, error: res.error };
           setProfile((res.profile as Profile) ?? null);
           return { ok: true };
+        },
+        uploadAvatarFile: async (file: File) => {
+          if (!session) return { ok: false, error: "Sign in first." };
+          if (file.size > 5 * 1024 * 1024) return { ok: false, error: "Image must be under 5 MB." };
+          const dataUrl = await new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(String(reader.result));
+            reader.onerror = () => reject(new Error("Could not read that file."));
+            reader.readAsDataURL(file);
+          });
+          const res = await uploadAvatar({ data: { email: session.email, dataUrl } });
+          if (!res.ok) return { ok: false, error: res.error };
+          if (res.profile) setProfile(res.profile as Profile);
+          return { ok: true, url: res.url };
         },
       }}
     >

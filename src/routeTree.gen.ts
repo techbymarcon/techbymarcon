@@ -15,6 +15,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as SocialsRouteImport } from './routes/socials'
 import { Route as ArticlesIndexRouteImport } from './routes/articles.index'
 import { Route as ArticlesArticleIdRouteImport } from './routes/articles.$articleId'
+import { Route as ApiPublicAvatarsFileRouteImport } from './routes/api/public/avatars.$file'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -46,6 +47,11 @@ const ArticlesArticleIdRoute = ArticlesArticleIdRouteImport.update({
   path: '/articles/$articleId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicAvatarsFileRoute = ApiPublicAvatarsFileRouteImport.update({
+  id: '/api/public/avatars/$file',
+  path: '/api/public/avatars/$file',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -54,6 +60,7 @@ export interface FileRoutesByFullPath {
   '/socials': typeof SocialsRoute
   '/articles/$articleId': typeof ArticlesArticleIdRoute
   '/articles/': typeof ArticlesIndexRoute
+  '/api/public/avatars/$file': typeof ApiPublicAvatarsFileRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -62,6 +69,7 @@ export interface FileRoutesByTo {
   '/socials': typeof SocialsRoute
   '/articles/$articleId': typeof ArticlesArticleIdRoute
   '/articles': typeof ArticlesIndexRoute
+  '/api/public/avatars/$file': typeof ApiPublicAvatarsFileRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -71,6 +79,7 @@ export interface FileRoutesById {
   '/socials': typeof SocialsRoute
   '/articles/$articleId': typeof ArticlesArticleIdRoute
   '/articles/': typeof ArticlesIndexRoute
+  '/api/public/avatars/$file': typeof ApiPublicAvatarsFileRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -81,6 +90,7 @@ export interface FileRouteTypes {
     | '/socials'
     | '/articles/$articleId'
     | '/articles/'
+    | '/api/public/avatars/$file'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -89,6 +99,7 @@ export interface FileRouteTypes {
     | '/socials'
     | '/articles/$articleId'
     | '/articles'
+    | '/api/public/avatars/$file'
   id:
     | '__root__'
     | '/'
@@ -97,6 +108,7 @@ export interface FileRouteTypes {
     | '/socials'
     | '/articles/$articleId'
     | '/articles/'
+    | '/api/public/avatars/$file'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -106,6 +118,7 @@ export interface RootRouteChildren {
   SocialsRoute: typeof SocialsRoute
   ArticlesArticleIdRoute: typeof ArticlesArticleIdRoute
   ArticlesIndexRoute: typeof ArticlesIndexRoute
+  ApiPublicAvatarsFileRoute: typeof ApiPublicAvatarsFileRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -152,6 +165,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ArticlesArticleIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/avatars/$file': {
+      id: '/api/public/avatars/$file'
+      path: '/api/public/avatars/$file'
+      fullPath: '/api/public/avatars/$file'
+      preLoaderRoute: typeof ApiPublicAvatarsFileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -162,6 +182,7 @@ const rootRouteChildren: RootRouteChildren = {
   SocialsRoute: SocialsRoute,
   ArticlesArticleIdRoute: ArticlesArticleIdRoute,
   ArticlesIndexRoute: ArticlesIndexRoute,
+  ApiPublicAvatarsFileRoute: ApiPublicAvatarsFileRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

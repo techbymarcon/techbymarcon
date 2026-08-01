@@ -1,6 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Icon, M3Button } from "@/components/m3";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { Avatar, VerifiedBadge } from "@/components/verified";
 import { useAuth } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 
@@ -56,7 +57,7 @@ function NavItem({
 
 export function Navigation() {
   const path = useRouterState({ select: (r) => r.location.pathname });
-  const { session, isDeveloper } = useAuth();
+  const { session, profile, isDeveloper } = useAuth();
   const isActive = (to: string) => (to === "/" ? path === "/" : path.startsWith(to));
 
   return (
@@ -71,14 +72,32 @@ export function Navigation() {
         ))}
         <div className="mt-auto flex flex-col items-center gap-2">
           <ThemeToggle />
-          <Link to="/login" aria-label="Account">
-            <span
-              className={cn(
-                "m3-transition grid size-12 place-items-center rounded-full hover:bg-foreground/8",
-                isDeveloper ? "text-primary" : "text-foreground",
-              )}
-            >
-              <Icon name={session ? "account_circle" : "login"} filled={!!session} />
+          <Link
+            to="/login"
+            aria-label={session ? `Account @${profile?.handle ?? ""}` : "Sign in"}
+            title={session ? `@${profile?.handle ?? ""}` : "Sign in"}
+            className="flex flex-col items-center gap-1"
+          >
+            {session ? (
+              <span className="relative grid size-12 place-items-center rounded-full hover:bg-foreground/8 m3-transition">
+                <Avatar
+                  src={profile?.avatar_url || undefined}
+                  name={profile?.display_name || session.email}
+                  size={36}
+                />
+                <VerifiedBadge
+                  tier={profile?.tier ?? (isDeveloper ? "gold" : "blue")}
+                  size={15}
+                  className="absolute right-0.5 bottom-0.5"
+                />
+              </span>
+            ) : (
+              <span className="m3-transition grid size-12 place-items-center rounded-full text-foreground hover:bg-foreground/8">
+                <Icon name="login" />
+              </span>
+            )}
+            <span className="max-w-[76px] truncate text-[11px] font-medium text-muted-foreground">
+              {session ? `@${profile?.handle ?? "you"}` : "Sign in"}
             </span>
           </Link>
         </div>
@@ -93,15 +112,32 @@ export function Navigation() {
         <Link to="/login" className="m3-transition flex flex-1 flex-col items-center gap-1 py-2">
           <span
             className={cn(
-              "flex h-8 w-16 items-center justify-center rounded-[16px]",
+              "relative flex h-8 w-16 items-center justify-center rounded-[16px]",
               path.startsWith("/login")
                 ? "bg-secondary-container text-on-secondary-container"
                 : "text-muted-foreground",
             )}
           >
-            <Icon name={session ? "account_circle" : "login"} filled={!!session} />
+            {session ? (
+              <>
+                <Avatar
+                  src={profile?.avatar_url || undefined}
+                  name={profile?.display_name || session.email}
+                  size={28}
+                />
+                <VerifiedBadge
+                  tier={profile?.tier ?? (isDeveloper ? "gold" : "blue")}
+                  size={13}
+                  className="absolute right-[14px] bottom-0"
+                />
+              </>
+            ) : (
+              <Icon name="login" />
+            )}
           </span>
-          <span className="text-[11px] font-medium text-muted-foreground">Account</span>
+          <span className="max-w-[72px] truncate text-[11px] font-medium text-muted-foreground">
+            {session ? `@${profile?.handle ?? "you"}` : "Sign in"}
+          </span>
         </Link>
       </nav>
     </>

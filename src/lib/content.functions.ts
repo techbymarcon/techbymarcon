@@ -285,3 +285,39 @@ export const editComment = createServerFn({ method: "POST" })
     if (error) return { ok: false as const, error: error.message };
     return { ok: true as const };
   });
+
+export const uploadAvatar = createServerFn({ method: "POST" })
+  .inputValidator((data: { email: string; dataUrl: string }) => data)
+  .handler(async ({ data }) => {
+    const email = data.email.trim().toLowerCase();
+    if (!email) return { ok: false as const, error: "Sign in first." };
+    if (email === DEV_EMAIL) await requireDeveloper();
+
+    const match = /^data:(image\/(png|jpeg|jpg|gif|webp));base64,([A-Za-z0-9+/=]+)$/.exec(
+      data.dataUrl,
+    );
+    if (!match) return { ok: false as const, error: "Use a PNG, JPG, GIF or WEBP image." };
+    const contentType = match[1]!;
+    const bytes = Buffer.from(match[3]!, "base64");
+    if (bytes.byteLength > 5 * 1024 * 1024) {
+      return { ok: false as const, error: "Image must be smaller than 5 MB." };
+    }
+    const ext = contentType === "image/jpeg" ? "jpg" : contentType.split("/")[1]!;
+    const name = `${slugHandle(email) || "user"}-${Date.now()}.${ext}`;
+
+    const supabase = await db();
+    const { error } = await supabase.storage
+      .from("avatars")
+      .upload(name, bytes, { contentType, upsert: true });
+    if (error) return { ok: false as const, error: error.message };
+
+    const url = `/api/public/avatars/${name}`;
+    const { data: row } = await supabase
+      .from("profiles")
+      .update({ avatar_url: url })
+      .eq("email", email)
+      .select("*")
+      .single();
+    await supabase.from("comments").update({ avatar_url: url }).eq("author_email", email);
+    return { ok: true as const, url, profile: row ?? null };
+  });
