@@ -217,7 +217,7 @@ function Login() {
             Developer access
           </p>
           <p className="mt-2 text-[15px] leading-relaxed">
-            Use <strong>developer</strong> as the email and the developer password to sign in as{" "}
+            Use <strong>developer</strong> as the username and the developer password to sign in as{" "}
             <strong>@techbymarcon</strong> with the golden check and article editing tools.
           </p>
         </div>
