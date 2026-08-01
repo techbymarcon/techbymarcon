@@ -2,6 +2,7 @@ import { useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { CategoryBadge } from "@/components/article-card";
 import { ArticleEditor } from "@/components/article-editor";
+import { Comments } from "@/components/comments";
 import { Icon, M3Button } from "@/components/m3";
 import { Reveal } from "@/components/reveal";
 import { formatDate, useArticles } from "@/lib/articles";
