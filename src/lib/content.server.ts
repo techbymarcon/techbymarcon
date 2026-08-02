@@ -71,12 +71,20 @@ export async function setUserSession(email: string) {
 
 const enc = new TextEncoder();
 
-async function pbkdf2(password: string, salt: Uint8Array) {
+// The Worker runtime caps PBKDF2 at 100000 iterations.
+const PBKDF2_ITERATIONS = 100000;
+
+async function pbkdf2(password: string, salt: Uint8Array, iterations = PBKDF2_ITERATIONS) {
   const key = await crypto.subtle.importKey("raw", enc.encode(password), "PBKDF2", false, [
     "deriveBits",
   ]);
   const bits = await crypto.subtle.deriveBits(
-    { name: "PBKDF2", salt: salt as unknown as BufferSource, iterations: 120000, hash: "SHA-256" },
+    {
+      name: "PBKDF2",
+      salt: salt as unknown as BufferSource,
+      iterations: Math.min(iterations, PBKDF2_ITERATIONS),
+      hash: "SHA-256",
+    },
     key,
     256,
   );
