@@ -68,7 +68,7 @@ function Socials() {
           <Field
             label="Intro"
             multiline
-            value=<Linkify text={socials.intro} />
+            value={socials.intro}
             onChange={(v) => patch({ intro: v })}
           />
         </div>
