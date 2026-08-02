@@ -4,6 +4,7 @@ import { CategoryBadge } from "@/components/article-card";
 import { AuthorByline } from "@/components/author-byline";
 import { ArticleEditor } from "@/components/article-editor";
 import { Comments } from "@/components/comments";
+import { Linkify } from "@/components/linkify";
 import { Icon, M3Button } from "@/components/m3";
 import { Reveal } from "@/components/reveal";
 import { formatDate, useArticles } from "@/lib/articles";
