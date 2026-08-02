@@ -8,6 +8,7 @@ import { Linkify } from "@/components/linkify";
 import { Icon, M3Button } from "@/components/m3";
 import { Reveal } from "@/components/reveal";
 import { formatDate, useArticles } from "@/lib/articles";
+import { ArticleDownload } from "@/components/article-download";
 import { useAuth } from "@/lib/auth";
 
 export const Route = createFileRoute("/articles/$articleId")({
@@ -75,6 +76,11 @@ function ArticlePage() {
             </p>
           ))}
         </div>
+        <ArticleDownload
+          path={article.downloadUrl ?? ""}
+          name={article.downloadName ?? ""}
+          size={article.downloadSize ?? 0}
+        />
       </Reveal>
 
       {isDeveloper ? (

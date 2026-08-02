@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Icon, M3Button } from "@/components/m3";
 import { CATEGORIES, type Article } from "@/lib/articles";
-import { uploadArticleImage } from "@/lib/content.functions";
+import { createDownloadUpload, uploadArticleImage } from "@/lib/content.functions";
+import { supabase } from "@/integrations/supabase/client";
 
 const blank: Article = {
   id: "",
@@ -12,6 +13,9 @@ const blank: Article = {
   date: new Date().toISOString().slice(0, 10),
   readingTime: "5 min read",
   cover: "",
+  downloadUrl: "",
+  downloadName: "",
+  downloadSize: 0,
 };
 
 const slug = (s: string) =>
@@ -32,6 +36,7 @@ export function ArticleEditor({
 }) {
   const [draft, setDraft] = useState<Article>(initial ?? blank);
   const [upload, setUpload] = useState<string | null>(null);
+  const [fileStatus, setFileStatus] = useState<string | null>(null);
   const set = (patch: Partial<Article>) => setDraft((d) => ({ ...d, ...patch }));
 
   const field =
@@ -122,6 +127,68 @@ export function ArticleEditor({
               className="h-40 w-full rounded-2xl object-cover"
             />
           ) : null}
+          <div className="rounded-2xl border border-border p-4">
+            <span className="mb-1.5 block text-[13px] font-medium text-muted-foreground">
+              Downloadable file (optional, max 1 GB) — visitors must be signed in to download
+            </span>
+            <input
+              type="file"
+              className="w-full rounded-2xl border border-border bg-surface px-4 py-3 text-[15px] file:mr-4 file:rounded-full file:border-0 file:bg-secondary-container file:px-4 file:py-2 file:text-[14px] file:font-medium file:text-on-secondary-container"
+              onChange={async (e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                e.target.value = "";
+                if (file.size > 1024 * 1024 * 1024) {
+                  setFileStatus("File must be 1 GB or smaller.");
+                  return;
+                }
+                setFileStatus("Uploading file… this can take a while for large files.");
+                try {
+                  const res = await createDownloadUpload({
+                    data: { fileName: file.name, size: file.size },
+                  });
+                  if (!res.ok) {
+                    setFileStatus(res.error ?? "Could not start the upload.");
+                    return;
+                  }
+                  const { error } = await supabase.storage
+                    .from("downloads")
+                    .uploadToSignedUrl(res.path, res.token, file);
+                  if (error) {
+                    setFileStatus("Upload failed. Please try again.");
+                    return;
+                  }
+                  set({
+                    downloadUrl: res.path,
+                    downloadName: file.name,
+                    downloadSize: file.size,
+                  });
+                  setFileStatus(`Attached ${file.name}.`);
+                } catch {
+                  setFileStatus("Upload failed. Please try again.");
+                }
+              }}
+            />
+            {draft.downloadName ? (
+              <div className="mt-3 flex items-center justify-between gap-3 text-sm">
+                <span className="truncate">{draft.downloadName}</span>
+                <button
+                  type="button"
+                  className="shrink-0 text-destructive"
+                  onClick={() => {
+                    set({ downloadUrl: "", downloadName: "", downloadSize: 0 });
+                    setFileStatus(null);
+                  }}
+                >
+                  Remove
+                </button>
+              </div>
+            ) : null}
+            {fileStatus ? (
+              <p className="mt-2 text-sm text-muted-foreground">{fileStatus}</p>
+            ) : null}
+          </div>
+
           <div className="grid gap-4 sm:grid-cols-3">
             <select
               className={field}
