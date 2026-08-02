@@ -9,6 +9,8 @@ import { Icon, M3Button } from "@/components/m3";
 import { Reveal } from "@/components/reveal";
 import { formatDate, useArticles } from "@/lib/articles";
 import { ArticleDownload } from "@/components/article-download";
+import { splitBody } from "@/lib/download-markers";
+
 import { useAuth } from "@/lib/auth";
 
 export const Route = createFileRoute("/articles/$articleId")({
