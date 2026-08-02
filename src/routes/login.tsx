@@ -82,7 +82,21 @@ function Login() {
               </div>
             </div>
 
+            {loginCode ? (
+              <div className="mt-6 rounded-3xl bg-accent p-5 text-accent-foreground">
+                <p className="inline-flex items-center gap-2 text-sm font-medium">
+                  <Icon name="pin" className="text-[18px]" />
+                  Your sign-in code
+                </p>
+                <p className="mt-2 font-display text-[32px] tracking-[0.3em]">{loginCode}</p>
+                <p className="mt-1 text-[14px] leading-relaxed">
+                  Keep it safe — this 5-digit code is the only way back into this account.
+                </p>
+              </div>
+            ) : null}
+
             <div className="mt-8 space-y-4">
+
               <label className="block">
                 <span className="mb-1.5 block text-[13px] font-medium text-muted-foreground">
                   Display name
