@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Icon, M3Button } from "@/components/m3";
 import { Avatar, VerifiedBadge } from "@/components/verified";
+import { Linkify } from "@/components/linkify";
 import {
   addComment,
   deleteComment,
