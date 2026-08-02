@@ -71,12 +71,20 @@ export async function setUserSession(email: string) {
 
 const enc = new TextEncoder();
 
-async function pbkdf2(password: string, salt: Uint8Array) {
+// The Worker runtime caps PBKDF2 at 100000 iterations.
+const PBKDF2_ITERATIONS = 100000;
+
+async function pbkdf2(password: string, salt: Uint8Array, iterations = PBKDF2_ITERATIONS) {
   const key = await crypto.subtle.importKey("raw", enc.encode(password), "PBKDF2", false, [
     "deriveBits",
   ]);
   const bits = await crypto.subtle.deriveBits(
-    { name: "PBKDF2", salt: salt as unknown as BufferSource, iterations: 120000, hash: "SHA-256" },
+    {
+      name: "PBKDF2",
+      salt: salt as unknown as BufferSource,
+      iterations: Math.min(iterations, PBKDF2_ITERATIONS),
+      hash: "SHA-256",
+    },
     key,
     256,
   );
@@ -94,14 +102,15 @@ const fromHex = (hex: string) =>
 export async function hashPassword(password: string) {
   const salt = crypto.getRandomValues(new Uint8Array(16));
   const derived = await pbkdf2(password, salt);
-  return `pbkdf2$120000$${toHex(salt)}$${toHex(derived)}`;
+  return `pbkdf2$${PBKDF2_ITERATIONS}$${toHex(salt)}$${toHex(derived)}`;
 }
 
 export async function verifyPassword(password: string, stored: string | null | undefined) {
   if (!stored) return false;
   const parts = stored.split("$");
   if (parts.length !== 4 || parts[0] !== "pbkdf2") return false;
-  const derived = await pbkdf2(password, fromHex(parts[2]!));
+  const iterations = Number(parts[1]) || PBKDF2_ITERATIONS;
+  const derived = await pbkdf2(password, fromHex(parts[2]!), iterations);
   const expected = fromHex(parts[3]!);
   if (derived.length !== expected.length) return false;
   let diff = 0;
