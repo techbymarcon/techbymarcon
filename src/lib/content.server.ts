@@ -102,14 +102,15 @@ const fromHex = (hex: string) =>
 export async function hashPassword(password: string) {
   const salt = crypto.getRandomValues(new Uint8Array(16));
   const derived = await pbkdf2(password, salt);
-  return `pbkdf2$120000$${toHex(salt)}$${toHex(derived)}`;
+  return `pbkdf2$${PBKDF2_ITERATIONS}$${toHex(salt)}$${toHex(derived)}`;
 }
 
 export async function verifyPassword(password: string, stored: string | null | undefined) {
   if (!stored) return false;
   const parts = stored.split("$");
   if (parts.length !== 4 || parts[0] !== "pbkdf2") return false;
-  const derived = await pbkdf2(password, fromHex(parts[2]!));
+  const iterations = Number(parts[1]) || PBKDF2_ITERATIONS;
+  const derived = await pbkdf2(password, fromHex(parts[2]!), iterations);
   const expected = fromHex(parts[3]!);
   if (derived.length !== expected.length) return false;
   let diff = 0;
