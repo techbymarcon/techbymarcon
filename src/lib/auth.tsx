@@ -107,8 +107,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (!res.ok) return { ok: false, error: res.error };
       await sync();
       return { ok: true };
-    } catch {
-      return { ok: false, error: "Something went wrong. Please try again." };
+    } catch (err) {
+      return {
+        ok: false,
+        error: `Sign-up failed: ${err instanceof Error ? err.message : "please try again."}`,
+      };
     }
   };
 
