@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Icon, M3Button } from "@/components/m3";
 import { Avatar, VerifiedBadge } from "@/components/verified";
+import { Linkify } from "@/components/linkify";
 import {
   addComment,
   deleteComment,
@@ -166,7 +167,7 @@ export function Comments({ articleId }: { articleId: string }) {
                   </div>
                 ) : (
                   <p className="mt-2 whitespace-pre-wrap text-[16px] leading-relaxed text-foreground/90">
-                    {c.body}
+                    <Linkify text={c.body} />
                   </p>
                 )}
               </div>

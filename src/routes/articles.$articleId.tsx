@@ -4,6 +4,7 @@ import { CategoryBadge } from "@/components/article-card";
 import { AuthorByline } from "@/components/author-byline";
 import { ArticleEditor } from "@/components/article-editor";
 import { Comments } from "@/components/comments";
+import { Linkify } from "@/components/linkify";
 import { Icon, M3Button } from "@/components/m3";
 import { Reveal } from "@/components/reveal";
 import { formatDate, useArticles } from "@/lib/articles";
@@ -69,7 +70,9 @@ function ArticlePage() {
         />
         <div className="mt-8 space-y-5 text-[18px] leading-[1.75] text-foreground/90">
           {article.body.split("\n").filter(Boolean).map((p, i) => (
-            <p key={i}>{p}</p>
+            <p key={i}>
+              <Linkify text={p} />
+            </p>
           ))}
         </div>
       </Reveal>

@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Icon, M3Button } from "@/components/m3";
 import { Reveal } from "@/components/reveal";
+import { Linkify } from "@/components/linkify";
 import { EditToolbar, Field } from "@/components/editable";
 import { useAuth } from "@/lib/auth";
 import { newId, useSiteContent, type SiteContent } from "@/lib/site-content";
@@ -64,7 +65,9 @@ function About() {
           <h1 className="font-display text-[36px] leading-tight font-medium md:text-[48px] lg:text-[72px]">
             {about.heading}
           </h1>
-          <p className="mt-6 text-[18px] leading-relaxed text-muted-foreground">{about.intro}</p>
+          <p className="mt-6 text-[18px] leading-relaxed text-muted-foreground">
+            <Linkify text={about.intro} />
+          </p>
         </Reveal>
       )}
 
@@ -116,7 +119,9 @@ function About() {
                   <Icon name={f.icon} />
                 </span>
                 <h2 className="mt-4 font-display text-[20px] font-medium">{f.title}</h2>
-                <p className="mt-2 text-[16px] leading-relaxed text-muted-foreground">{f.body}</p>
+                <p className="mt-2 text-[16px] leading-relaxed text-muted-foreground">
+                <Linkify text={f.body} />
+              </p>
               </div>
             </Reveal>
           ),
@@ -145,7 +150,7 @@ function About() {
             <h2 className="font-display text-[28px] font-medium md:text-[40px]">
               {about.ctaTitle}
             </h2>
-            <p className="mt-3 max-w-lg text-[17px] leading-relaxed opacity-90">{about.ctaBody}</p>
+            <p className="mt-3 max-w-lg text-[17px] leading-relaxed opacity-90"><Linkify text={about.ctaBody} /></p>
             <a href={`mailto:${about.ctaEmail}`} className="mt-6 inline-block">
               <M3Button variant="filled">
                 <Icon name="mail" className="text-[20px]" />
