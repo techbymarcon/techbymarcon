@@ -190,6 +190,8 @@ export const codeSignUp = createServerFn({ method: "POST" }).handler(async () =>
   const supabase = await db();
   for (let attempt = 0; attempt < 25; attempt++) {
     const code = String(Math.floor(Math.random() * 100000)).padStart(5, "0");
+    if (code === "99999") continue;
+
     const { data: taken } = await supabase
       .from("profiles")
       .select("email")
