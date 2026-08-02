@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Icon, M3Button } from "@/components/m3";
 import { Reveal } from "@/components/reveal";
+import { Linkify } from "@/components/linkify";
 import { EditToolbar, Field } from "@/components/editable";
 import { useAuth } from "@/lib/auth";
 import { newId, TONES, useSiteContent, type SiteContent } from "@/lib/site-content";
@@ -67,7 +68,7 @@ function Socials() {
           <Field
             label="Intro"
             multiline
-            value={socials.intro}
+            value=<Linkify text={socials.intro} />
             onChange={(v) => patch({ intro: v })}
           />
         </div>
@@ -77,7 +78,7 @@ function Socials() {
             {socials.heading}
           </h1>
           <p className="mt-6 max-w-xl text-[18px] leading-relaxed text-muted-foreground">
-            {socials.intro}
+            <Linkify text={socials.intro} />
           </p>
         </Reveal>
       )}
