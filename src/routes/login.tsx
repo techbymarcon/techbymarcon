@@ -181,62 +181,152 @@ function Login() {
     );
   }
 
+  const isCode = mode === "code-signin" || mode === "code-signup";
+  const title =
+    mode === "signin"
+      ? "Sign in"
+      : mode === "signup"
+        ? "Create account"
+        : mode === "code-signin"
+          ? "Sign in with a code"
+          : "Get a sign-in code";
+
   return (
     <div className="mx-auto max-w-[620px] px-5 py-16 md:py-24">
       <Reveal>
         <h1 className="font-display text-[36px] leading-tight font-medium md:text-[48px]">
-          {mode === "signin" ? "Sign in" : "Create account"}
+          {title}
         </h1>
         <p className="mt-4 text-[17px] leading-relaxed text-muted-foreground">
-          Sign up with just a username and a password — no email, no personal details. You get a
-          handle, a profile picture (animated GIFs work) and a blue verified check.
+          {isCode
+            ? "No username, no password — just a random 5-digit code. Save it: it's how you get back in."
+            : "Sign up with just a username and a password — no email, no personal details. You get a handle, a profile picture (animated GIFs work) and a blue verified check."}
         </p>
 
         <form
           className="mt-8 space-y-4"
           onSubmit={async (e) => {
             e.preventDefault();
-            const res =
-              mode === "signup"
-                ? await signUp(username, password)
-                : await signIn(username, password);
-            setError(res.ok ? null : (res.error ?? "Sign in failed."));
+            if (busy) return;
+            setBusy(true);
+            setError(null);
+            try {
+              if (mode === "code-signup") {
+                const res = await signUpWithCode();
+                if (!res.ok) setError(res.error ?? "Could not create a code.");
+                else setNewCode(res.code ?? null);
+                return;
+              }
+              if (mode === "code-signin") {
+                const res = await signInWithCode(code);
+                setError(res.ok ? null : (res.error ?? "Sign in failed."));
+                return;
+              }
+              const res =
+                mode === "signup"
+                  ? await signUp(username, password)
+                  : await signIn(username, password);
+              setError(res.ok ? null : (res.error ?? "Sign in failed."));
+            } finally {
+              setBusy(false);
+            }
           }}
         >
-          <input
-            className={field}
-            placeholder="Username"
-            autoComplete="username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
+          {mode === "code-signin" ? (
+            <input
+              className={`${field} tracking-[0.4em]`}
+              placeholder="5-digit code"
+              inputMode="numeric"
+              maxLength={5}
+              value={code}
+              onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 5))}
+            />
+          ) : mode === "code-signup" ? null : (
+            <>
+              <input
+                className={field}
+                placeholder="Username"
+                autoComplete="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
 
-          <input
-            className={field}
-            type="password"
-            placeholder="Password"
-            autoComplete={mode === "signup" ? "new-password" : "current-password"}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+              <input
+                className={field}
+                type="password"
+                placeholder="Password"
+                autoComplete={mode === "signup" ? "new-password" : "current-password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </>
+          )}
+          {newCode ? (
+            <p className="text-sm text-muted-foreground">Your code is {newCode}</p>
+          ) : null}
           {error ? <p className="text-sm text-destructive">{error}</p> : null}
-          <M3Button type="submit" variant="filled" className="w-full">
-            {mode === "signin" ? "Sign in" : "Create account"}
+          <M3Button type="submit" variant="filled" className="w-full" disabled={busy}>
+            {busy
+              ? "Please wait…"
+              : mode === "signin"
+                ? "Sign in"
+                : mode === "signup"
+                  ? "Create account"
+                  : mode === "code-signin"
+                    ? "Log in with code"
+                    : "Generate my code"}
           </M3Button>
-          <M3Button
-            type="button"
-            variant="text"
-            className="w-full"
-            onClick={() => {
-              setError(null);
-              setMode(mode === "signin" ? "signup" : "signin");
-            }}
-          >
-            {mode === "signin" ? "New here? Create an account" : "Already a member? Sign in"}
-          </M3Button>
+          {!isCode ? (
+            <M3Button
+              type="button"
+              variant="text"
+              className="w-full"
+              onClick={() => {
+                setError(null);
+                setMode(mode === "signin" ? "signup" : "signin");
+              }}
+            >
+              {mode === "signin" ? "New here? Create an account" : "Already a member? Sign in"}
+            </M3Button>
+          ) : null}
+          <div className="flex flex-wrap justify-center gap-2">
+            <M3Button
+              type="button"
+              variant="text"
+              onClick={() => {
+                setError(null);
+                setMode("code-signin");
+              }}
+            >
+              Log in with code
+            </M3Button>
+            <M3Button
+              type="button"
+              variant="text"
+              onClick={() => {
+                setError(null);
+                setMode("code-signup");
+              }}
+            >
+              Sign up with a code
+            </M3Button>
+            {isCode ? (
+              <M3Button
+                type="button"
+                variant="text"
+                onClick={() => {
+                  setError(null);
+                  setMode("signin");
+                }}
+              >
+                Use a username instead
+              </M3Button>
+            ) : null}
+          </div>
         </form>
 
         <VerifiedInfo className="mt-8" />
+
 
         <div className="mt-6 rounded-3xl bg-accent p-6 text-accent-foreground">
           <p className="inline-flex items-center gap-2 text-sm font-medium">
