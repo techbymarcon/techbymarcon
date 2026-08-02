@@ -69,7 +69,9 @@ function ArticlePage() {
         />
         <div className="mt-8 space-y-5 text-[18px] leading-[1.75] text-foreground/90">
           {article.body.split("\n").filter(Boolean).map((p, i) => (
-            <p key={i}>{p}</p>
+            <p key={i}>
+              <Linkify text={p} />
+            </p>
           ))}
         </div>
       </Reveal>
