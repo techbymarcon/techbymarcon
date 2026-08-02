@@ -1,12 +1,16 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import heroBanner from "@/assets/hero-banner.png.asset.json";
 import heroBannerDark from "@/assets/hero-banner-dark.png.asset.json";
+import githubBadge from "@/assets/get-it-on-github.png.asset.json";
 import { useArticles } from "@/lib/articles";
 import { useTheme } from "@/lib/theme";
 import { ArticleCard } from "@/components/article-card";
 import { Icon, M3Button } from "@/components/m3";
 import { Reveal } from "@/components/reveal";
 import { VerifiedInfo } from "@/components/verified";
+import { EditToolbar, Field } from "@/components/editable";
+import { useSiteContent, type SiteContent } from "@/lib/site-content";
 import { useAuth } from "@/lib/auth";
 
 export const Route = createFileRoute("/")({
