@@ -292,17 +292,29 @@ export const listComments = createServerFn({ method: "POST" })
       avatar_url: (c.avatar_url as string) ?? "",
       tier: c.tier as string,
       body: c.body as string,
+      image_url: ((c as Record<string, unknown>)["image_url"] as string) ?? "",
+      parent_id: (((c as Record<string, unknown>)["parent_id"] as string) ?? null) as
+        | string
+        | null,
       created_at: c.created_at as string,
       mine: Boolean(id.email && c.author_email === id.email),
     }));
   });
 
 export const addComment = createServerFn({ method: "POST" })
-  .inputValidator((data: { articleId: string; body: string }) => data)
+  .inputValidator(
+    (data: {
+      articleId: string;
+      body: string;
+      imageUrl?: string;
+      parentId?: string | null;
+    }) => data,
+  )
   .handler(async ({ data }) => {
     const { email } = await requireIdentity();
     const body = data.body.trim().slice(0, 2000);
-    if (!body) return { ok: false as const, error: "Write something first." };
+    const imageUrl = (data.imageUrl ?? "").trim().slice(0, 500);
+    if (!body && !imageUrl) return { ok: false as const, error: "Write something first." };
 
     const supabase = await db();
     const profile = await profileByEmail(email);
@@ -316,10 +328,13 @@ export const addComment = createServerFn({ method: "POST" })
       avatar_url: profile.avatar_url ?? "",
       tier: profile.tier,
       body,
-    });
+      image_url: imageUrl,
+      parent_id: data.parentId ?? null,
+    } as never);
     if (error) return { ok: false as const, error: "Could not post that comment." };
     return { ok: true as const };
   });
+
 
 export const deleteComment = createServerFn({ method: "POST" })
   .inputValidator((data: { id: string }) => data)
