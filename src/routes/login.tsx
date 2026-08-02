@@ -160,9 +160,8 @@ function Login() {
           {mode === "signin" ? "Sign in" : "Create account"}
         </h1>
         <p className="mt-4 text-[17px] leading-relaxed text-muted-foreground">
-          Sign up with just a username and a password (at least 8 characters) — no email, no
-          personal details. You get a handle, a profile picture (animated GIFs work) and a blue
-          verified check.
+          Sign up with just a username and a password — no email, no personal details. You get a
+          handle, a profile picture (animated GIFs work) and a blue verified check.
         </p>
 
         <form

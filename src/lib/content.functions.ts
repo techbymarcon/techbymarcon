@@ -189,9 +189,6 @@ export const userSignUp = createServerFn({ method: "POST" })
     if (username === "developer" || username === "techbymarcon") {
       return { ok: false as const, error: "That username is reserved." };
     }
-    if (password.length < 8) {
-      return { ok: false as const, error: "Password must be at least 8 characters." };
-    }
     const supabase = await db();
     const existing = await profileByEmail(username);
     if (existing) return { ok: false as const, error: "That username is taken." };
