@@ -57,6 +57,9 @@ export const upsertArticle = createServerFn({ method: "POST" })
       readingTime: string;
       cover: string;
       featured: boolean;
+      downloadUrl?: string;
+      downloadName?: string;
+      downloadSize?: number;
     }) => data,
   )
   .handler(async ({ data }) => {
@@ -72,6 +75,9 @@ export const upsertArticle = createServerFn({ method: "POST" })
       reading_time: data.readingTime,
       cover: data.cover,
       featured: data.featured,
+      download_url: data.downloadUrl ?? "",
+      download_name: data.downloadName ?? "",
+      download_size: data.downloadSize ?? 0,
       updated_at: new Date().toISOString(),
     });
     if (error) throw new Error(error.message);
