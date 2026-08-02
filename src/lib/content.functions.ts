@@ -378,3 +378,27 @@ export const uploadAvatar = createServerFn({ method: "POST" })
     await supabase.from("comments").update({ avatar_url: url }).eq("author_email", email);
     return { ok: true as const, url, profile: publicProfile(row as ProfileRow) };
   });
+
+export const uploadArticleImage = createServerFn({ method: "POST" })
+  .inputValidator((data: { dataUrl: string }) => data)
+  .handler(async ({ data }) => {
+    await requireDeveloper();
+
+    const match = /^data:(image\/(png|jpeg|jpg|webp));base64,([A-Za-z0-9+/=]+)$/.exec(data.dataUrl);
+    if (!match) return { ok: false as const, error: "Use a PNG, JPG or JPEG image." };
+    const contentType = match[1]!;
+    const bytes = Buffer.from(match[3]!, "base64");
+    if (bytes.byteLength > 5 * 1024 * 1024) {
+      return { ok: false as const, error: "Image must be smaller than 5 MB." };
+    }
+    const ext = contentType === "image/jpeg" ? "jpg" : contentType.split("/")[1]!;
+    const name = `cover-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+
+    const supabase = await db();
+    const { error } = await supabase.storage
+      .from("avatars")
+      .upload(name, bytes, { contentType, upsert: true });
+    if (error) return { ok: false as const, error: "Could not upload that image." };
+
+    return { ok: true as const, url: `/api/public/avatars/${name}` };
+  });
