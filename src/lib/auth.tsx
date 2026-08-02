@@ -144,11 +144,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       value={{
         session,
         profile,
+        loginCode,
         signIn,
         signUp,
+        signUpWithCode,
+        signInWithCode,
         signOut: () => {
           setSession(null);
           setProfile(null);
+          setLoginCode("");
           developerSignOut().catch(() => {
             /* ignore */
           });
