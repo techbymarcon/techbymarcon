@@ -3,6 +3,12 @@ import { Icon, M3Button } from "@/components/m3";
 import { CATEGORIES, type Article } from "@/lib/articles";
 import { createDownloadUpload, uploadArticleImage } from "@/lib/content.functions";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  buildMarker,
+  findDownloadMarkers,
+  replaceMarkerAt,
+} from "@/lib/download-markers";
+
 
 const blank: Article = {
   id: "",
@@ -38,6 +44,8 @@ export function ArticleEditor({
   const [upload, setUpload] = useState<string | null>(null);
   const [fileStatus, setFileStatus] = useState<string | null>(null);
   const set = (patch: Partial<Article>) => setDraft((d) => ({ ...d, ...patch }));
+  const markers = findDownloadMarkers(draft.body);
+
 
   const field =
     "w-full rounded-2xl border border-border bg-surface px-4 py-3 text-[16px] outline-none focus:border-primary m3-transition";
