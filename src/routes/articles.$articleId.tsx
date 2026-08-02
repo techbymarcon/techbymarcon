@@ -70,17 +70,34 @@ function ArticlePage() {
           className="mt-8 aspect-[16/9] w-full rounded-[32px] object-cover elevation-2"
         />
         <div className="mt-8 space-y-5 text-[18px] leading-[1.75] text-foreground/90">
-          {article.body.split("\n").filter(Boolean).map((p, i) => (
-            <p key={i}>
-              <Linkify text={p} />
-            </p>
-          ))}
+          {splitBody(article.body).map((seg, i) =>
+            seg.kind === "download" ? (
+              <ArticleDownload
+                key={`d-${i}`}
+                path={seg.marker.path}
+                name={seg.marker.name}
+                size={seg.marker.size}
+              />
+            ) : (
+              seg.text
+                .split("\n")
+                .filter(Boolean)
+                .map((p, j) => (
+                  <p key={`${i}-${j}`}>
+                    <Linkify text={p} />
+                  </p>
+                ))
+            ),
+          )}
         </div>
-        <ArticleDownload
-          path={article.downloadUrl ?? ""}
-          name={article.downloadName ?? ""}
-          size={article.downloadSize ?? 0}
-        />
+        {article.downloadUrl ? (
+          <ArticleDownload
+            path={article.downloadUrl}
+            name={article.downloadName ?? ""}
+            size={article.downloadSize ?? 0}
+          />
+        ) : null}
+
       </Reveal>
 
       {isDeveloper ? (
