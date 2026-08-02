@@ -273,7 +273,7 @@ function Login() {
                 : mode === "signup"
                   ? "Create account"
                   : mode === "code-signin"
-                    ? "Log in with code"
+                    ? "Sign in with my code"
                     : "Generate my code"}
           </M3Button>
           {!isCode ? (
