@@ -167,10 +167,69 @@ async function profileByEmail(email: string) {
 /** Session state — identity always comes from the httpOnly cookie, never the client. */
 export const getSessionInfo = createServerFn({ method: "GET" }).handler(async () => {
   const id = await currentIdentity();
-  if (!id.email) return { signedIn: false as const, developer: false, profile: null };
+  if (!id.email) {
+    return { signedIn: false as const, developer: false, profile: null, loginCode: "" };
+  }
   const row = await profileByEmail(id.email);
-  return { signedIn: true as const, developer: id.developer, profile: publicProfile(row) };
+  return {
+    signedIn: true as const,
+    developer: id.developer,
+    profile: publicProfile(row),
+    loginCode: row?.login_code ?? "",
+  };
 });
+
+/** Code accounts: a random 5-digit code is the only credential. */
+export const codeSignUp = createServerFn({ method: "POST" }).handler(async () => {
+  const supabase = await db();
+  for (let attempt = 0; attempt < 25; attempt++) {
+    const code = String(Math.floor(Math.random() * 100000)).padStart(5, "0");
+    const { data: taken } = await supabase
+      .from("profiles")
+      .select("email")
+      .eq("login_code", code)
+      .maybeSingle();
+    if (taken) continue;
+
+    const username = `code_${code}`;
+    if (await profileByEmail(username)) continue;
+    const handle = `member${code}`;
+    const { data: created, error } = await supabase
+      .from("profiles")
+      .insert({
+        email: username,
+        handle,
+        display_name: handle,
+        avatar_url: "",
+        tier: "blue",
+        password_hash: null,
+        login_code: code,
+      } as never)
+      .select("*")
+      .single();
+    if (error) continue;
+    await setUserSession(username);
+    return { ok: true as const, code, profile: publicProfile(created as ProfileRow) };
+  }
+  return { ok: false as const, error: "Could not create a code right now. Try again." };
+});
+
+export const codeSignIn = createServerFn({ method: "POST" })
+  .inputValidator((data: { code: string }) => data)
+  .handler(async ({ data }) => {
+    const code = (data.code ?? "").replace(/\D/g, "");
+    if (code.length !== 5) return { ok: false as const, error: "Enter your 5-digit code." };
+    const supabase = await db();
+    const { data: row } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("login_code", code)
+      .maybeSingle();
+    if (!row) return { ok: false as const, error: "That code doesn't match an account." };
+    await setUserSession((row as ProfileRow).email);
+    return { ok: true as const, profile: publicProfile(row as ProfileRow) };
+  });
+
 
 export const getDeveloperProfile = createServerFn({ method: "GET" }).handler(async () => ({
   profile: publicProfile(await profileByEmail(DEV_EMAIL)),
