@@ -12,6 +12,14 @@ export type Social = {
 };
 
 export type SiteContent = {
+  home: {
+    badge: string;
+    title: string;
+    intro: string;
+    articlesLabel: string;
+    downloadCaption: string;
+    apkUrl: string;
+  };
   about: {
     heading: string;
     intro: string;
@@ -36,6 +44,14 @@ export const TONES: string[] = [
 ];
 
 export const defaultContent: SiteContent = {
+  home: {
+    badge: "Updated weekly",
+    title: "Tech by Marcon",
+    intro: "Find the downloads and links of my guides.",
+    articlesLabel: "View Articles",
+    downloadCaption: "Download the official app!",
+    apkUrl: "/__l5e/assets-v1/9cfde75a-190b-44d4-84df-67fb9db49e57/TechByMarcon_App_v1.0.0.apk",
+  },
   about: {
     heading: "About",
     intro:
@@ -106,6 +122,7 @@ const Ctx = createContext<{
 }>({ content: defaultContent, update: () => {}, reset: () => {} });
 
 const merge = (parsed: Partial<SiteContent>): SiteContent => ({
+  home: { ...defaultContent.home, ...parsed.home },
   about: { ...defaultContent.about, ...parsed.about },
   socials: { ...defaultContent.socials, ...parsed.socials },
 });
