@@ -131,6 +131,7 @@ type ProfileRow = {
   avatar_url: string | null;
   tier: string;
   password_hash?: string | null;
+  login_code?: string | null;
 };
 
 export type PublicProfile = {
