@@ -7,7 +7,9 @@ const sessionConfig = () => ({
   password: process.env["SESSION_SECRET"]!,
   name: "tbm-dev",
   maxAge: 60 * 60 * 24 * 30,
-  cookie: { httpOnly: true, secure: true, sameSite: "lax" as const, path: "/" },
+  // SameSite=None so the session cookie survives the embedded preview iframe
+  // (cross-site context); Secure is required alongside it.
+  cookie: { httpOnly: true, secure: true, sameSite: "none" as const, path: "/" },
 });
 
 export async function getGateSession() {
