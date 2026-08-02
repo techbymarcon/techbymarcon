@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Icon, M3Button } from "@/components/m3";
 import { CATEGORIES, type Article } from "@/lib/articles";
+import { uploadArticleImage } from "@/lib/content.functions";
 
 const blank: Article = {
   id: "",
@@ -30,6 +31,7 @@ export function ArticleEditor({
   onClose: () => void;
 }) {
   const [draft, setDraft] = useState<Article>(initial ?? blank);
+  const [upload, setUpload] = useState<string | null>(null);
   const set = (patch: Partial<Article>) => setDraft((d) => ({ ...d, ...patch }));
 
   const field =
