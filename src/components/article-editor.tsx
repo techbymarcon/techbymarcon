@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Icon, M3Button } from "@/components/m3";
 import { CATEGORIES, type Article } from "@/lib/articles";
+import { uploadArticleImage } from "@/lib/content.functions";
 
 const blank: Article = {
   id: "",
@@ -30,6 +31,7 @@ export function ArticleEditor({
   onClose: () => void;
 }) {
   const [draft, setDraft] = useState<Article>(initial ?? blank);
+  const [upload, setUpload] = useState<string | null>(null);
   const set = (patch: Partial<Article>) => setDraft((d) => ({ ...d, ...patch }));
 
   const field =
@@ -68,9 +70,47 @@ export function ArticleEditor({
             value={draft.body}
             onChange={(e) => set({ body: e.target.value })}
           />
+          <label className="block">
+            <span className="mb-1.5 block text-[13px] font-medium text-muted-foreground">
+              Cover image — upload from your device (PNG, JPG or JPEG, max 5 MB)
+            </span>
+            <input
+              type="file"
+              accept="image/png,image/jpeg,image/jpg"
+              className="w-full rounded-2xl border border-border bg-surface px-4 py-3 text-[15px] file:mr-4 file:rounded-full file:border-0 file:bg-secondary-container file:px-4 file:py-2 file:text-[14px] file:font-medium file:text-on-secondary-container"
+              onChange={async (e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                e.target.value = "";
+                if (file.size > 5 * 1024 * 1024) {
+                  setUpload("Image must be under 5 MB.");
+                  return;
+                }
+                setUpload("Uploading image…");
+                try {
+                  const dataUrl = await new Promise<string>((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(String(reader.result));
+                    reader.onerror = () => reject(new Error("read"));
+                    reader.readAsDataURL(file);
+                  });
+                  const res = await uploadArticleImage({ data: { dataUrl } });
+                  if (!res.ok) {
+                    setUpload(res.error ?? "Could not upload that image.");
+                    return;
+                  }
+                  set({ cover: res.url });
+                  setUpload("Cover image uploaded.");
+                } catch {
+                  setUpload("Could not read that file.");
+                }
+              }}
+            />
+          </label>
+          {upload ? <p className="text-sm text-muted-foreground">{upload}</p> : null}
           <input
             className={field}
-            placeholder="Cover image URL"
+            placeholder="…or paste a cover image URL"
             value={draft.cover}
             onChange={(e) => set({ cover: e.target.value })}
           />

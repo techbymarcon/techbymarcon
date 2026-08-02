@@ -7,6 +7,7 @@ import { ArticleCard } from "@/components/article-card";
 import { Icon, M3Button } from "@/components/m3";
 import { Reveal } from "@/components/reveal";
 import { VerifiedInfo } from "@/components/verified";
+import { useAuth } from "@/lib/auth";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -30,6 +31,7 @@ export const Route = createFileRoute("/")({
 function Index() {
   const { articles } = useArticles();
   const { theme } = useTheme();
+  const { session } = useAuth();
   const featured = articles.find((a) => a.featured) ?? articles[0];
   const rest = articles.filter((a) => a.id !== featured?.id).slice(0, 4);
   const bannerSrc = theme === "dark" ? heroBannerDark.url : heroBanner.url;
@@ -81,10 +83,11 @@ function Index() {
         </section>
       ) : null}
 
-      <section className="mt-20 grid gap-6 md:grid-cols-2">
+      <section className={`mt-20 grid gap-6 ${session ? "" : "md:grid-cols-2"}`}>
         <Reveal>
           <VerifiedInfo className="h-full" />
         </Reveal>
+        {session ? null : (
         <Reveal delay={80}>
           <div className="flex h-full flex-col justify-center rounded-[28px] bg-accent p-6 text-accent-foreground md:p-7">
             <h3 className="font-display text-[20px] font-medium">Join the conversation</h3>
@@ -99,6 +102,7 @@ function Index() {
             </div>
           </div>
         </Reveal>
+        )}
       </section>
 
 
