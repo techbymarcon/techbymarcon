@@ -1,5 +1,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import {
+  codeSignIn,
+  codeSignUp,
   developerSignIn,
   developerSignOut,
   getSessionInfo,
@@ -25,8 +27,11 @@ type Result = { ok: boolean; error?: string };
 const AuthCtx = createContext<{
   session: Session;
   profile: Profile;
+  loginCode: string;
   signIn: (username: string, password: string) => Promise<Result>;
   signUp: (username: string, password: string) => Promise<Result>;
+  signUpWithCode: () => Promise<{ ok: boolean; code?: string; error?: string }>;
+  signInWithCode: (code: string) => Promise<Result>;
 
   signOut: () => void;
   isDeveloper: boolean;
@@ -39,8 +44,11 @@ const AuthCtx = createContext<{
 }>({
   session: null,
   profile: null,
+  loginCode: "",
   signIn: async () => ({ ok: false }),
   signUp: async () => ({ ok: false }),
+  signUpWithCode: async () => ({ ok: false }),
+  signInWithCode: async () => ({ ok: false }),
   signOut: () => {},
   isDeveloper: false,
   saveProfile: async () => ({ ok: false }),
@@ -50,6 +58,7 @@ const AuthCtx = createContext<{
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session>(null);
   const [profile, setProfile] = useState<Profile>(null);
+  const [loginCode, setLoginCode] = useState("");
 
   // Identity always comes from the server-side httpOnly session cookie.
   const sync = async () => {
@@ -57,9 +66,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const info = await getSessionInfo();
       setSession(info.signedIn ? { role: info.developer ? "developer" : "user" } : null);
       setProfile((info.profile as Profile) ?? null);
+      setLoginCode(info.loginCode ?? "");
     } catch {
       setSession(null);
       setProfile(null);
+      setLoginCode("");
     }
   };
 
@@ -71,26 +82,61 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const normalized = username.trim().toLowerCase().replace(/^@/, "");
     if (!normalized || !password) return { ok: false, error: "Enter a username and password." };
 
-    if (normalized === DEV_USERNAME) {
-      const res = await developerSignIn({ data: { password } });
-      if (!res.ok) return { ok: false, error: "Wrong developer password." };
+    try {
+      if (normalized === DEV_USERNAME) {
+        const res = await developerSignIn({ data: { password } });
+        if (!res.ok) return { ok: false, error: "Wrong developer password." };
+        await sync();
+        return { ok: true };
+      }
+
+      const res = await userSignIn({ data: { username: normalized, password } });
+      if (!res.ok) return { ok: false, error: res.error };
       await sync();
       return { ok: true };
+    } catch {
+      return { ok: false, error: "Something went wrong. Please try again." };
     }
-
-    const res = await userSignIn({ data: { username: normalized, password } });
-    if (!res.ok) return { ok: false, error: res.error };
-    await sync();
-    return { ok: true };
   };
 
   const signUp = async (username: string, password: string) => {
     const normalized = username.trim().toLowerCase().replace(/^@/, "");
-    const res = await userSignUp({ data: { username: normalized, password } });
-    if (!res.ok) return { ok: false, error: res.error };
-    await sync();
-    return { ok: true };
+    if (!normalized || !password) return { ok: false, error: "Enter a username and password." };
+    try {
+      const res = await userSignUp({ data: { username: normalized, password } });
+      if (!res.ok) return { ok: false, error: res.error };
+      await sync();
+      return { ok: true };
+    } catch {
+      return { ok: false, error: "Something went wrong. Please try again." };
+    }
   };
+
+  const signUpWithCode = async () => {
+    try {
+      const res = await codeSignUp();
+      if (!res.ok) return { ok: false, error: res.error };
+      await sync();
+      return { ok: true, code: res.code };
+    } catch {
+      return { ok: false, error: "Something went wrong. Please try again." };
+    }
+  };
+
+  const signInWithCode = async (code: string) => {
+    const digits = code.replace(/\D/g, "");
+    if (digits.length !== 5) return { ok: false, error: "Enter your 5-digit code." };
+    try {
+      const res = await codeSignIn({ data: { code: digits } });
+      if (!res.ok) return { ok: false, error: res.error };
+      await sync();
+      return { ok: true };
+    } catch {
+      return { ok: false, error: "Something went wrong. Please try again." };
+    }
+  };
+
+
 
 
   return (
