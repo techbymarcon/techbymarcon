@@ -516,3 +516,40 @@ export const uploadCommentImage = createServerFn({ method: "POST" })
 
     return { ok: true as const, url: `/api/public/avatars/${name}` };
   });
+
+export const createDownloadUpload = createServerFn({ method: "POST" })
+  .inputValidator((data: { fileName: string; size: number }) => data)
+  .handler(async ({ data }) => {
+    await requireDeveloper();
+    if (!data.fileName) return { ok: false as const, error: "Missing file name." };
+    if (data.size > 1024 * 1024 * 1024) {
+      return { ok: false as const, error: "File must be 1 GB or smaller." };
+    }
+    const supabase = await db();
+    await supabase.storage.updateBucket("downloads", {
+      public: false,
+      fileSizeLimit: 1024 * 1024 * 1024,
+    });
+    const safe = data.fileName.replace(/[^A-Za-z0-9._-]+/g, "-").slice(-80);
+    const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}-${safe}`;
+    const { data: signed, error } = await supabase.storage
+      .from("downloads")
+      .createSignedUploadUrl(path);
+    if (error || !signed) return { ok: false as const, error: "Could not start the upload." };
+    return { ok: true as const, path, token: signed.token };
+  });
+
+export const getArticleDownload = createServerFn({ method: "POST" })
+  .inputValidator((data: { path: string }) => data)
+  .handler(async ({ data }) => {
+    const identity = await currentIdentity();
+    if (!identity.email) {
+      return { ok: false as const, error: "Sign in or sign up to download this file." };
+    }
+    const supabase = await db();
+    const { data: signed, error } = await supabase.storage
+      .from("downloads")
+      .createSignedUrl(data.path, 60, { download: true });
+    if (error || !signed) return { ok: false as const, error: "This file is no longer available." };
+    return { ok: true as const, url: signed.signedUrl };
+  });
