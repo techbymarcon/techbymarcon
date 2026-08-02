@@ -238,43 +238,57 @@ export const getDeveloperProfile = createServerFn({ method: "GET" }).handler(asy
 export const userSignUp = createServerFn({ method: "POST" })
   .inputValidator((data: { username: string; password: string; displayName?: string }) => data)
   .handler(async ({ data }) => {
-    const username = normalizeUsername(data.username ?? "");
-    const password = data.password ?? "";
-    if (!isUsername(username)) {
+    try {
+      const username = normalizeUsername(data.username ?? "");
+      const password = data.password ?? "";
+      if (!isUsername(username)) {
+        return {
+          ok: false as const,
+          error: "Username must be 3–20 characters: letters, numbers or underscores.",
+        };
+      }
+      if (username === "developer" || username === "techbymarcon") {
+        return { ok: false as const, error: "That username is reserved." };
+      }
+      const supabase = await db();
+      const existing = await profileByEmail(username);
+      if (existing) return { ok: false as const, error: "That username is taken." };
+
+      const { data: clash } = await supabase
+        .from("profiles")
+        .select("handle")
+        .eq("handle", username)
+        .maybeSingle();
+      if (clash) return { ok: false as const, error: "That username is taken." };
+
+      const { data: created, error } = await supabase
+        .from("profiles")
+        .insert({
+          email: username,
+          handle: username,
+          display_name: data.displayName?.trim().slice(0, 40) || username,
+          avatar_url: "",
+          tier: "blue",
+          password_hash: await hashPassword(password),
+        })
+        .select("*")
+        .single();
+      if (error) {
+        return {
+          ok: false as const,
+          error: /duplicate|unique/i.test(error.message)
+            ? "That username is taken."
+            : `Could not create that account: ${error.message}`,
+        };
+      }
+      await setUserSession(username);
+      return { ok: true as const, profile: publicProfile(created as ProfileRow) };
+    } catch (err) {
       return {
         ok: false as const,
-        error: "Username must be 3–20 characters: letters, numbers or underscores.",
+        error: `Sign-up failed: ${err instanceof Error ? err.message : "unknown error"}`,
       };
     }
-    if (username === "developer" || username === "techbymarcon") {
-      return { ok: false as const, error: "That username is reserved." };
-    }
-    const supabase = await db();
-    const existing = await profileByEmail(username);
-    if (existing) return { ok: false as const, error: "That username is taken." };
-
-    const { data: clash } = await supabase
-      .from("profiles")
-      .select("handle")
-      .eq("handle", username)
-      .maybeSingle();
-    if (clash) return { ok: false as const, error: "That username is taken." };
-
-    const { data: created, error } = await supabase
-      .from("profiles")
-      .insert({
-        email: username,
-        handle: username,
-        display_name: data.displayName?.trim().slice(0, 40) || username,
-        avatar_url: "",
-        tier: "blue",
-        password_hash: await hashPassword(password),
-      })
-      .select("*")
-      .single();
-    if (error) return { ok: false as const, error: "Could not create that account." };
-    await setUserSession(username);
-    return { ok: true as const, profile: publicProfile(created as ProfileRow) };
   });
 
 export const userSignIn = createServerFn({ method: "POST" })
