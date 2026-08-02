@@ -1,0 +1,23 @@
+name: Auto Commit
+
+on:
+  push:
+
+jobs:
+  auto-commit:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v5
+
+      # Your commands that modify files go here
+      - run: |
+          echo "Updated on $(date)" >> log.txt
+
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v7.2.0
+        with:
+          commit_message: "Auto-update"
