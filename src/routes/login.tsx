@@ -25,11 +25,25 @@ export const Route = createFileRoute("/login")({
 });
 
 function Login() {
-  const { session, profile, signIn, signUp, signOut, isDeveloper, saveProfile, uploadAvatarFile } =
-    useAuth();
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const {
+    session,
+    profile,
+    loginCode,
+    signIn,
+    signUp,
+    signUpWithCode,
+    signInWithCode,
+    signOut,
+    isDeveloper,
+    saveProfile,
+    uploadAvatarFile,
+  } = useAuth();
+  const [mode, setMode] = useState<"signin" | "signup" | "code-signin" | "code-signup">("signin");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [code, setCode] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [newCode, setNewCode] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const [displayName, setDisplayName] = useState("");
