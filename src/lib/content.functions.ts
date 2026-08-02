@@ -292,17 +292,29 @@ export const listComments = createServerFn({ method: "POST" })
       avatar_url: (c.avatar_url as string) ?? "",
       tier: c.tier as string,
       body: c.body as string,
+      image_url: ((c as Record<string, unknown>)["image_url"] as string) ?? "",
+      parent_id: (((c as Record<string, unknown>)["parent_id"] as string) ?? null) as
+        | string
+        | null,
       created_at: c.created_at as string,
       mine: Boolean(id.email && c.author_email === id.email),
     }));
   });
 
 export const addComment = createServerFn({ method: "POST" })
-  .inputValidator((data: { articleId: string; body: string }) => data)
+  .inputValidator(
+    (data: {
+      articleId: string;
+      body: string;
+      imageUrl?: string;
+      parentId?: string | null;
+    }) => data,
+  )
   .handler(async ({ data }) => {
     const { email } = await requireIdentity();
     const body = data.body.trim().slice(0, 2000);
-    if (!body) return { ok: false as const, error: "Write something first." };
+    const imageUrl = (data.imageUrl ?? "").trim().slice(0, 500);
+    if (!body && !imageUrl) return { ok: false as const, error: "Write something first." };
 
     const supabase = await db();
     const profile = await profileByEmail(email);
@@ -316,10 +328,13 @@ export const addComment = createServerFn({ method: "POST" })
       avatar_url: profile.avatar_url ?? "",
       tier: profile.tier,
       body,
-    });
+      image_url: imageUrl,
+      parent_id: data.parentId ?? null,
+    } as never);
     if (error) return { ok: false as const, error: "Could not post that comment." };
     return { ok: true as const };
   });
+
 
 export const deleteComment = createServerFn({ method: "POST" })
   .inputValidator((data: { id: string }) => data)
@@ -393,6 +408,34 @@ export const uploadArticleImage = createServerFn({ method: "POST" })
     }
     const ext = contentType === "image/jpeg" ? "jpg" : contentType.split("/")[1]!;
     const name = `cover-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+
+    const supabase = await db();
+    const { error } = await supabase.storage
+      .from("avatars")
+      .upload(name, bytes, { contentType, upsert: true });
+    if (error) return { ok: false as const, error: "Could not upload that image." };
+
+    return { ok: true as const, url: `/api/public/avatars/${name}` };
+  });
+
+export const uploadCommentImage = createServerFn({ method: "POST" })
+  .inputValidator((data: { dataUrl: string }) => data)
+  .handler(async ({ data }) => {
+    const { email } = await requireIdentity();
+
+    const match = /^data:(image\/(png|jpeg|jpg|gif|webp));base64,([A-Za-z0-9+/=]+)$/.exec(
+      data.dataUrl,
+    );
+    if (!match) return { ok: false as const, error: "Use a PNG, JPG, GIF or WEBP image." };
+    const contentType = match[1]!;
+    const bytes = Buffer.from(match[3]!, "base64");
+    if (bytes.byteLength > 5 * 1024 * 1024) {
+      return { ok: false as const, error: "Image must be smaller than 5 MB." };
+    }
+    const ext = contentType === "image/jpeg" ? "jpg" : contentType.split("/")[1]!;
+    const name = `comment-${slugHandle(email) || "user"}-${Date.now()}-${Math.random()
+      .toString(36)
+      .slice(2, 8)}.${ext}`;
 
     const supabase = await db();
     const { error } = await supabase.storage
