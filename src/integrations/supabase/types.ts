@@ -22,6 +22,9 @@ export type Database = {
           created_at: string
           date: string
           description: string
+          download_name: string
+          download_size: number
+          download_url: string
           featured: boolean
           id: string
           reading_time: string
@@ -35,6 +38,9 @@ export type Database = {
           created_at?: string
           date?: string
           description?: string
+          download_name?: string
+          download_size?: number
+          download_url?: string
           featured?: boolean
           id: string
           reading_time?: string
@@ -48,6 +54,9 @@ export type Database = {
           created_at?: string
           date?: string
           description?: string
+          download_name?: string
+          download_size?: number
+          download_url?: string
           featured?: boolean
           id?: string
           reading_time?: string

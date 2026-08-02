@@ -15,6 +15,9 @@ export type Article = {
   readingTime: string;
   cover: string;
   featured?: boolean;
+  downloadUrl?: string;
+  downloadName?: string;
+  downloadSize?: number;
 };
 
 export const CATEGORIES = ["Guides", "Downloads", "Android", "Design", "Tools"];
@@ -38,6 +41,9 @@ type Row = {
   reading_time: string;
   cover: string;
   featured: boolean;
+  download_url?: string;
+  download_name?: string;
+  download_size?: number;
 };
 
 const fromRow = (r: Row): Article => ({
@@ -50,6 +56,9 @@ const fromRow = (r: Row): Article => ({
   readingTime: r.reading_time,
   cover: coverSrc(r.cover),
   featured: r.featured,
+  downloadUrl: r.download_url ?? "",
+  downloadName: r.download_name ?? "",
+  downloadSize: r.download_size ?? 0,
 });
 
 const Ctx = createContext<{
@@ -90,6 +99,9 @@ export function ArticlesProvider({ children }: { children: ReactNode }) {
               readingTime: a.readingTime,
               cover: a.cover,
               featured: a.featured ?? false,
+              downloadUrl: a.downloadUrl ?? "",
+              downloadName: a.downloadName ?? "",
+              downloadSize: a.downloadSize ?? 0,
             },
           });
           await refresh();
