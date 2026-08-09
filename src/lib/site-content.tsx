@@ -1,7 +1,6 @@
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { getSiteContent, saveSiteContent } from "./content.functions";
 
-export type Sprite = { id: string; icon: string; title: string; body: string };
 export type Social = {
   id: string;
   name: string;
@@ -19,15 +18,6 @@ export type SiteContent = {
     articlesLabel: string;
     downloadCaption: string;
     apkUrl: string;
-  };
-  about: {
-    heading: string;
-    intro: string;
-    sprites: Sprite[];
-    ctaTitle: string;
-    ctaBody: string;
-    ctaLabel: string;
-    ctaEmail: string;
   };
   socials: {
     heading: string;
@@ -52,66 +42,10 @@ export const defaultContent: SiteContent = {
     downloadCaption: "Download the official app!",
     apkUrl: "/__l5e/assets-v1/9cfde75a-190b-44d4-84df-67fb9db49e57/TechByMarcon_App_v1.0.0.apk",
   },
-  about: {
-    heading: "About",
-    intro:
-      "I'm Marcon. I write practical technology guides and publish the files, scripts and links that go with them. Everything here is tested on my own devices before it's published — no filler, no placebo tweaks.",
-    sprites: [
-      {
-        id: "writing",
-        icon: "edit_note",
-        title: "Writing",
-        body: "Long-form guides about Android, tools and design.",
-      },
-      {
-        id: "downloads",
-        icon: "download",
-        title: "Downloads",
-        body: "Every guide ships with the files you need.",
-      },
-      {
-        id: "design",
-        icon: "palette",
-        title: "Design",
-        body: "Material 3 is my default language for interfaces.",
-      },
-    ],
-    ctaTitle: "Want to collaborate?",
-    ctaBody: "I'm open to guest guides, tool reviews and translation of my articles.",
-    ctaLabel: "Get in touch",
-    ctaEmail: "hello@techbymarcon.dev",
-  },
   socials: {
     heading: "Socials",
-    intro:
-      "New guides get announced here first. Downloads are mirrored on GitHub and Telegram.",
-    items: [
-      {
-        id: "youtube",
-        name: "YouTube",
-        handle: "@techbymarcon",
-        icon: "smart_display",
-        url: "https://youtube.com",
-        tone: "bg-tertiary-container text-on-tertiary-container",
-      },
-      {
-        id: "github",
-        name: "GitHub",
-        handle: "marcon",
-        icon: "code",
-        url: "https://github.com",
-        tone: "bg-primary-container text-on-primary-container",
-      },
-      { id: "x", name: "X", handle: "@marcon", icon: "tag", url: "https://x.com", tone: "bg-secondary-container text-on-secondary-container" },
-      {
-        id: "telegram",
-        name: "Telegram",
-        handle: "techbymarcon",
-        icon: "send",
-        url: "https://telegram.org",
-        tone: "bg-accent text-accent-foreground",
-      },
-    ],
+    intro: "Follow Tech by Marcon across platforms.",
+    items: [],
   },
 };
 
@@ -123,7 +57,6 @@ const Ctx = createContext<{
 
 const merge = (parsed: Partial<SiteContent>): SiteContent => ({
   home: { ...defaultContent.home, ...parsed.home },
-  about: { ...defaultContent.about, ...parsed.about },
   socials: { ...defaultContent.socials, ...parsed.socials },
 });
 

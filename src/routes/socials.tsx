@@ -11,7 +11,7 @@ export const Route = createFileRoute("/socials")({
   head: () => ({
     meta: [
       { title: "Socials — Tech by Marcon" },
-      { name: "description", content: "Follow Tech by Marcon on YouTube, X, GitHub and Telegram." },
+      { name: "description", content: "Follow Tech by Marcon across platforms." },
       { property: "og:title", content: "Socials — Tech by Marcon" },
       { property: "og:description", content: "Follow Tech by Marcon across platforms." },
     ],
