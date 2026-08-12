@@ -36,7 +36,7 @@ function NavItem({
         className={cn(
           "m3-transition ripple-host flex h-8 w-16 items-center justify-center rounded-[16px]",
           active
-            ? "bg-secondary-container text-on-secondary-container"
+            ? "bg-secondary-container text-on-secondary-container elevation-1"
             : "text-muted-foreground group-hover:bg-foreground/8",
         )}
       >
@@ -62,8 +62,8 @@ export function Navigation() {
   return (
     <>
       {/* Desktop rail */}
-      <nav className="fixed inset-y-0 left-0 z-40 hidden w-[90px] flex-col items-center gap-2 border-r border-border bg-surface-container py-5 md:flex">
-        <Link to="/" className="mb-4 grid size-11 place-items-center rounded-2xl bg-primary">
+      <nav className="fixed inset-y-0 left-0 z-40 hidden w-[90px] flex-col items-center gap-2 border-r border-border/70 glass py-5 md:flex">
+        <Link to="/" className="mb-4 grid size-11 place-items-center rounded-2xl bg-[image:var(--gradient-brand)] elevation-2 m3-transition hover:scale-105">
           <span className="font-display text-lg font-medium text-primary-foreground">M</span>
         </Link>
         {items.map((i) => (
@@ -103,7 +103,7 @@ export function Navigation() {
       </nav>
 
       {/* Mobile bottom bar */}
-      <nav className="fixed inset-x-0 bottom-0 z-40 flex items-stretch border-t border-border bg-surface-container px-1 pt-1 pb-[max(0.25rem,env(safe-area-inset-bottom))] md:hidden">
+      <nav className="fixed inset-x-0 bottom-0 z-40 flex items-stretch border-t border-border/70 glass px-1 pt-1 pb-[max(0.25rem,env(safe-area-inset-bottom))] md:hidden">
         {items.map((i) => (
           <NavItem key={i.to} {...i} active={isActive(i.to)} compact />
         ))}

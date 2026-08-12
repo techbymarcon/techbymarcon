@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 
 export function CategoryBadge({ category }: { category: string }) {
   return (
-    <span className="inline-flex items-center rounded-full bg-primary-container px-3 py-1 text-xs font-medium text-on-primary-container">
+    <span className="inline-flex items-center rounded-full border border-primary/20 bg-primary-container/70 px-3 py-1 text-[11px] font-semibold tracking-[0.08em] text-on-primary-container uppercase">
       {category}
     </span>
   );
@@ -25,11 +25,12 @@ export function ArticleCard({
       to="/articles/$articleId"
       params={{ articleId: article.id }}
       className={cn(
-        "card-hover group block overflow-hidden rounded-3xl bg-surface-container elevation-1",
+        "card-hover surface-sheen group block overflow-hidden rounded-[28px] border border-border/60 bg-surface-container elevation-1",
         className,
       )}
     >
-      <div className={cn("overflow-hidden", large ? "aspect-[16/9]" : "aspect-[16/10]")}>
+      <div className={cn("relative overflow-hidden", large ? "aspect-[16/9]" : "aspect-[16/10]")}>
+        <div className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-t from-surface-container/70 via-transparent to-transparent" />
         <img
           src={article.cover}
           alt={article.title}
@@ -41,7 +42,7 @@ export function ArticleCard({
         <CategoryBadge category={article.category} />
         <h3
           className={cn(
-            "font-display font-medium leading-tight",
+            "font-display font-medium leading-tight tracking-tight m3-transition group-hover:text-gradient",
             large ? "text-[28px] md:text-[40px]" : "text-[22px] md:text-[28px]",
           )}
         >
