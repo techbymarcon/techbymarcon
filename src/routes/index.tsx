@@ -69,59 +69,91 @@ function Index() {
           <Field label="APK link" value={home.apkUrl} onChange={(v) => patch({ apkUrl: v })} />
         </section>
       ) : (
-        <section className="reveal in-view">
-          <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-accent px-4 py-2 text-sm font-medium text-accent-foreground">
-            <Icon name="auto_awesome" className="text-[18px]" />
-            {home.badge}
-          </p>
-          <h1 className="font-display text-[36px] leading-[1.05] font-medium tracking-tight md:text-[48px] lg:text-[72px]">
-            {home.title}
-          </h1>
-          <p className="mt-5 max-w-xl text-[18px] leading-relaxed text-muted-foreground">
-            {home.intro}
-          </p>
-          <div className="mt-8 flex flex-wrap items-start gap-4">
-            <Link to="/articles">
-              <M3Button variant="filled">
-                {home.articlesLabel}
-                <Icon name="arrow_forward" className="text-[20px]" />
-              </M3Button>
-            </Link>
-            <div className="flex flex-col items-start gap-2">
-              <a
-                href={home.apkUrl}
-                download="TechByMarcon_App_v1.0.0.apk"
-                className="m3-transition inline-block hover:opacity-85"
-              >
+        <section className="reveal in-view relative">
+          <div className="grid-veil pointer-events-none absolute -inset-x-10 -top-16 h-[420px] -z-10" />
+          <div className="grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr]">
+            <div>
+              <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-border/70 glass px-4 py-2 text-[13px] font-medium tracking-wide text-foreground">
+                <Icon name="auto_awesome" className="text-[18px] text-primary" />
+                {home.badge}
+              </p>
+              <h1 className="font-display text-[42px] leading-[1.02] font-medium tracking-tight md:text-[60px] lg:text-[76px]">
+                <span className="text-gradient">{home.title}</span>
+              </h1>
+              <p className="mt-6 max-w-xl text-[18px] leading-relaxed text-muted-foreground">
+                {home.intro}
+              </p>
+              <div className="mt-9 flex flex-wrap items-center gap-4">
+                <Link to="/articles">
+                  <M3Button variant="filled">
+                    {home.articlesLabel}
+                    <Icon name="arrow_forward" className="text-[20px]" />
+                  </M3Button>
+                </Link>
+                <div className="flex flex-col items-start gap-2">
+                  <a
+                    href={home.apkUrl}
+                    download="TechByMarcon_App_v1.0.0.apk"
+                    className="m3-transition inline-block hover:-translate-y-0.5 hover:opacity-90"
+                  >
+                    <img
+                      src={githubBadge.url}
+                      alt="Get it on GitHub — download the Tech by Marcon app"
+                      width={646}
+                      height={250}
+                      className="h-[52px] w-auto"
+                    />
+                  </a>
+                  <span className="text-[14px] text-muted-foreground">{home.downloadCaption}</span>
+                </div>
+              </div>
+              <dl className="mt-10 flex flex-wrap gap-8 border-t border-border/70 pt-6">
+                <div>
+                  <dt className="text-[12px] font-semibold tracking-[0.12em] text-muted-foreground uppercase">
+                    Guides
+                  </dt>
+                  <dd className="font-display text-[26px] font-medium">{articles.length}</dd>
+                </div>
+                <div>
+                  <dt className="text-[12px] font-semibold tracking-[0.12em] text-muted-foreground uppercase">
+                    Focus
+                  </dt>
+                  <dd className="font-display text-[26px] font-medium">Android</dd>
+                </div>
+                <div>
+                  <dt className="text-[12px] font-semibold tracking-[0.12em] text-muted-foreground uppercase">
+                    Downloads
+                  </dt>
+                  <dd className="font-display text-[26px] font-medium">Free</dd>
+                </div>
+              </dl>
+            </div>
+
+            <div className="relative">
+              <div className="surface-sheen overflow-hidden rounded-[36px] border border-border/60 glow-ring">
                 <img
-                  src={githubBadge.url}
-                  alt="Get it on GitHub — download the Tech by Marcon app"
-                  width={646}
-                  height={250}
-                  className="h-[52px] w-auto"
+                  src={bannerSrc}
+                  alt="Tech by Marcon banner"
+                  width={1600}
+                  height={1000}
+                  className="h-[240px] w-full object-cover md:h-[380px]"
                 />
-              </a>
-              <span className="text-[15px] text-muted-foreground">{home.downloadCaption}</span>
+              </div>
             </div>
           </div>
         </section>
       )}
 
 
-      <Reveal delay={120} className="mt-12">
-        <img
-          src={bannerSrc}
-          alt="Tech by Marcon banner"
-          width={1600}
-          height={1000}
-          className="h-[220px] w-full rounded-[32px] object-cover elevation-2 md:h-[420px]"
-        />
-      </Reveal>
-
       {featured ? (
         <section className="mt-20">
           <Reveal>
-            <h2 className="font-display text-[28px] font-medium md:text-[40px]">Featured</h2>
+            <div className="flex items-center gap-3">
+              <span className="h-px w-10 bg-[image:var(--gradient-brand)]" />
+              <h2 className="font-display text-[28px] font-medium tracking-tight md:text-[40px]">
+                Featured
+              </h2>
+            </div>
           </Reveal>
           <Reveal delay={80} className="mt-6">
             <ArticleCard article={featured} large />
@@ -135,7 +167,7 @@ function Index() {
         </Reveal>
         {session ? null : (
         <Reveal delay={80}>
-          <div className="flex h-full flex-col justify-center rounded-[28px] bg-accent p-6 text-accent-foreground md:p-7">
+          <div className="flex h-full flex-col justify-center surface-sheen rounded-[28px] border border-border/60 bg-accent p-7 text-accent-foreground md:p-8">
             <h3 className="font-display text-[20px] font-medium">Join the conversation</h3>
             <p className="mt-2 text-[15px] leading-relaxed">
               Articles are open for comments. Sign in to pick a handle and a profile picture
@@ -155,7 +187,12 @@ function Index() {
       <section className="mt-20">
         <Reveal>
           <div className="flex flex-wrap items-end justify-between gap-4">
-            <h2 className="font-display text-[28px] font-medium md:text-[40px]">Latest articles</h2>
+            <div className="flex items-center gap-3">
+              <span className="h-px w-10 bg-[image:var(--gradient-brand)]" />
+              <h2 className="font-display text-[28px] font-medium tracking-tight md:text-[40px]">
+                Latest articles
+              </h2>
+            </div>
             <Link to="/articles">
               <M3Button variant="text">
                 See all

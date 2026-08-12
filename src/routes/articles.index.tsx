@@ -61,9 +61,14 @@ function Articles() {
     <div className="mx-auto max-w-[1200px] px-5 py-12 md:px-12 md:py-20">
       <Reveal>
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 sm:flex sm:justify-between">
-          <h1 className="min-w-0 font-display text-[36px] leading-tight font-medium md:text-[48px]">
-            Articles
-          </h1>
+          <div className="min-w-0">
+            <p className="text-[12px] font-semibold tracking-[0.16em] text-muted-foreground uppercase">
+              Library
+            </p>
+            <h1 className="min-w-0 font-display text-[38px] leading-tight font-medium tracking-tight md:text-[54px]">
+              <span className="text-gradient">Articles</span>
+            </h1>
+          </div>
           {isDeveloper ? (
             <M3Button variant="tonal" className="shrink-0" onClick={() => setEditing(true)}>
               <Icon name="add" className="text-[20px]" />
@@ -74,7 +79,7 @@ function Articles() {
       </Reveal>
 
       <Reveal delay={60}>
-        <label className="mt-8 flex items-center gap-3 rounded-[28px] bg-surface-container px-5 py-4 elevation-1 m3-transition focus-within:elevation-2">
+        <label className="mt-8 flex items-center gap-3 rounded-[28px] border border-border/60 glass px-5 py-4 elevation-1 m3-transition focus-within:elevation-2">
           <Icon name="search" className="text-muted-foreground" />
           <input
             ref={searchRef}
@@ -98,7 +103,7 @@ function Articles() {
               className={cn(
                 "ripple-host m3-transition rounded-full border px-4 py-2 text-sm font-medium",
                 category === c
-                  ? "border-transparent bg-secondary-container text-on-secondary-container"
+                  ? "border-transparent bg-secondary-container text-on-secondary-container elevation-1"
                   : "border-border text-muted-foreground hover:bg-foreground/5",
               )}
             >
