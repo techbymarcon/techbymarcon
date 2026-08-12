@@ -108,12 +108,14 @@ function Index() {
                 </div>
               </div>
               <dl className="mt-10 flex flex-wrap gap-8 border-t border-border/70 pt-6">
-                <div>
-                  <dt className="text-[12px] font-semibold tracking-[0.12em] text-muted-foreground uppercase">
-                    Guides
-                  </dt>
-                  <dd className="font-display text-[26px] font-medium">{articles.length}</dd>
-                </div>
+                {articles.length > 0 ? (
+                  <div>
+                    <dt className="text-[12px] font-semibold tracking-[0.12em] text-muted-foreground uppercase">
+                      Guides
+                    </dt>
+                    <dd className="font-display text-[26px] font-medium">{articles.length}</dd>
+                  </div>
+                ) : null}
                 <div>
                   <dt className="text-[12px] font-semibold tracking-[0.12em] text-muted-foreground uppercase">
                     Focus
