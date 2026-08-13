@@ -224,7 +224,11 @@ function Forum() {
                     <Linkify text={p.body} />
                   </p>
                 ) : null}
+                <div className="mt-3">
+                  <ForumVotes post={p} canVote={Boolean(session)} />
+                </div>
               </div>
+
               {isModerator || p.canManage ? (
                 <div className="flex shrink-0 items-center gap-1">
                   {isModerator ? (
