@@ -143,9 +143,9 @@ export const moderateForumPost = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const me = await currentStaff();
     if (!me.developer && !me.moderator) return { ok: false as const, error: "Not allowed." };
-    const patch: Record<string, boolean> = {};
-    if (typeof data.pinned === "boolean") patch["pinned"] = data.pinned;
-    if (typeof data.locked === "boolean") patch["locked"] = data.locked;
+    const patch: { pinned?: boolean; locked?: boolean } = {};
+    if (typeof data.pinned === "boolean") patch.pinned = data.pinned;
+    if (typeof data.locked === "boolean") patch.locked = data.locked;
     const supabase = await db();
     const { error } = await supabase.from("forum_posts").update(patch).eq("id", data.id);
     if (error) return { ok: false as const, error: "Could not update that post." };
