@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { currentStaff, db, requireDeveloper, requireIdentity } from "./content.server";
+import { actorFor, notify } from "./notifications.server";
 
 export type ForumPost = {
   id: string;
@@ -127,6 +128,27 @@ export const voteForumPost = createServerFn({ method: "POST" })
         .from("forum_votes")
         .insert({ post_id: data.id, voter_email: me.email, value } as never);
       if (error) return { ok: false as const, error: "Could not record that vote." };
+    }
+    if (value > 0 && (!current || current.value !== value)) {
+      const { data: post } = await supabase
+        .from("forum_posts")
+        .select("author_email, title")
+        .eq("id", data.id)
+        .maybeSingle();
+      const row = post as { author_email?: string; title?: string } | null;
+      if (row?.author_email && row.author_email !== me.email) {
+        const actor = await actorFor(me.email);
+        await notify({
+          recipient: row.author_email,
+          kind: "upvote",
+          title: `@${actor.handle} upvoted your post`,
+          body: row.title ?? "",
+          link: `/forum/${data.id}`,
+          actorHandle: actor.handle,
+          actorAvatar: actor.avatar,
+          actorTier: actor.tier,
+        });
+      }
     }
     const tally = await voteTally([data.id], me.email);
     const t = tally.get(data.id)!;
