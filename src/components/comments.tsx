@@ -144,7 +144,7 @@ function Composer({
 }
 
 export function Comments({ articleId }: { articleId: string }) {
-  const { session, profile, isDeveloper } = useAuth();
+  const { session, profile, isDeveloper, isModerator } = useAuth();
   const [comments, setComments] = useState<CommentRow[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -261,7 +261,7 @@ export function Comments({ articleId }: { articleId: string }) {
             />
           ) : null}
         </div>
-        {isDeveloper || c.mine ? (
+        {isDeveloper || isModerator || c.mine ? (
           <div className="flex shrink-0 items-center gap-1">
             <button
               aria-label="Edit comment"

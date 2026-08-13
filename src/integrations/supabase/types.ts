@@ -118,6 +118,54 @@ export type Database = {
           },
         ]
       }
+      forum_posts: {
+        Row: {
+          author_email: string
+          avatar_url: string
+          body: string
+          created_at: string
+          display_name: string
+          handle: string
+          id: string
+          image_url: string
+          locked: boolean
+          pinned: boolean
+          tier: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author_email: string
+          avatar_url?: string
+          body?: string
+          created_at?: string
+          display_name: string
+          handle: string
+          id?: string
+          image_url?: string
+          locked?: boolean
+          pinned?: boolean
+          tier?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author_email?: string
+          avatar_url?: string
+          body?: string
+          created_at?: string
+          display_name?: string
+          handle?: string
+          id?: string
+          image_url?: string
+          locked?: boolean
+          pinned?: boolean
+          tier?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string
@@ -169,6 +217,27 @@ export type Database = {
           key?: string
           updated_at?: string
           value?: Json
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: string
+          username: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: string
+          username: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: string
+          username?: string
         }
         Relationships: []
       }

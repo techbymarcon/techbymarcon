@@ -1,16 +1,20 @@
 import { createServerFn } from "@tanstack/react-start";
 import {
   currentIdentity,
+  currentStaff,
   db,
   getGateSession,
   hashPassword,
   isDeveloperSession,
+  isModerator,
   passwordMatches,
   requireDeveloper,
   requireIdentity,
+  requireStaff,
   setUserSession,
   verifyPassword,
 } from "./content.server";
+
 
 export const getDeveloperStatus = createServerFn({ method: "GET" }).handler(async () => ({
   developer: await isDeveloperSession(),
@@ -174,16 +178,24 @@ async function profileByEmail(email: string) {
 export const getSessionInfo = createServerFn({ method: "GET" }).handler(async () => {
   const id = await currentIdentity();
   if (!id.email) {
-    return { signedIn: false as const, developer: false, profile: null, loginCode: "" };
+    return {
+      signedIn: false as const,
+      developer: false,
+      moderator: false,
+      profile: null,
+      loginCode: "",
+    };
   }
   const row = await profileByEmail(id.email);
   return {
     signedIn: true as const,
     developer: id.developer,
+    moderator: id.developer ? true : await isModerator(id.email),
     profile: publicProfile(row),
     loginCode: row?.login_code ?? "",
   };
 });
+
 
 /** Code accounts: a random 5-digit code is the only credential. */
 export const codeSignUp = createServerFn({ method: "POST" }).handler(async () => {
@@ -402,6 +414,14 @@ export const addComment = createServerFn({ method: "POST" })
     if (!body && !imageUrl) return { ok: false as const, error: "Write something first." };
 
     const supabase = await db();
+    if (data.articleId.startsWith("forum:")) {
+      const { data: post } = await supabase
+        .from("forum_posts")
+        .select("locked")
+        .eq("id", data.articleId.slice(6))
+        .maybeSingle();
+      if (post?.locked) return { ok: false as const, error: "This thread is locked." };
+    }
     const profile = await profileByEmail(email);
     if (!profile) return { ok: false as const, error: "Sign in to comment." };
 
@@ -424,10 +444,12 @@ export const addComment = createServerFn({ method: "POST" })
 export const deleteComment = createServerFn({ method: "POST" })
   .inputValidator((data: { id: string }) => data)
   .handler(async ({ data }) => {
-    const { email, developer } = await requireIdentity();
+    const staff = await currentStaff();
+    if (!staff.signedIn) throw new Error("Unauthorized");
     const supabase = await db();
     const query = supabase.from("comments").delete().eq("id", data.id);
-    const { error } = developer ? await query : await query.eq("author_email", email);
+    const { error } =
+      staff.developer || staff.moderator ? await query : await query.eq("author_email", staff.email);
     if (error) throw new Error("Could not delete that comment.");
     return { ok: true as const };
   });
@@ -435,12 +457,15 @@ export const deleteComment = createServerFn({ method: "POST" })
 export const editComment = createServerFn({ method: "POST" })
   .inputValidator((data: { id: string; body: string }) => data)
   .handler(async ({ data }) => {
-    const { email, developer } = await requireIdentity();
+    const staff = await currentStaff();
+    if (!staff.signedIn) throw new Error("Unauthorized");
     const body = data.body.trim().slice(0, 2000);
     if (!body) return { ok: false as const, error: "Write something first." };
     const supabase = await db();
     const query = supabase.from("comments").update({ body }).eq("id", data.id);
-    const { error } = developer ? await query : await query.eq("author_email", email);
+    const { error } =
+      staff.developer || staff.moderator ? await query : await query.eq("author_email", staff.email);
+
     if (error) return { ok: false as const, error: "Could not save that comment." };
     return { ok: true as const };
   });

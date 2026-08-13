@@ -11,9 +11,12 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as ModeratorsRouteImport } from './routes/moderators'
 import { Route as SocialsRouteImport } from './routes/socials'
 import { Route as ArticlesIndexRouteImport } from './routes/articles.index'
 import { Route as ArticlesArticleIdRouteImport } from './routes/articles.$articleId'
+import { Route as ForumIndexRouteImport } from './routes/forum.index'
+import { Route as ForumPostIdRouteImport } from './routes/forum.$postId'
 import { Route as ApiPublicAvatarsFileRouteImport } from './routes/api/public/avatars.$file'
 
 const IndexRoute = IndexRouteImport.update({
@@ -24,6 +27,11 @@ const IndexRoute = IndexRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ModeratorsRoute = ModeratorsRouteImport.update({
+  id: '/moderators',
+  path: '/moderators',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SocialsRoute = SocialsRouteImport.update({
@@ -41,6 +49,16 @@ const ArticlesArticleIdRoute = ArticlesArticleIdRouteImport.update({
   path: '/articles/$articleId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ForumIndexRoute = ForumIndexRouteImport.update({
+  id: '/forum/',
+  path: '/forum/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForumPostIdRoute = ForumPostIdRouteImport.update({
+  id: '/forum/$postId',
+  path: '/forum/$postId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicAvatarsFileRoute = ApiPublicAvatarsFileRouteImport.update({
   id: '/api/public/avatars/$file',
   path: '/api/public/avatars/$file',
@@ -50,26 +68,35 @@ const ApiPublicAvatarsFileRoute = ApiPublicAvatarsFileRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/moderators': typeof ModeratorsRoute
   '/socials': typeof SocialsRoute
   '/articles/$articleId': typeof ArticlesArticleIdRoute
+  '/forum/$postId': typeof ForumPostIdRoute
   '/articles/': typeof ArticlesIndexRoute
+  '/forum/': typeof ForumIndexRoute
   '/api/public/avatars/$file': typeof ApiPublicAvatarsFileRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/moderators': typeof ModeratorsRoute
   '/socials': typeof SocialsRoute
   '/articles/$articleId': typeof ArticlesArticleIdRoute
+  '/forum/$postId': typeof ForumPostIdRoute
   '/articles': typeof ArticlesIndexRoute
+  '/forum': typeof ForumIndexRoute
   '/api/public/avatars/$file': typeof ApiPublicAvatarsFileRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/moderators': typeof ModeratorsRoute
   '/socials': typeof SocialsRoute
   '/articles/$articleId': typeof ArticlesArticleIdRoute
+  '/forum/$postId': typeof ForumPostIdRoute
   '/articles/': typeof ArticlesIndexRoute
+  '/forum/': typeof ForumIndexRoute
   '/api/public/avatars/$file': typeof ApiPublicAvatarsFileRoute
 }
 export interface FileRouteTypes {
@@ -77,34 +104,46 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/login'
+    | '/moderators'
     | '/socials'
     | '/articles/$articleId'
+    | '/forum/$postId'
     | '/articles/'
+    | '/forum/'
     | '/api/public/avatars/$file'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/login'
+    | '/moderators'
     | '/socials'
     | '/articles/$articleId'
+    | '/forum/$postId'
     | '/articles'
+    | '/forum'
     | '/api/public/avatars/$file'
   id:
     | '__root__'
     | '/'
     | '/login'
+    | '/moderators'
     | '/socials'
     | '/articles/$articleId'
+    | '/forum/$postId'
     | '/articles/'
+    | '/forum/'
     | '/api/public/avatars/$file'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LoginRoute: typeof LoginRoute
+  ModeratorsRoute: typeof ModeratorsRoute
   SocialsRoute: typeof SocialsRoute
   ArticlesArticleIdRoute: typeof ArticlesArticleIdRoute
+  ForumPostIdRoute: typeof ForumPostIdRoute
   ArticlesIndexRoute: typeof ArticlesIndexRoute
+  ForumIndexRoute: typeof ForumIndexRoute
   ApiPublicAvatarsFileRoute: typeof ApiPublicAvatarsFileRoute
 }
 
@@ -122,6 +161,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/moderators': {
+      id: '/moderators'
+      path: '/moderators'
+      fullPath: '/moderators'
+      preLoaderRoute: typeof ModeratorsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/socials': {
@@ -145,6 +191,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ArticlesArticleIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/forum/': {
+      id: '/forum/'
+      path: '/forum'
+      fullPath: '/forum/'
+      preLoaderRoute: typeof ForumIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forum/$postId': {
+      id: '/forum/$postId'
+      path: '/forum/$postId'
+      fullPath: '/forum/$postId'
+      preLoaderRoute: typeof ForumPostIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/avatars/$file': {
       id: '/api/public/avatars/$file'
       path: '/api/public/avatars/$file'
@@ -158,9 +218,12 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LoginRoute: LoginRoute,
+  ModeratorsRoute: ModeratorsRoute,
   SocialsRoute: SocialsRoute,
   ArticlesArticleIdRoute: ArticlesArticleIdRoute,
+  ForumPostIdRoute: ForumPostIdRoute,
   ArticlesIndexRoute: ArticlesIndexRoute,
+  ForumIndexRoute: ForumIndexRoute,
   ApiPublicAvatarsFileRoute: ApiPublicAvatarsFileRoute,
 }
 export const routeTree = rootRouteImport
