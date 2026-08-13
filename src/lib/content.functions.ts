@@ -414,6 +414,14 @@ export const addComment = createServerFn({ method: "POST" })
     if (!body && !imageUrl) return { ok: false as const, error: "Write something first." };
 
     const supabase = await db();
+    if (data.articleId.startsWith("forum:")) {
+      const { data: post } = await supabase
+        .from("forum_posts")
+        .select("locked")
+        .eq("id", data.articleId.slice(6))
+        .maybeSingle();
+      if (post?.locked) return { ok: false as const, error: "This thread is locked." };
+    }
     const profile = await profileByEmail(email);
     if (!profile) return { ok: false as const, error: "Sign in to comment." };
 
