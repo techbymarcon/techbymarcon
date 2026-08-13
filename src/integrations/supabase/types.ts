@@ -201,6 +201,48 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          actor_avatar: string
+          actor_handle: string
+          actor_tier: string
+          body: string
+          created_at: string
+          id: string
+          kind: string
+          link: string
+          read: boolean
+          recipient_email: string
+          title: string
+        }
+        Insert: {
+          actor_avatar?: string
+          actor_handle?: string
+          actor_tier?: string
+          body?: string
+          created_at?: string
+          id?: string
+          kind?: string
+          link?: string
+          read?: boolean
+          recipient_email: string
+          title: string
+        }
+        Update: {
+          actor_avatar?: string
+          actor_handle?: string
+          actor_tier?: string
+          body?: string
+          created_at?: string
+          id?: string
+          kind?: string
+          link?: string
+          read?: boolean
+          recipient_email?: string
+          title?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string
