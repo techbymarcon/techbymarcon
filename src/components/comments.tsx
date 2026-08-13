@@ -172,9 +172,10 @@ export function Comments({ articleId }: { articleId: string }) {
       key={c.id}
       className={
         isReply
-          ? "rounded-[24px] bg-surface-container p-4"
-          : "rounded-[28px] bg-surface-container-low p-5"
+          ? "rounded-[24px] border border-border/50 bg-surface-container p-4"
+          : "surface-sheen rounded-[28px] border border-border/60 glass p-5"
       }
+
     >
       <div className="flex items-start gap-3">
         <Avatar src={c.avatar_url || undefined} name={c.display_name} />
