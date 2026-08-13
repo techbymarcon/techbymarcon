@@ -24,7 +24,7 @@ const ago = (iso: string) => {
 const iconFor = (kind: string) =>
   kind === "upvote" ? "thumb_up" : kind === "welcome" ? "waving_hand" : "chat_bubble";
 
-export function NotificationsButton({ compact }: { compact?: boolean }) {
+export function NotificationsButton() {
   const { session } = useAuth();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
@@ -78,31 +78,23 @@ export function NotificationsButton({ compact }: { compact?: boolean }) {
   };
 
   return (
-    <div ref={wrap} className={cn("relative", compact && "flex-1")}>
+    <div ref={wrap} className="fixed right-5 top-5 z-50 flex flex-col items-end gap-2">
       <button
         type="button"
         onClick={() => void toggle()}
         aria-label={unread ? `Notifications, ${unread} unread` : "Notifications"}
-        className={cn(
-          "m3-transition relative grid place-items-center rounded-full text-foreground hover:bg-foreground/8",
-          compact ? "mx-auto h-8 w-16 rounded-[16px]" : "size-12",
-        )}
+        className="m3-transition relative grid size-12 place-items-center rounded-full border border-border/60 glass text-foreground elevation-2 hover:scale-105"
       >
         <Icon name="notifications" filled={unread > 0} />
         {unread > 0 && (
-          <span className="absolute right-1.5 top-1.5 min-w-[16px] rounded-full bg-primary px-1 text-[10px] font-semibold leading-4 text-primary-foreground">
+          <span className="absolute -right-0.5 -top-0.5 min-w-[18px] rounded-full bg-primary px-1 text-[10px] font-semibold leading-[18px] text-primary-foreground">
             {unread > 9 ? "9+" : unread}
           </span>
         )}
       </button>
 
       {open && (
-        <div
-          className={cn(
-            "fixed z-50 w-[min(360px,calc(100vw-1.5rem))] overflow-hidden rounded-[24px] border border-border/70 glass elevation-3",
-            compact ? "bottom-20 left-1/2 -translate-x-1/2" : "bottom-6 left-[96px]",
-          )}
-        >
+        <div className="w-[min(360px,calc(100vw-2.5rem))] overflow-hidden rounded-[24px] border border-border/70 glass elevation-3">
           <div className="flex items-center justify-between px-4 py-3">
             <span className="font-display text-base font-medium">Notifications</span>
             {items.length > 0 && (

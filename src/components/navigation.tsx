@@ -1,6 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Icon, M3Button } from "@/components/m3";
-import { NotificationsButton } from "@/components/notifications";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Avatar, VerifiedBadge } from "@/components/verified";
 import { useAuth } from "@/lib/auth";
@@ -72,7 +71,6 @@ export function Navigation() {
           <NavItem key={i.to} {...i} active={isActive(i.to)} />
         ))}
         <div className="mt-auto flex flex-col items-center gap-2">
-          <NotificationsButton />
           <ThemeToggle />
           <Link
             to="/login"
@@ -111,7 +109,6 @@ export function Navigation() {
           <NavItem key={i.to} {...i} active={isActive(i.to)} compact />
         ))}
         <ThemeToggle floating />
-        <NotificationsButton compact />
         <Link to="/login" className="m3-transition flex flex-1 flex-col items-center gap-1 py-2">
           <span
             className={cn(
