@@ -15,6 +15,7 @@ import { Route as SocialsRouteImport } from './routes/socials'
 import { Route as ArticlesIndexRouteImport } from './routes/articles.index'
 import { Route as ArticlesArticleIdRouteImport } from './routes/articles.$articleId'
 import { Route as ForumIndexRouteImport } from './routes/forum.index'
+import { Route as ForumPostIdRouteImport } from './routes/forum.$postId'
 import { Route as ApiPublicAvatarsFileRouteImport } from './routes/api/public/avatars.$file'
 
 const IndexRoute = IndexRouteImport.update({
@@ -47,6 +48,11 @@ const ForumIndexRoute = ForumIndexRouteImport.update({
   path: '/forum/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ForumPostIdRoute = ForumPostIdRouteImport.update({
+  id: '/forum/$postId',
+  path: '/forum/$postId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicAvatarsFileRoute = ApiPublicAvatarsFileRouteImport.update({
   id: '/api/public/avatars/$file',
   path: '/api/public/avatars/$file',
@@ -58,6 +64,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/socials': typeof SocialsRoute
   '/articles/$articleId': typeof ArticlesArticleIdRoute
+  '/forum/$postId': typeof ForumPostIdRoute
   '/articles/': typeof ArticlesIndexRoute
   '/forum/': typeof ForumIndexRoute
   '/api/public/avatars/$file': typeof ApiPublicAvatarsFileRoute
@@ -67,6 +74,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/socials': typeof SocialsRoute
   '/articles/$articleId': typeof ArticlesArticleIdRoute
+  '/forum/$postId': typeof ForumPostIdRoute
   '/articles': typeof ArticlesIndexRoute
   '/forum': typeof ForumIndexRoute
   '/api/public/avatars/$file': typeof ApiPublicAvatarsFileRoute
@@ -77,6 +85,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/socials': typeof SocialsRoute
   '/articles/$articleId': typeof ArticlesArticleIdRoute
+  '/forum/$postId': typeof ForumPostIdRoute
   '/articles/': typeof ArticlesIndexRoute
   '/forum/': typeof ForumIndexRoute
   '/api/public/avatars/$file': typeof ApiPublicAvatarsFileRoute
@@ -88,6 +97,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/socials'
     | '/articles/$articleId'
+    | '/forum/$postId'
     | '/articles/'
     | '/forum/'
     | '/api/public/avatars/$file'
@@ -97,6 +107,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/socials'
     | '/articles/$articleId'
+    | '/forum/$postId'
     | '/articles'
     | '/forum'
     | '/api/public/avatars/$file'
@@ -106,6 +117,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/socials'
     | '/articles/$articleId'
+    | '/forum/$postId'
     | '/articles/'
     | '/forum/'
     | '/api/public/avatars/$file'
@@ -116,6 +128,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   SocialsRoute: typeof SocialsRoute
   ArticlesArticleIdRoute: typeof ArticlesArticleIdRoute
+  ForumPostIdRoute: typeof ForumPostIdRoute
   ArticlesIndexRoute: typeof ArticlesIndexRoute
   ForumIndexRoute: typeof ForumIndexRoute
   ApiPublicAvatarsFileRoute: typeof ApiPublicAvatarsFileRoute
@@ -165,6 +178,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ForumIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/forum/$postId': {
+      id: '/forum/$postId'
+      path: '/forum/$postId'
+      fullPath: '/forum/$postId'
+      preLoaderRoute: typeof ForumPostIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/avatars/$file': {
       id: '/api/public/avatars/$file'
       path: '/api/public/avatars/$file'
@@ -180,6 +200,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   SocialsRoute: SocialsRoute,
   ArticlesArticleIdRoute: ArticlesArticleIdRoute,
+  ForumPostIdRoute: ForumPostIdRoute,
   ArticlesIndexRoute: ArticlesIndexRoute,
   ForumIndexRoute: ForumIndexRoute,
   ApiPublicAvatarsFileRoute: ApiPublicAvatarsFileRoute,
