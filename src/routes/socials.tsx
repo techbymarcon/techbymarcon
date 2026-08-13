@@ -83,7 +83,17 @@ function Socials() {
         </Reveal>
       )}
 
+      {!editing && socials.items.length === 0 ? (
+        <Reveal delay={80}>
+          <div className="mt-12 surface-sheen rounded-[28px] border border-border/60 glass p-8 text-center">
+            <Icon name="link_off" className="text-[28px] text-muted-foreground" />
+            <p className="mt-2 text-[16px] text-muted-foreground">No links here yet.</p>
+          </div>
+        </Reveal>
+      ) : null}
+
       <div className="mt-12 grid gap-5 sm:grid-cols-2">
+
         {socials.items.map((s, i) =>
           editing ? (
             <div key={s.id} className="grid gap-3 rounded-3xl bg-surface-container p-5 elevation-1">

@@ -310,7 +310,7 @@ export function Comments({ articleId }: { articleId: string }) {
       </div>
 
       {session && profile ? (
-        <div className="mt-6 rounded-[28px] bg-surface-container p-5 elevation-1">
+        <div className="surface-sheen mt-6 rounded-[28px] border border-border/60 glass p-5 elevation-1">
           <div className="flex items-center gap-3">
             <Avatar src={profile.avatar_url || undefined} name={profile.display_name} />
             <div className="min-w-0">
