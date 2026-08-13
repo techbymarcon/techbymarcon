@@ -14,6 +14,7 @@ import {
   setUserSession,
   verifyPassword,
 } from "./content.server";
+import { notify, welcomeNotification } from "./notifications.server";
 
 
 export const getDeveloperStatus = createServerFn({ method: "GET" }).handler(async () => ({
@@ -30,6 +31,7 @@ export const developerSignIn = createServerFn({ method: "POST" })
     }
     const session = await getGateSession();
     await session.update({ developer: true, email: "developer" });
+    await welcomeNotification("developer", false);
     return { ok: true as const };
   });
 
@@ -229,6 +231,7 @@ export const codeSignUp = createServerFn({ method: "POST" }).handler(async () =>
       .single();
     if (error) continue;
     await setUserSession(username);
+    await welcomeNotification(username, true);
     return { ok: true as const, code, profile: publicProfile(created as ProfileRow) };
   }
   return { ok: false as const, error: "Could not create a code right now. Try again." };
@@ -253,6 +256,7 @@ export const codeSignIn = createServerFn({ method: "POST" })
     if (!row) return { ok: false as const, error: "That code doesn't match an account." };
 
     await setUserSession((row as ProfileRow).email);
+    await welcomeNotification((row as ProfileRow).email, false);
     return { ok: true as const, profile: publicProfile(row as ProfileRow) };
   });
 
@@ -308,6 +312,7 @@ export const userSignUp = createServerFn({ method: "POST" })
         };
       }
       await setUserSession(username);
+      await welcomeNotification(username, true);
       return { ok: true as const, profile: publicProfile(created as ProfileRow) };
     } catch (err) {
       return {
@@ -327,6 +332,7 @@ export const userSignIn = createServerFn({ method: "POST" })
       return { ok: false as const, error: "Wrong username or password." };
     }
     await setUserSession(username);
+    await welcomeNotification(username, false);
     return { ok: true as const, profile: publicProfile(row) };
   });
 
@@ -437,6 +443,46 @@ export const addComment = createServerFn({ method: "POST" })
       parent_id: data.parentId ?? null,
     } as never);
     if (error) return { ok: false as const, error: "Could not post that comment." };
+
+    // Tell the person being answered: parent comment author, thread author, or the developer.
+    let recipient: string | null = null;
+    let title = "New reply";
+    let link = `/articles/${data.articleId}`;
+    const isForum = data.articleId.startsWith("forum:");
+    if (isForum) link = `/forum/${data.articleId.slice(6)}`;
+    if (data.parentId) {
+      const { data: parent } = await supabase
+        .from("comments")
+        .select("author_email")
+        .eq("id", data.parentId)
+        .maybeSingle();
+      recipient = (parent as { author_email?: string } | null)?.author_email ?? null;
+      title = "Someone replied to you";
+    } else if (isForum) {
+      const { data: post } = await supabase
+        .from("forum_posts")
+        .select("author_email, title")
+        .eq("id", data.articleId.slice(6))
+        .maybeSingle();
+      const row = post as { author_email?: string; title?: string } | null;
+      recipient = row?.author_email ?? null;
+      title = `New comment on "${row?.title ?? "your post"}"`;
+    } else {
+      recipient = DEV_EMAIL;
+      title = "New comment on an article";
+    }
+    if (recipient && recipient !== email) {
+      await notify({
+        recipient,
+        kind: "comment",
+        title,
+        body: `@${profile.handle}: ${body || "sent an image"}`,
+        link,
+        actorHandle: profile.handle,
+        actorAvatar: profile.avatar_url ?? "",
+        actorTier: profile.tier,
+      });
+    }
     return { ok: true as const };
   });
 
