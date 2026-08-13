@@ -38,7 +38,7 @@ export const Route = createFileRoute("/forum/$postId")({
 function ForumPostPage() {
   const { postId } = Route.useParams();
   const navigate = useNavigate();
-  const { isModerator } = useAuth();
+  const { isModerator, session } = useAuth();
   const [post, setPost] = useState<ForumPost | null>(null);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
