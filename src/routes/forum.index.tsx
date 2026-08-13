@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { Icon, M3Button } from "@/components/m3";
+import { ForumVotes } from "@/components/forum-votes";
+
 import { Reveal } from "@/components/reveal";
 import { Avatar, VerifiedBadge } from "@/components/verified";
 import { Linkify } from "@/components/linkify";
