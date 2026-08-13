@@ -178,16 +178,24 @@ async function profileByEmail(email: string) {
 export const getSessionInfo = createServerFn({ method: "GET" }).handler(async () => {
   const id = await currentIdentity();
   if (!id.email) {
-    return { signedIn: false as const, developer: false, profile: null, loginCode: "" };
+    return {
+      signedIn: false as const,
+      developer: false,
+      moderator: false,
+      profile: null,
+      loginCode: "",
+    };
   }
   const row = await profileByEmail(id.email);
   return {
     signedIn: true as const,
     developer: id.developer,
+    moderator: id.developer ? true : await isModerator(id.email),
     profile: publicProfile(row),
     loginCode: row?.login_code ?? "",
   };
 });
+
 
 /** Code accounts: a random 5-digit code is the only credential. */
 export const codeSignUp = createServerFn({ method: "POST" }).handler(async () => {
