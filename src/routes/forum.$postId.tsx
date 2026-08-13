@@ -2,6 +2,8 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Comments } from "@/components/comments";
 import { Icon, M3Button } from "@/components/m3";
+import { ForumVotes } from "@/components/forum-votes";
+
 import { Linkify } from "@/components/linkify";
 import { Avatar, VerifiedBadge } from "@/components/verified";
 import { useAuth } from "@/lib/auth";
@@ -36,7 +38,7 @@ export const Route = createFileRoute("/forum/$postId")({
 function ForumPostPage() {
   const { postId } = Route.useParams();
   const navigate = useNavigate();
-  const { isModerator } = useAuth();
+  const { isModerator, session } = useAuth();
   const [post, setPost] = useState<ForumPost | null>(null);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
@@ -191,7 +193,12 @@ function ForumPostPage() {
             ) : null}
           </>
         )}
+
+        <div className="mt-5">
+          <ForumVotes key={post.id} post={post} canVote={Boolean(session)} />
+        </div>
       </article>
+
 
       {post.locked ? (
         <p className="mt-8 rounded-2xl border border-border/60 glass px-4 py-3 text-[15px] text-muted-foreground">

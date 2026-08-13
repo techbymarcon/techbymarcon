@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { Icon, M3Button } from "@/components/m3";
+import { ForumVotes } from "@/components/forum-votes";
+
 import { Reveal } from "@/components/reveal";
 import { Avatar, VerifiedBadge } from "@/components/verified";
 import { Linkify } from "@/components/linkify";
@@ -224,7 +226,11 @@ function Forum() {
                     <Linkify text={p.body} />
                   </p>
                 ) : null}
+                <div className="mt-3">
+                  <ForumVotes post={p} canVote={Boolean(session)} />
+                </div>
               </div>
+
               {isModerator || p.canManage ? (
                 <div className="flex shrink-0 items-center gap-1">
                   {isModerator ? (

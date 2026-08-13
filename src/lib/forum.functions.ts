@@ -16,12 +16,39 @@ export type ForumPost = {
   updated_at: string;
   mine: boolean;
   canManage: boolean;
+  upvotes: number;
+  downvotes: number;
+  score: number;
+  myVote: number;
 };
+
+type VoteRow = { post_id: string; voter_email: string; value: number };
+
+/** Tally votes per post plus the caller's own vote. */
+async function voteTally(postIds: string[], email: string) {
+  const tally = new Map<string, { up: number; down: number; mine: number }>();
+  for (const id of postIds) tally.set(id, { up: 0, down: 0, mine: 0 });
+  if (!postIds.length) return tally;
+  const supabase = await db();
+  const { data } = await supabase
+    .from("forum_votes")
+    .select("post_id, voter_email, value")
+    .in("post_id", postIds);
+  for (const raw of (data ?? []) as VoteRow[]) {
+    const entry = tally.get(raw.post_id);
+    if (!entry) continue;
+    if (raw.value > 0) entry.up += 1;
+    else if (raw.value < 0) entry.down += 1;
+    if (email && raw.voter_email === email) entry.mine = raw.value > 0 ? 1 : -1;
+  }
+  return tally;
+}
 
 const shape = (
   row: Record<string, unknown>,
   email: string,
   staff: boolean,
+  votes?: { up: number; down: number; mine: number },
 ): ForumPost => ({
   id: row["id"] as string,
   handle: row["handle"] as string,
@@ -37,7 +64,12 @@ const shape = (
   updated_at: row["updated_at"] as string,
   mine: Boolean(email && row["author_email"] === email),
   canManage: staff || Boolean(email && row["author_email"] === email),
+  upvotes: votes?.up ?? 0,
+  downvotes: votes?.down ?? 0,
+  score: (votes?.up ?? 0) - (votes?.down ?? 0),
+  myVote: votes?.mine ?? 0,
 });
+
 
 export const listForumPosts = createServerFn({ method: "GET" }).handler(async () => {
   const supabase = await db();
@@ -49,7 +81,9 @@ export const listForumPosts = createServerFn({ method: "GET" }).handler(async ()
     .order("pinned", { ascending: false })
     .order("created_at", { ascending: false });
   if (error) throw new Error(error.message);
-  return (data ?? []).map((row) => shape(row as Record<string, unknown>, me.email, staff));
+  const rows = (data ?? []) as Record<string, unknown>[];
+  const tally = await voteTally(rows.map((r) => r["id"] as string), me.email);
+  return rows.map((row) => shape(row, me.email, staff, tally.get(row["id"] as string)));
 });
 
 export const getForumPost = createServerFn({ method: "POST" })
@@ -64,8 +98,41 @@ export const getForumPost = createServerFn({ method: "POST" })
       .eq("id", data.id)
       .maybeSingle();
     if (!row) return { post: null };
-    return { post: shape(row as Record<string, unknown>, me.email, staff) };
+    const tally = await voteTally([data.id], me.email);
+    return { post: shape(row as Record<string, unknown>, me.email, staff, tally.get(data.id)) };
   });
+
+/** One vote per member per post; sending the same value again clears it. */
+export const voteForumPost = createServerFn({ method: "POST" })
+  .inputValidator((data: { id: string; value: number }) => data)
+  .handler(async ({ data }) => {
+    const me = await currentStaff();
+    if (!me.signedIn) return { ok: false as const, error: "Sign in to vote." };
+    const value = data.value > 0 ? 1 : data.value < 0 ? -1 : 0;
+    const supabase = await db();
+    const { data: existing } = await supabase
+      .from("forum_votes")
+      .select("id, value")
+      .eq("post_id", data.id)
+      .eq("voter_email", me.email)
+      .maybeSingle();
+    const current = existing as { id: string; value: number } | null;
+
+    if (value === 0 || (current && current.value === value)) {
+      if (current) await supabase.from("forum_votes").delete().eq("id", current.id);
+    } else if (current) {
+      await supabase.from("forum_votes").update({ value }).eq("id", current.id);
+    } else {
+      const { error } = await supabase
+        .from("forum_votes")
+        .insert({ post_id: data.id, voter_email: me.email, value } as never);
+      if (error) return { ok: false as const, error: "Could not record that vote." };
+    }
+    const tally = await voteTally([data.id], me.email);
+    const t = tally.get(data.id)!;
+    return { ok: true as const, upvotes: t.up, downvotes: t.down, score: t.up - t.down, myVote: t.mine };
+  });
+
 
 export const createForumPost = createServerFn({ method: "POST" })
   .inputValidator((data: { title: string; body: string; imageUrl?: string }) => data)
