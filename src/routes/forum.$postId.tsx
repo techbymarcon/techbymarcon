@@ -191,7 +191,12 @@ function ForumPostPage() {
             ) : null}
           </>
         )}
+
+        <div className="mt-5">
+          <ForumVotes key={post.id} post={post} canVote={Boolean(session)} />
+        </div>
       </article>
+
 
       {post.locked ? (
         <p className="mt-8 rounded-2xl border border-border/60 glass px-4 py-3 text-[15px] text-muted-foreground">
