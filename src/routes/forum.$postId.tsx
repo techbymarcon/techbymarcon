@@ -2,6 +2,8 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Comments } from "@/components/comments";
 import { Icon, M3Button } from "@/components/m3";
+import { ForumVotes } from "@/components/forum-votes";
+
 import { Linkify } from "@/components/linkify";
 import { Avatar, VerifiedBadge } from "@/components/verified";
 import { useAuth } from "@/lib/auth";
