@@ -166,6 +166,41 @@ export type Database = {
         }
         Relationships: []
       }
+      forum_votes: {
+        Row: {
+          created_at: string
+          id: string
+          post_id: string
+          updated_at: string
+          value: number
+          voter_email: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          post_id: string
+          updated_at?: string
+          value: number
+          voter_email: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          post_id?: string
+          updated_at?: string
+          value?: number
+          voter_email?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "forum_votes_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "forum_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string
