@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as ModeratorsRouteImport } from './routes/moderators'
 import { Route as SocialsRouteImport } from './routes/socials'
 import { Route as ArticlesIndexRouteImport } from './routes/articles.index'
 import { Route as ArticlesArticleIdRouteImport } from './routes/articles.$articleId'
@@ -26,6 +27,11 @@ const IndexRoute = IndexRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ModeratorsRoute = ModeratorsRouteImport.update({
+  id: '/moderators',
+  path: '/moderators',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SocialsRoute = SocialsRouteImport.update({
@@ -62,6 +68,7 @@ const ApiPublicAvatarsFileRoute = ApiPublicAvatarsFileRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/moderators': typeof ModeratorsRoute
   '/socials': typeof SocialsRoute
   '/articles/$articleId': typeof ArticlesArticleIdRoute
   '/forum/$postId': typeof ForumPostIdRoute
@@ -72,6 +79,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/moderators': typeof ModeratorsRoute
   '/socials': typeof SocialsRoute
   '/articles/$articleId': typeof ArticlesArticleIdRoute
   '/forum/$postId': typeof ForumPostIdRoute
@@ -83,6 +91,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/moderators': typeof ModeratorsRoute
   '/socials': typeof SocialsRoute
   '/articles/$articleId': typeof ArticlesArticleIdRoute
   '/forum/$postId': typeof ForumPostIdRoute
@@ -95,6 +104,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/login'
+    | '/moderators'
     | '/socials'
     | '/articles/$articleId'
     | '/forum/$postId'
@@ -105,6 +115,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/login'
+    | '/moderators'
     | '/socials'
     | '/articles/$articleId'
     | '/forum/$postId'
@@ -115,6 +126,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/login'
+    | '/moderators'
     | '/socials'
     | '/articles/$articleId'
     | '/forum/$postId'
@@ -126,6 +138,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LoginRoute: typeof LoginRoute
+  ModeratorsRoute: typeof ModeratorsRoute
   SocialsRoute: typeof SocialsRoute
   ArticlesArticleIdRoute: typeof ArticlesArticleIdRoute
   ForumPostIdRoute: typeof ForumPostIdRoute
@@ -148,6 +161,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/moderators': {
+      id: '/moderators'
+      path: '/moderators'
+      fullPath: '/moderators'
+      preLoaderRoute: typeof ModeratorsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/socials': {
@@ -198,6 +218,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LoginRoute: LoginRoute,
+  ModeratorsRoute: ModeratorsRoute,
   SocialsRoute: SocialsRoute,
   ArticlesArticleIdRoute: ArticlesArticleIdRoute,
   ForumPostIdRoute: ForumPostIdRoute,
