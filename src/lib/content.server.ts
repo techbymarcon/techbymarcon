@@ -64,6 +64,36 @@ export async function requireIdentity(): Promise<{ developer: boolean; email: st
   return { developer: id.developer, email: id.email };
 }
 
+/** Roles live in their own table — never on the profile row. */
+export async function isModerator(email: string | null | undefined) {
+  if (!email) return false;
+  const supabase = await db();
+  const { data } = await supabase
+    .from("user_roles")
+    .select("username")
+    .eq("username", email)
+    .eq("role", "moderator")
+    .maybeSingle();
+  return Boolean(data);
+}
+
+export type Staff = { email: string; developer: boolean; moderator: boolean };
+
+/** Signed-in identity plus staff powers (developer or moderator). */
+export async function currentStaff(): Promise<Staff & { signedIn: boolean }> {
+  const id = await currentIdentity();
+  if (!id.email) return { email: "", developer: false, moderator: false, signedIn: false };
+  const moderator = id.developer ? true : await isModerator(id.email);
+  return { email: id.email, developer: id.developer, moderator, signedIn: true };
+}
+
+export async function requireStaff(): Promise<Staff> {
+  const staff = await currentStaff();
+  if (!staff.signedIn || (!staff.developer && !staff.moderator)) throw new Error("Unauthorized");
+  return staff;
+}
+
+
 export async function setUserSession(email: string) {
   const session = await getGateSession();
   await session.update({ developer: false, email });
