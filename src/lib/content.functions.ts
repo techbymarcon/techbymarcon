@@ -14,7 +14,7 @@ import {
   setUserSession,
   verifyPassword,
 } from "./content.server";
-import { actorFor, notify, welcomeNotification } from "./notifications.server";
+import { notify, welcomeNotification } from "./notifications.server";
 
 
 export const getDeveloperStatus = createServerFn({ method: "GET" }).handler(async () => ({
