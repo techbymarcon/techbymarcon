@@ -107,28 +107,23 @@ function Index() {
                   <span className="text-[14px] text-muted-foreground">{home.downloadCaption}</span>
                 </div>
               </div>
-              <dl className="mt-10 flex flex-wrap gap-8 border-t border-border/70 pt-6">
-                {articles.length > 0 ? (
+              {articles.length > 0 ? (
+                <dl className="mt-10 flex flex-wrap gap-8 border-t border-border/70 pt-6">
                   <div>
                     <dt className="text-[12px] font-semibold tracking-[0.12em] text-muted-foreground uppercase">
                       Guides
                     </dt>
                     <dd className="font-display text-[26px] font-medium">{articles.length}</dd>
                   </div>
-                ) : null}
-                <div>
-                  <dt className="text-[12px] font-semibold tracking-[0.12em] text-muted-foreground uppercase">
-                    Focus
-                  </dt>
-                  <dd className="font-display text-[26px] font-medium">Android</dd>
-                </div>
-                <div>
-                  <dt className="text-[12px] font-semibold tracking-[0.12em] text-muted-foreground uppercase">
-                    Downloads
-                  </dt>
-                  <dd className="font-display text-[26px] font-medium">Free</dd>
-                </div>
-              </dl>
+                  <div>
+                    <dt className="text-[12px] font-semibold tracking-[0.12em] text-muted-foreground uppercase">
+                      Focus
+                    </dt>
+                    <dd className="font-display text-[26px] font-medium">Android</dd>
+                  </div>
+                </dl>
+              ) : null}
+
             </div>
 
             <div className="relative">
