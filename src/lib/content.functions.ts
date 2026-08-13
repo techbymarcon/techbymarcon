@@ -1,16 +1,20 @@
 import { createServerFn } from "@tanstack/react-start";
 import {
   currentIdentity,
+  currentStaff,
   db,
   getGateSession,
   hashPassword,
   isDeveloperSession,
+  isModerator,
   passwordMatches,
   requireDeveloper,
   requireIdentity,
+  requireStaff,
   setUserSession,
   verifyPassword,
 } from "./content.server";
+
 
 export const getDeveloperStatus = createServerFn({ method: "GET" }).handler(async () => ({
   developer: await isDeveloperSession(),
