@@ -1,0 +1,199 @@
+import { createServerFn } from "@tanstack/react-start";
+import { currentStaff, db, requireDeveloper, requireIdentity } from "./content.server";
+
+export type ForumPost = {
+  id: string;
+  handle: string;
+  display_name: string;
+  avatar_url: string;
+  tier: string;
+  title: string;
+  body: string;
+  image_url: string;
+  pinned: boolean;
+  locked: boolean;
+  created_at: string;
+  updated_at: string;
+  mine: boolean;
+  canManage: boolean;
+};
+
+const shape = (
+  row: Record<string, unknown>,
+  email: string,
+  staff: boolean,
+): ForumPost => ({
+  id: row["id"] as string,
+  handle: row["handle"] as string,
+  display_name: row["display_name"] as string,
+  avatar_url: (row["avatar_url"] as string) ?? "",
+  tier: (row["tier"] as string) ?? "blue",
+  title: row["title"] as string,
+  body: (row["body"] as string) ?? "",
+  image_url: (row["image_url"] as string) ?? "",
+  pinned: Boolean(row["pinned"]),
+  locked: Boolean(row["locked"]),
+  created_at: row["created_at"] as string,
+  updated_at: row["updated_at"] as string,
+  mine: Boolean(email && row["author_email"] === email),
+  canManage: staff || Boolean(email && row["author_email"] === email),
+});
+
+export const listForumPosts = createServerFn({ method: "GET" }).handler(async () => {
+  const supabase = await db();
+  const me = await currentStaff();
+  const staff = me.developer || me.moderator;
+  const { data, error } = await supabase
+    .from("forum_posts")
+    .select("*")
+    .order("pinned", { ascending: false })
+    .order("created_at", { ascending: false });
+  if (error) throw new Error(error.message);
+  return (data ?? []).map((row) => shape(row as Record<string, unknown>, me.email, staff));
+});
+
+export const getForumPost = createServerFn({ method: "POST" })
+  .inputValidator((data: { id: string }) => data)
+  .handler(async ({ data }) => {
+    const supabase = await db();
+    const me = await currentStaff();
+    const staff = me.developer || me.moderator;
+    const { data: row } = await supabase
+      .from("forum_posts")
+      .select("*")
+      .eq("id", data.id)
+      .maybeSingle();
+    if (!row) return { post: null };
+    return { post: shape(row as Record<string, unknown>, me.email, staff) };
+  });
+
+export const createForumPost = createServerFn({ method: "POST" })
+  .inputValidator((data: { title: string; body: string; imageUrl?: string }) => data)
+  .handler(async ({ data }) => {
+    const { email } = await requireIdentity();
+    const title = data.title.trim().slice(0, 140);
+    const body = data.body.trim().slice(0, 8000);
+    if (!title) return { ok: false as const, error: "Give your post a title." };
+
+    const supabase = await db();
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("email", email)
+      .maybeSingle();
+    if (!profile) return { ok: false as const, error: "Sign in to post." };
+
+    const { data: created, error } = await supabase
+      .from("forum_posts")
+      .insert({
+        author_email: email,
+        handle: profile.handle,
+        display_name: profile.display_name,
+        avatar_url: profile.avatar_url ?? "",
+        tier: profile.tier,
+        title,
+        body,
+        image_url: (data.imageUrl ?? "").trim().slice(0, 500),
+      } as never)
+      .select("id")
+      .single();
+    if (error || !created) return { ok: false as const, error: "Could not publish that post." };
+    return { ok: true as const, id: (created as { id: string }).id };
+  });
+
+export const updateForumPost = createServerFn({ method: "POST" })
+  .inputValidator((data: { id: string; title: string; body: string; imageUrl?: string }) => data)
+  .handler(async ({ data }) => {
+    const me = await currentStaff();
+    if (!me.signedIn) return { ok: false as const, error: "Sign in first." };
+    const title = data.title.trim().slice(0, 140);
+    if (!title) return { ok: false as const, error: "Give your post a title." };
+    const supabase = await db();
+    let query = supabase
+      .from("forum_posts")
+      .update({
+        title,
+        body: data.body.trim().slice(0, 8000),
+        image_url: (data.imageUrl ?? "").trim().slice(0, 500),
+      })
+      .eq("id", data.id);
+    if (!me.developer && !me.moderator) query = query.eq("author_email", me.email);
+    const { error } = await query;
+    if (error) return { ok: false as const, error: "Could not save that post." };
+    return { ok: true as const };
+  });
+
+export const deleteForumPost = createServerFn({ method: "POST" })
+  .inputValidator((data: { id: string }) => data)
+  .handler(async ({ data }) => {
+    const me = await currentStaff();
+    if (!me.signedIn) return { ok: false as const, error: "Sign in first." };
+    const supabase = await db();
+    let query = supabase.from("forum_posts").delete().eq("id", data.id);
+    if (!me.developer && !me.moderator) query = query.eq("author_email", me.email);
+    const { error } = await query;
+    if (error) return { ok: false as const, error: "Could not delete that post." };
+    await supabase.from("comments").delete().eq("article_id", `forum:${data.id}`);
+    return { ok: true as const };
+  });
+
+/** Pin and lock are moderation-only controls. */
+export const moderateForumPost = createServerFn({ method: "POST" })
+  .inputValidator((data: { id: string; pinned?: boolean; locked?: boolean }) => data)
+  .handler(async ({ data }) => {
+    const me = await currentStaff();
+    if (!me.developer && !me.moderator) return { ok: false as const, error: "Not allowed." };
+    const patch: Record<string, boolean> = {};
+    if (typeof data.pinned === "boolean") patch["pinned"] = data.pinned;
+    if (typeof data.locked === "boolean") patch["locked"] = data.locked;
+    const supabase = await db();
+    const { error } = await supabase.from("forum_posts").update(patch).eq("id", data.id);
+    if (error) return { ok: false as const, error: "Could not update that post." };
+    return { ok: true as const };
+  });
+
+/** Developer-only moderator roster. */
+export const listMembers = createServerFn({ method: "GET" }).handler(async () => {
+  await requireDeveloper();
+  const supabase = await db();
+  const { data: profiles } = await supabase
+    .from("profiles")
+    .select("email, handle, display_name, avatar_url, tier")
+    .order("created_at", { ascending: false });
+  const { data: roles } = await supabase
+    .from("user_roles")
+    .select("username")
+    .eq("role", "moderator");
+  const mods = new Set((roles ?? []).map((r) => (r as { username: string }).username));
+  return (profiles ?? []).map((p) => ({
+    username: p.email as string,
+    handle: p.handle as string,
+    display_name: p.display_name as string,
+    avatar_url: (p.avatar_url as string) ?? "",
+    tier: p.tier as string,
+    moderator: mods.has(p.email as string),
+  }));
+});
+
+export const setModerator = createServerFn({ method: "POST" })
+  .inputValidator((data: { username: string; moderator: boolean }) => data)
+  .handler(async ({ data }) => {
+    await requireDeveloper();
+    const supabase = await db();
+    if (data.moderator) {
+      const { error } = await supabase
+        .from("user_roles")
+        .upsert({ username: data.username, role: "moderator" } as never, {
+          onConflict: "username,role",
+        });
+      if (error) return { ok: false as const, error: "Could not grant that role." };
+    } else {
+      const { error } = await supabase
+        .from("user_roles")
+        .delete()
+        .eq("username", data.username)
+        .eq("role", "moderator");
+      if (error) return { ok: false as const, error: "Could not remove that role." };
+    }
+    return { ok: true as const };
+  });
