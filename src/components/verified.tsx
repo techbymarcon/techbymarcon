@@ -66,10 +66,11 @@ export function VerifiedInfo({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "rounded-[28px] bg-surface-container p-6 elevation-1 md:p-7",
+        "surface-sheen rounded-[28px] border border-border/60 glass p-6 elevation-1 md:p-7",
         className,
       )}
     >
+
       <h3 className="font-display text-[20px] font-medium">Verified checkmarks</h3>
       <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">
         Every signed-in account gets a verified badge next to its name, so you always know who
