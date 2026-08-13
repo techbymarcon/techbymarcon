@@ -436,10 +436,12 @@ export const addComment = createServerFn({ method: "POST" })
 export const deleteComment = createServerFn({ method: "POST" })
   .inputValidator((data: { id: string }) => data)
   .handler(async ({ data }) => {
-    const { email, developer } = await requireIdentity();
+    const staff = await currentStaff();
+    if (!staff.signedIn) throw new Error("Unauthorized");
     const supabase = await db();
     const query = supabase.from("comments").delete().eq("id", data.id);
-    const { error } = developer ? await query : await query.eq("author_email", email);
+    const { error } =
+      staff.developer || staff.moderator ? await query : await query.eq("author_email", staff.email);
     if (error) throw new Error("Could not delete that comment.");
     return { ok: true as const };
   });
@@ -447,12 +449,15 @@ export const deleteComment = createServerFn({ method: "POST" })
 export const editComment = createServerFn({ method: "POST" })
   .inputValidator((data: { id: string; body: string }) => data)
   .handler(async ({ data }) => {
-    const { email, developer } = await requireIdentity();
+    const staff = await currentStaff();
+    if (!staff.signedIn) throw new Error("Unauthorized");
     const body = data.body.trim().slice(0, 2000);
     if (!body) return { ok: false as const, error: "Write something first." };
     const supabase = await db();
     const query = supabase.from("comments").update({ body }).eq("id", data.id);
-    const { error } = developer ? await query : await query.eq("author_email", email);
+    const { error } =
+      staff.developer || staff.moderator ? await query : await query.eq("author_email", staff.email);
+
     if (error) return { ok: false as const, error: "Could not save that comment." };
     return { ok: true as const };
   });
