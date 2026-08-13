@@ -36,7 +36,6 @@ const AuthCtx = createContext<{
   signOut: () => void;
   isDeveloper: boolean;
   isModerator: boolean;
-  isModerator: boolean;
   saveProfile: (p: {
     displayName: string;
     handle: string;
@@ -53,7 +52,6 @@ const AuthCtx = createContext<{
   signInWithCode: async () => ({ ok: false }),
   signOut: () => {},
   isDeveloper: false,
-  isModerator: false,
   isModerator: false,
   saveProfile: async () => ({ ok: false }),
   uploadAvatarFile: async () => ({ ok: false }),
