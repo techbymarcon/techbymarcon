@@ -16,12 +16,39 @@ export type ForumPost = {
   updated_at: string;
   mine: boolean;
   canManage: boolean;
+  upvotes: number;
+  downvotes: number;
+  score: number;
+  myVote: number;
 };
+
+type VoteRow = { post_id: string; voter_email: string; value: number };
+
+/** Tally votes per post plus the caller's own vote. */
+async function voteTally(postIds: string[], email: string) {
+  const tally = new Map<string, { up: number; down: number; mine: number }>();
+  for (const id of postIds) tally.set(id, { up: 0, down: 0, mine: 0 });
+  if (!postIds.length) return tally;
+  const supabase = await db();
+  const { data } = await supabase
+    .from("forum_votes")
+    .select("post_id, voter_email, value")
+    .in("post_id", postIds);
+  for (const raw of (data ?? []) as VoteRow[]) {
+    const entry = tally.get(raw.post_id);
+    if (!entry) continue;
+    if (raw.value > 0) entry.up += 1;
+    else if (raw.value < 0) entry.down += 1;
+    if (email && raw.voter_email === email) entry.mine = raw.value > 0 ? 1 : -1;
+  }
+  return tally;
+}
 
 const shape = (
   row: Record<string, unknown>,
   email: string,
   staff: boolean,
+  votes?: { up: number; down: number; mine: number },
 ): ForumPost => ({
   id: row["id"] as string,
   handle: row["handle"] as string,
@@ -37,7 +64,12 @@ const shape = (
   updated_at: row["updated_at"] as string,
   mine: Boolean(email && row["author_email"] === email),
   canManage: staff || Boolean(email && row["author_email"] === email),
+  upvotes: votes?.up ?? 0,
+  downvotes: votes?.down ?? 0,
+  score: (votes?.up ?? 0) - (votes?.down ?? 0),
+  myVote: votes?.mine ?? 0,
 });
+
 
 export const listForumPosts = createServerFn({ method: "GET" }).handler(async () => {
   const supabase = await db();
