@@ -266,9 +266,10 @@ export const codeSignIn = createServerFn({ method: "POST" })
   });
 
 
-export const getDeveloperProfile = createServerFn({ method: "GET" }).handler(async () => ({
-  profile: await publicProfile(await profileByEmail(DEV_EMAIL)),
-}));
+export const getDeveloperProfile = createServerFn({ method: "GET" }).handler(async () => {
+  const row = await profileByEmail(DEV_EMAIL);
+  return { profile: publicProfile(row, await effectiveTier(DEV_EMAIL, row?.tier)) };
+});
 
 export const userSignUp = createServerFn({ method: "POST" })
   .inputValidator((data: { username: string; password: string; displayName?: string }) => data)
