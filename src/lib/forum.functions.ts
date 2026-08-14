@@ -254,7 +254,8 @@ export const deleteForumPost = createServerFn({ method: "POST" })
     if (!me.signedIn) return { ok: false as const, error: "Sign in first." };
     const supabase = await db();
     let query = supabase.from("forum_posts").delete().eq("id", data.id);
-    if (!me.developer && !me.moderator) query = query.eq("author_email", me.email);
+    // Only green and gold keys can remove someone else's post.
+    if (!(await keyAllows("forum:delete:any"))) query = query.eq("author_email", me.email);
     const { error } = await query;
     if (error) return { ok: false as const, error: "Could not delete that post." };
     await supabase.from("comments").delete().eq("article_id", `forum:${data.id}`);
