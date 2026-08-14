@@ -39,7 +39,7 @@ export const defaultContent: SiteContent = {
     title: "Tech by Marcon",
     intro: "Find the downloads and links of my guides.",
     articlesLabel: "View Articles",
-    downloadCaption: "Download the official app!",
+    downloadCaption: "Download the App! It's being reworked right now, but you can still grab the current version.",
     apkUrl: "/__l5e/assets-v1/9cfde75a-190b-44d4-84df-67fb9db49e57/TechByMarcon_App_v1.0.0.apk",
   },
   socials: {
