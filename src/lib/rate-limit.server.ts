@@ -90,8 +90,7 @@ export async function throttleLogin(rawIdentifier: string): Promise<Throttle> {
     row = await readRow(identifier);
   } catch {
     // If the throttle store is unavailable, never lock people out of the app.
-    await sleep(2000);
-    return { blocked: false, attempts: 1, clear: async () => {} };
+    return { blocked: false, attempts: 1, wait: 0, clear: async () => {} };
   }
 
   const now = Date.now();
@@ -111,13 +110,13 @@ export async function throttleLogin(rawIdentifier: string): Promise<Throttle> {
   const stale = row ? now - new Date(row.last_attempt_at).getTime() > WINDOW_MS : true;
   const attempts = (stale ? 0 : (row?.attempts ?? 0)) + 1;
 
-  const blockSeconds = blockForAttempt(attempts);
-  const blockedUntil = blockSeconds
-    ? new Date(now + blockSeconds * 1000).toISOString()
-    : null;
+  // The cooldown is applied after the attempt instead of stalling the request,
+  // so the client can register the attempt instantly and count down locally.
+  const wait = Math.max(delayForAttempt(attempts), blockForAttempt(attempts));
+  const blockedUntil = wait ? new Date(now + wait * 1000).toISOString() : null;
 
   await writeRow(identifier, attempts, blockedUntil).catch(() => {});
-  await sleep(delayForAttempt(attempts) * 1000);
 
-  return { blocked: false, attempts, clear: () => clearAttempts(identifier) };
+  return { blocked: false, attempts, wait, clear: () => clearAttempts(identifier) };
+
 }
