@@ -258,14 +258,16 @@ export const listMembers = createServerFn({ method: "GET" }).handler(async () =>
     .select("username")
     .eq("role", "moderator");
   const mods = new Set((roles ?? []).map((r) => (r as { username: string }).username));
-  return (profiles ?? []).map((p) => ({
-    username: p.email as string,
-    handle: p.handle as string,
-    display_name: p.display_name as string,
-    avatar_url: (p.avatar_url as string) ?? "",
-    tier: p.tier as string,
-    moderator: mods.has(p.email as string),
-  }));
+  return await Promise.all(
+    (profiles ?? []).map(async (p) => ({
+      username: p.email as string,
+      handle: p.handle as string,
+      display_name: p.display_name as string,
+      avatar_url: (p.avatar_url as string) ?? "",
+      tier: await effectiveTier(p.email as string, p.tier as string),
+      moderator: mods.has(p.email as string),
+    })),
+  );
 });
 
 export const setModerator = createServerFn({ method: "POST" })
