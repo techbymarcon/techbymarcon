@@ -116,7 +116,6 @@ async function session(username: string) {
 
 export async function login(body: Record<string, unknown>) {
   const mode = String(body["mode"] ?? "").toLowerCase();
-  const code = String(body["code"] ?? "").replace(/\D/g, "");
   const username = normalizeUsername(String(body["username"] ?? ""));
   const password = String(body["password"] ?? "");
 
@@ -131,20 +130,11 @@ export async function login(body: Record<string, unknown>) {
     return json(await session("developer"));
   }
 
-  // Code accounts: a 5-digit code is the only credential.
-  if (mode === "code" || (!username && code)) {
-    if (code.length !== 5) return json({ error: "Enter your 5-digit code." }, 400);
-    const supabase = await db();
-    const { data } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("login_code", code)
-      .maybeSingle();
-    const row = data as ProfileRow | null;
-    if (!row) return json({ error: "That code doesn't match an account." }, 401);
-    await welcomeNotification(row.email, false);
-    return json(await session(row.email));
+  // Code-based sign-in has been removed: username + password is the only path.
+  if (mode === "code" || body["code"] !== undefined) {
+    return json({ error: "Code sign-in has been removed. Use your username and password." }, 410);
   }
+
 
   if (!isUsername(username)) return json({ error: "Invalid credentials" }, 401);
   const row = await profileFor(username);
