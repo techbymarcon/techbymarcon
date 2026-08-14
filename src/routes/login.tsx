@@ -35,6 +35,8 @@ function Login() {
     isDeveloper,
     saveProfile,
     uploadAvatarFile,
+    checkLegacyAccount,
+    migrateAccount,
   } = useAuth();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [username, setUsername] = useState("");
@@ -44,6 +46,8 @@ function Login() {
 
   const [codeMode, setCodeMode] = useState(false);
   const [code, setCode] = useState("");
+  const [migrateHandle, setMigrateHandle] = useState("");
+  const [migrateInfo, setMigrateInfo] = useState<{ handle: string; message: string } | null>(null);
 
   const [displayName, setDisplayName] = useState("");
   const [handle, setHandle] = useState("");
