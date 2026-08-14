@@ -102,7 +102,9 @@ export const getForumPost = createServerFn({ method: "POST" })
       .maybeSingle();
     if (!row) return { post: null };
     const tally = await voteTally([data.id], me.email);
-    return { post: shape(row as Record<string, unknown>, me.email, staff, tally.get(data.id)) };
+    return {
+      post: await shape(row as Record<string, unknown>, me.email, staff, tally.get(data.id)),
+    };
   });
 
 /** One vote per member per post; sending the same value again clears it. */
