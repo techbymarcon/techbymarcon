@@ -197,13 +197,13 @@ function Forum() {
             className="hidden"
             onChange={(e) => void pick(e.target.files?.[0])}
           />
-          {swearing ? (
+          {slur || swearing ? (
             <p
               role="alert"
               className="mt-3 flex items-start gap-2 rounded-2xl bg-destructive/10 px-4 py-3 text-[14px] leading-snug text-destructive"
             >
               <Icon name="warning" className="text-[18px]" />
-              {PROFANITY_WARNING}
+              {slur ? slur.message : PROFANITY_WARNING}
             </p>
           ) : null}
           <div className="mt-3 flex flex-wrap justify-end gap-2">
