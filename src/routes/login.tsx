@@ -75,9 +75,11 @@ function Login() {
                 </h1>
                 <p className="text-[15px] text-muted-foreground">@{handle || "…"}</p>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  {isDeveloper
+                  {profile?.tier === "gold"
                     ? "Golden check — developer account"
-                    : "Blue check — verified member"}
+                    : profile?.tier === "green"
+                      ? "Green check — moderator"
+                      : "Blue check — verified member"}
                 </p>
               </div>
             </div>
