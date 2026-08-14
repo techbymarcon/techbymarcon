@@ -29,6 +29,7 @@ import { Route as ApiPublicAuthRegisterRouteImport } from './routes/api/public/a
 import { Route as ApiPublicAvatarsFileRouteImport } from './routes/api/public/avatars.$file'
 import { Route as ApiPublicForumPostIdRouteImport } from './routes/api/public/forum.$postId'
 import { Route as ApiPublicForumRulesRouteImport } from './routes/api/public/forum.rules'
+import { Route as ApiPublicProfilesHandleRouteImport } from './routes/api/public/profiles.$handle'
 import { Route as ApiPublicForumPostIdVoteRouteImport } from './routes/api/public/forum.$postId.vote'
 
 const IndexRoute = IndexRouteImport.update({
@@ -131,6 +132,11 @@ const ApiPublicForumRulesRoute = ApiPublicForumRulesRouteImport.update({
   path: '/rules',
   getParentRoute: () => ApiPublicForumRoute,
 } as any)
+const ApiPublicProfilesHandleRoute = ApiPublicProfilesHandleRouteImport.update({
+  id: '/api/public/profiles/$handle',
+  path: '/api/public/profiles/$handle',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicForumPostIdVoteRoute =
   ApiPublicForumPostIdVoteRouteImport.update({
     id: '/vote',
@@ -159,6 +165,7 @@ export interface FileRoutesByFullPath {
   '/api/public/avatars/$file': typeof ApiPublicAvatarsFileRoute
   '/api/public/forum/$postId': typeof ApiPublicForumPostIdRouteWithChildren
   '/api/public/forum/rules': typeof ApiPublicForumRulesRoute
+  '/api/public/profiles/$handle': typeof ApiPublicProfilesHandleRoute
   '/api/public/forum/$postId/vote': typeof ApiPublicForumPostIdVoteRoute
 }
 export interface FileRoutesByTo {
@@ -182,6 +189,7 @@ export interface FileRoutesByTo {
   '/api/public/avatars/$file': typeof ApiPublicAvatarsFileRoute
   '/api/public/forum/$postId': typeof ApiPublicForumPostIdRouteWithChildren
   '/api/public/forum/rules': typeof ApiPublicForumRulesRoute
+  '/api/public/profiles/$handle': typeof ApiPublicProfilesHandleRoute
   '/api/public/forum/$postId/vote': typeof ApiPublicForumPostIdVoteRoute
 }
 export interface FileRoutesById {
@@ -206,6 +214,7 @@ export interface FileRoutesById {
   '/api/public/avatars/$file': typeof ApiPublicAvatarsFileRoute
   '/api/public/forum/$postId': typeof ApiPublicForumPostIdRouteWithChildren
   '/api/public/forum/rules': typeof ApiPublicForumRulesRoute
+  '/api/public/profiles/$handle': typeof ApiPublicProfilesHandleRoute
   '/api/public/forum/$postId/vote': typeof ApiPublicForumPostIdVoteRoute
 }
 export interface FileRouteTypes {
@@ -231,6 +240,7 @@ export interface FileRouteTypes {
     | '/api/public/avatars/$file'
     | '/api/public/forum/$postId'
     | '/api/public/forum/rules'
+    | '/api/public/profiles/$handle'
     | '/api/public/forum/$postId/vote'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -254,6 +264,7 @@ export interface FileRouteTypes {
     | '/api/public/avatars/$file'
     | '/api/public/forum/$postId'
     | '/api/public/forum/rules'
+    | '/api/public/profiles/$handle'
     | '/api/public/forum/$postId/vote'
   id:
     | '__root__'
@@ -277,6 +288,7 @@ export interface FileRouteTypes {
     | '/api/public/avatars/$file'
     | '/api/public/forum/$postId'
     | '/api/public/forum/rules'
+    | '/api/public/profiles/$handle'
     | '/api/public/forum/$postId/vote'
   fileRoutesById: FileRoutesById
 }
@@ -299,6 +311,7 @@ export interface RootRouteChildren {
   ApiPublicAuthMeRoute: typeof ApiPublicAuthMeRoute
   ApiPublicAuthRegisterRoute: typeof ApiPublicAuthRegisterRoute
   ApiPublicAvatarsFileRoute: typeof ApiPublicAvatarsFileRoute
+  ApiPublicProfilesHandleRoute: typeof ApiPublicProfilesHandleRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -443,6 +456,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicForumRulesRouteImport
       parentRoute: typeof ApiPublicForumRoute
     }
+    '/api/public/profiles/$handle': {
+      id: '/api/public/profiles/$handle'
+      path: '/api/public/profiles/$handle'
+      fullPath: '/api/public/profiles/$handle'
+      preLoaderRoute: typeof ApiPublicProfilesHandleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/forum/$postId/vote': {
       id: '/api/public/forum/$postId/vote'
       path: '/vote'
@@ -497,6 +517,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicAuthMeRoute: ApiPublicAuthMeRoute,
   ApiPublicAuthRegisterRoute: ApiPublicAuthRegisterRoute,
   ApiPublicAvatarsFileRoute: ApiPublicAvatarsFileRoute,
+  ApiPublicProfilesHandleRoute: ApiPublicProfilesHandleRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
