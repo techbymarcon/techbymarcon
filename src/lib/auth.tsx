@@ -3,6 +3,8 @@ import {
   developerSignIn,
   developerSignOut,
   getSessionInfo,
+  lookupLegacyAccount,
+  migrateLegacyAccount,
   updateProfile,
   uploadAvatar,
   userSignIn,
@@ -27,6 +29,10 @@ const AuthCtx = createContext<{
   profile: Profile;
   signIn: (username: string, password: string) => Promise<Result>;
   signUp: (username: string, password: string) => Promise<Result>;
+  checkLegacyAccount: (
+    handle: string,
+  ) => Promise<Result & { displayName?: string; message?: string }>;
+  migrateAccount: (handle: string, username: string, password: string) => Promise<Result>;
 
   signOut: () => void;
   isDeveloper: boolean;
@@ -42,6 +48,8 @@ const AuthCtx = createContext<{
   profile: null,
   signIn: async () => ({ ok: false }),
   signUp: async () => ({ ok: false }),
+  checkLegacyAccount: async () => ({ ok: false }),
+  migrateAccount: async () => ({ ok: false }),
   signOut: () => {},
   isDeveloper: false,
   isModerator: false,
@@ -113,6 +121,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 
 
+  const checkLegacyAccount = async (handle: string) => {
+    try {
+      const res = await lookupLegacyAccount({ data: { handle } });
+      if (!res.ok) return { ok: false, error: res.error };
+      return { ok: true, displayName: res.displayName, message: res.message };
+    } catch {
+      return { ok: false, error: "Something went wrong. Please try again." };
+    }
+  };
+
+  const migrateAccount = async (handle: string, username: string, password: string) => {
+    try {
+      const res = await migrateLegacyAccount({
+        data: { handle, username: username.trim().toLowerCase().replace(/^@/, ""), password },
+      });
+      if (!res.ok) return { ok: false, error: res.error };
+      await sync();
+      return { ok: true };
+    } catch {
+      return { ok: false, error: "Something went wrong. Please try again." };
+    }
+  };
+
   return (
     <AuthCtx.Provider
       value={{
@@ -120,6 +151,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         profile,
         signIn,
         signUp,
+        checkLegacyAccount,
+        migrateAccount,
         signOut: () => {
           setSession(null);
           setProfile(null);
