@@ -16,7 +16,7 @@ import {
   moderateForumPost,
   type ForumPost,
 } from "@/lib/forum.functions";
-import { PROFANITY_WARNING, hasProfanity } from "@/lib/profanity";
+import { PROFANITY_WARNING, hasProfanity, slurStage } from "@/lib/profanity";
 
 export const Route = createFileRoute("/forum/")({
   head: () => ({
@@ -74,6 +74,24 @@ function Forum() {
   };
 
   const swearing = hasProfanity(title, body);
+  const slur = slurStage(title, body);
+
+  // Shake the whole page while the slur is being typed; intensity is 0-100.
+  useEffect(() => {
+    const root = document.documentElement;
+    const amp = slur?.shake ?? 0;
+    if (amp > 0) {
+      root.style.setProperty("--shake-amp", `${(amp / 100) * 12}px`);
+      root.classList.add("screen-shake");
+    } else {
+      root.classList.remove("screen-shake");
+      root.style.removeProperty("--shake-amp");
+    }
+    return () => {
+      root.classList.remove("screen-shake");
+      root.style.removeProperty("--shake-amp");
+    };
+  }, [slur?.shake]);
 
   const publish = async () => {
     setBusy(true);
@@ -179,13 +197,13 @@ function Forum() {
             className="hidden"
             onChange={(e) => void pick(e.target.files?.[0])}
           />
-          {swearing ? (
+          {slur || swearing ? (
             <p
               role="alert"
               className="mt-3 flex items-start gap-2 rounded-2xl bg-destructive/10 px-4 py-3 text-[14px] leading-snug text-destructive"
             >
               <Icon name="warning" className="text-[18px]" />
-              {PROFANITY_WARNING}
+              {slur ? slur.message : PROFANITY_WARNING}
             </p>
           ) : null}
           <div className="mt-3 flex flex-wrap justify-end gap-2">

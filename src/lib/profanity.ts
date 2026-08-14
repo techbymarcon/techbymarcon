@@ -101,3 +101,35 @@ export const PROFANITY_WARNING =
 
 export const PROFANITY_REJECTION =
   "Your post contained a swear word, so it was deleted. Please keep the forum clean.";
+
+/**
+ * Escalating live warning for the worst slur, used by the forum composer while
+ * the user is still typing. Returns the strongest stage found in the text.
+ */
+export type SlurStage = { message: string; shake: number };
+
+const SLUR_STAGES: { prefix: string; stage: SlurStage }[] = [
+  { prefix: "nig", stage: { message: "Be careful what you type here.", shake: 1 } },
+  {
+    prefix: "nigg",
+    stage: {
+      message: "Not only will your post get deleted, but also your account will be banned.",
+      shake: 25,
+    },
+  },
+  {
+    prefix: "nigga",
+    stage: { message: "Don't you dare send that. I swear, you will be banned.", shake: 0 },
+  },
+  { prefix: "nigge", stage: { message: "TRUST ME! You do not want to do this.", shake: 75 } },
+  { prefix: "nigger", stage: { message: "Don't send that. I swear to everyone.", shake: 0 } },
+];
+
+export function slurStage(...parts: (string | null | undefined)[]): SlurStage | null {
+  const text = normalize(parts.filter(Boolean).join(" ")).replace(/\s+/g, "");
+  let found: SlurStage | null = null;
+  for (const { prefix, stage } of SLUR_STAGES) {
+    if (text.includes(prefix)) found = stage;
+  }
+  return found;
+}
