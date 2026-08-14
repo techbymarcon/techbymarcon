@@ -159,7 +159,9 @@ export async function currentKey(): Promise<{ key: string; payload: Payload } | 
     scopes: scopesFor(tier),
     nonce: b64url(crypto.getRandomValues(new Uint8Array(12))),
     iat: Date.now(),
+    epoch: await keyEpoch(me.email),
   };
+
   const key = await seal(payload);
   await session.update({ ...session.data, accessKey: key });
   return { key, payload };
