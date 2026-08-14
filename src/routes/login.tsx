@@ -237,6 +237,60 @@ function Login() {
           </M3Button>
         </form>
 
+        {!codeMode ? (
+          <button
+            type="button"
+            onClick={() => {
+              setCodeMode(true);
+              setError(null);
+              setCode("");
+            }}
+            className="mt-4 block w-full text-center text-sm text-muted-foreground underline underline-offset-4 hover:text-primary"
+          >
+            Have an access code?
+          </button>
+        ) : (
+          <form
+            className="mt-4 space-y-3 rounded-3xl border border-border bg-surface-container p-5"
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (code.trim() === "99999") {
+                setError("This was a vulnerability that has been patched. Good riddance!");
+              } else {
+                setError("Access codes have been retired. Sign in with your username and password instead.");
+              }
+            }}
+          >
+            <label className="block text-sm font-medium text-muted-foreground">
+              Access code
+            </label>
+            <input
+              className={field}
+              inputMode="numeric"
+              maxLength={5}
+              placeholder="5-digit code"
+              value={code}
+              onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
+            />
+            <div className="flex gap-3">
+              <M3Button type="submit" variant="tonal" className="flex-1">
+                Check code
+              </M3Button>
+              <M3Button
+                type="button"
+                variant="text"
+                onClick={() => {
+                  setCodeMode(false);
+                  setCode("");
+                  setError(null);
+                }}
+              >
+                Back
+              </M3Button>
+            </div>
+          </form>
+        )}
+
         <VerifiedInfo className="mt-8" />
 
 
