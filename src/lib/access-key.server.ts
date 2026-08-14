@@ -24,7 +24,7 @@ export type Scope =
 
 const SCOPES: Record<KeyTier, Scope[]> = {
   blue: ["forum:post", "forum:delete:own"],
-  green: ["forum:delete:any", "forum:moderate", "forum:ratelimit"],
+  green: ["forum:post", "forum:delete:own", "forum:delete:any", "forum:moderate", "forum:ratelimit"],
   gold: [
     "forum:post",
     "forum:delete:own",
