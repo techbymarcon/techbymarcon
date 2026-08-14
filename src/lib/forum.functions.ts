@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { forumRules, keyAllows } from "./access-key.server";
 import { currentStaff, db, effectiveTier, requireDeveloper, requireIdentity } from "./content.server";
 import { actorFor, notify } from "./notifications.server";
+import { postingBlock } from "./moderation.server";
 import { PROFANITY_REJECTION, hasProfanity } from "./profanity";
 
 export type ForumPost = {
@@ -166,6 +167,8 @@ export const createForumPost = createServerFn({ method: "POST" })
   .inputValidator((data: { title: string; body: string; imageUrl?: string }) => data)
   .handler(async ({ data }) => {
     const { email } = await requireIdentity();
+    const blocked = await postingBlock(email);
+    if (blocked) return { ok: false as const, error: blocked };
     if (!(await keyAllows("forum:post"))) {
       return { ok: false as const, error: "Your key does not allow posting in the forum." };
     }

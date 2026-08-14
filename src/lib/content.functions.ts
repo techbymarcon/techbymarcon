@@ -16,6 +16,7 @@ import {
   verifyPassword,
 } from "./content.server";
 import { notify, welcomeNotification } from "./notifications.server";
+import { postingBlock, sanctionState } from "./moderation.server";
 import { bumpKeyEpoch } from "./access-key.server";
 import { throttleLogin } from "./rate-limit.server";
 
@@ -198,14 +199,21 @@ export const getSessionInfo = createServerFn({ method: "GET" }).handler(async ()
       developer: false,
       moderator: false,
       profile: null,
+      banned: false,
+      banReason: "",
+      mutedUntil: null as string | null,
     };
   }
   const row = await profileByEmail(id.email);
+  const sanction = await sanctionState(id.email);
   return {
     signedIn: true as const,
     developer: id.developer,
     moderator: id.developer ? true : await isModerator(id.email),
     profile: publicProfile(row, await effectiveTier(id.email, row?.tier)),
+    banned: sanction.banned,
+    banReason: sanction.banReason,
+    mutedUntil: sanction.mutedUntil,
   };
 });
 
@@ -499,6 +507,8 @@ export const addComment = createServerFn({ method: "POST" })
   )
   .handler(async ({ data }) => {
     const { email } = await requireIdentity();
+    const blocked = await postingBlock(email);
+    if (blocked) return { ok: false as const, error: blocked };
     const body = data.body.trim().slice(0, 2000);
     const imageUrl = (data.imageUrl ?? "").trim().slice(0, 500);
     if (!body && !imageUrl) return { ok: false as const, error: "Write something first." };

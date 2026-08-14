@@ -36,6 +36,8 @@ const AuthCtx = createContext<{
 
   signOut: () => void;
   isDeveloper: boolean;
+  banned: boolean;
+  banReason: string;
   isModerator: boolean;
   saveProfile: (p: {
     displayName: string;
@@ -52,6 +54,8 @@ const AuthCtx = createContext<{
   migrateAccount: async () => ({ ok: false }),
   signOut: () => {},
   isDeveloper: false,
+  banned: false,
+  banReason: "",
   isModerator: false,
   saveProfile: async () => ({ ok: false }),
   uploadAvatarFile: async () => ({ ok: false }),
@@ -61,6 +65,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session>(null);
   const [profile, setProfile] = useState<Profile>(null);
   const [moderator, setModerator] = useState(false);
+  const [ban, setBan] = useState<{ banned: boolean; reason: string }>({
+    banned: false,
+    reason: "",
+  });
 
   // Identity always comes from the server-side httpOnly session cookie.
   const sync = async () => {
@@ -69,10 +77,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(info.signedIn ? { role: info.developer ? "developer" : "user" } : null);
       setProfile((info.profile as Profile) ?? null);
       setModerator(Boolean(info.moderator));
+      setBan({ banned: Boolean(info.banned), reason: info.banReason ?? "" });
     } catch {
       setSession(null);
       setProfile(null);
       setModerator(false);
+      setBan({ banned: false, reason: "" });
     }
   };
 
@@ -162,10 +172,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setSession(null);
           setProfile(null);
               setModerator(false);
+          setBan({ banned: false, reason: "" });
           developerSignOut().catch(() => {
             /* ignore */
           });
         },
+        banned: ban.banned,
+        banReason: ban.reason,
         isDeveloper: session?.role === "developer",
         isModerator: session?.role === "developer" || moderator,
         saveProfile: async (p) => {

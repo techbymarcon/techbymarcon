@@ -18,6 +18,7 @@ import { SiteContentProvider } from "@/lib/site-content";
 import { Navigation } from "@/components/navigation";
 import { BackToTop } from "@/components/back-to-top";
 import { NotificationsButton } from "@/components/notifications";
+import { BannedGate } from "@/components/banned-gate";
 
 function NotFoundComponent() {
   return (
@@ -141,6 +142,7 @@ function RootComponent() {
            <SiteContentProvider>
             <div className="relative min-h-screen w-full bg-background">
               <div className="aurora" aria-hidden="true" />
+              <BannedGate>
               <Navigation />
               <main className="pb-28 md:pb-0 md:pl-[90px]">
                 {/* Required: nested routes render here. */}
@@ -148,6 +150,7 @@ function RootComponent() {
               </main>
               <NotificationsButton />
               <BackToTop />
+              </BannedGate>
             </div>
            </SiteContentProvider>
           </ArticlesProvider>
