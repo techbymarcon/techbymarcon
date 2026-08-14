@@ -244,51 +244,152 @@ function Login() {
               setCodeMode(true);
               setError(null);
               setCode("");
+              setMigrateHandle("");
+              setMigrateInfo(null);
             }}
             className="mt-4 block w-full text-center text-sm text-muted-foreground underline underline-offset-4 hover:text-primary"
           >
             Have an access code?
           </button>
         ) : (
-          <form
-            className="mt-4 space-y-3 rounded-3xl border border-border bg-surface-container p-5"
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (code.trim() === "99999") {
-                setError("This was a vulnerability that has been patched. Good riddance!");
-              } else {
-                setError("Access codes have been retired. Sign in with your username and password instead.");
-              }
-            }}
-          >
-            <label className="block text-sm font-medium text-muted-foreground">
-              Access code
-            </label>
-            <input
-              className={field}
-              inputMode="numeric"
-              maxLength={5}
-              placeholder="5-digit code"
-              value={code}
-              onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
-            />
-            <div className="flex gap-3">
-              <M3Button type="submit" variant="tonal" className="flex-1">
-                Check code
-              </M3Button>
-              <M3Button
-                type="button"
-                variant="text"
-                onClick={() => {
-                  setCodeMode(false);
-                  setCode("");
-                  setError(null);
-                }}
-              >
-                Back
-              </M3Button>
+          <div className="mt-4 space-y-4 rounded-3xl border border-border bg-surface-container p-5">
+            <form
+              className="space-y-3"
+              onSubmit={(e) => {
+                e.preventDefault();
+                setMigrateInfo(null);
+                if (code.trim() === "99999") {
+                  setError("This was a vulnerability that has been patched. Good riddance!");
+                } else {
+                  setError(
+                    "Access codes have been retired. If your account only had a code, claim it below with your handle.",
+                  );
+                }
+              }}
+            >
+              <label className="block text-sm font-medium text-muted-foreground">Access code</label>
+              <input
+                className={field}
+                inputMode="numeric"
+                maxLength={5}
+                placeholder="5-digit code"
+                value={code}
+                onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
+              />
+              <div className="flex gap-3">
+                <M3Button type="submit" variant="tonal" className="flex-1">
+                  Check code
+                </M3Button>
+                <M3Button
+                  type="button"
+                  variant="text"
+                  onClick={() => {
+                    setCodeMode(false);
+                    setCode("");
+                    setError(null);
+                    setMigrateInfo(null);
+                  }}
+                >
+                  Back
+                </M3Button>
+              </div>
+            </form>
+
+            <div className="border-t border-border pt-4">
+              <p className="text-sm font-medium">Had a code-only account?</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Enter your handle to claim it and set up username and password login.
+              </p>
+              {!migrateInfo ? (
+                <form
+                  className="mt-3 space-y-3"
+                  onSubmit={async (e) => {
+                    e.preventDefault();
+                    if (busy) return;
+                    setBusy(true);
+                    setError(null);
+                    try {
+                      const res = await checkLegacyAccount(migrateHandle);
+                      if (!res.ok) {
+                        setError(res.error ?? "No account found with that handle.");
+                        return;
+                      }
+                      setMigrateInfo({
+                        handle: migrateHandle.replace(/^@/, ""),
+                        message:
+                          res.message ??
+                          "Your account will be migrated to username and password login.",
+                      });
+                      setUsername(migrateHandle.replace(/^@/, ""));
+                      setPassword("");
+                    } finally {
+                      setBusy(false);
+                    }
+                  }}
+                >
+                  <input
+                    className={field}
+                    placeholder="@yourhandle"
+                    value={migrateHandle}
+                    onChange={(e) => setMigrateHandle(e.target.value)}
+                  />
+                  <M3Button type="submit" variant="outlined" className="w-full" disabled={busy}>
+                    {busy ? "Checking…" : "Find my account"}
+                  </M3Button>
+                </form>
+              ) : (
+                <form
+                  className="mt-3 space-y-3"
+                  onSubmit={async (e) => {
+                    e.preventDefault();
+                    if (busy) return;
+                    setBusy(true);
+                    setError(null);
+                    try {
+                      const res = await migrateAccount(migrateInfo.handle, username, password);
+                      if (!res.ok) setError(res.error ?? "Could not migrate that account.");
+                    } finally {
+                      setBusy(false);
+                    }
+                  }}
+                >
+                  <p className="rounded-2xl bg-accent p-4 text-[15px] text-accent-foreground">
+                    {migrateInfo.message}
+                  </p>
+                  <input
+                    className={field}
+                    placeholder="Choose a username"
+                    autoComplete="username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                  />
+                  <input
+                    className={field}
+                    type="password"
+                    placeholder="Choose a password"
+                    autoComplete="new-password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                  <div className="flex gap-3">
+                    <M3Button type="submit" variant="filled" className="flex-1" disabled={busy}>
+                      {busy ? "Migrating…" : "Migrate my account"}
+                    </M3Button>
+                    <M3Button
+                      type="button"
+                      variant="text"
+                      onClick={() => {
+                        setMigrateInfo(null);
+                        setError(null);
+                      }}
+                    >
+                      Back
+                    </M3Button>
+                  </div>
+                </form>
+              )}
             </div>
-          </form>
+          </div>
         )}
 
         <VerifiedInfo className="mt-8" />
