@@ -16,7 +16,7 @@ import {
   moderateForumPost,
   type ForumPost,
 } from "@/lib/forum.functions";
-import { PROFANITY_WARNING, hasProfanity, slurStage } from "@/lib/profanity";
+import { PROFANITY_WARNING, hasProfanity, isNight, slurStage } from "@/lib/profanity";
 
 export const Route = createFileRoute("/forum/")({
   head: () => ({
@@ -74,7 +74,27 @@ function Forum() {
   };
 
   const swearing = hasProfanity(title, body);
-  const slur = slurStage(title, body);
+  const night = isNight(title, body);
+  const slur = night ? null : slurStage(title, body);
+
+  // "night" gets a brief, deadpan "Oh." — open the space first, then fade in;
+  // on the way out, fade first, then collapse the space.
+  const [ohSpace, setOhSpace] = useState(false);
+  const [ohOpen, setOhOpen] = useState(false);
+  const [ohFade, setOhFade] = useState(false);
+  useEffect(() => {
+    if (!night) return;
+    setOhSpace(true);
+    const openId = setTimeout(() => setOhOpen(true), 20);
+    const inId = setTimeout(() => setOhFade(true), 250);
+    const outId = setTimeout(() => setOhFade(false), 5000);
+    const collapseId = setTimeout(() => setOhOpen(false), 5300);
+    const doneId = setTimeout(() => setOhSpace(false), 5550);
+    return () => {
+      [openId, inId, outId, collapseId, doneId].forEach(clearTimeout);
+    };
+  }, [night]);
+
 
   // Shake the whole page while the slur is being typed; intensity is 0-100.
   useEffect(() => {
@@ -92,6 +112,7 @@ function Forum() {
       root.style.removeProperty("--shake-amp");
     };
   }, [slur?.shake]);
+
 
   const publish = async () => {
     setBusy(true);
@@ -197,7 +218,24 @@ function Forum() {
             className="hidden"
             onChange={(e) => void pick(e.target.files?.[0])}
           />
-          {slur || swearing ? (
+          {ohSpace ? (
+            <div
+              className={`grid transition-[grid-template-rows] duration-200 ease-out ${
+                ohOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+              }`}
+            >
+              <div className="overflow-hidden">
+                <p
+                  role="status"
+                  className={`mt-3 rounded-2xl bg-surface-container px-4 py-3 text-[14px] leading-snug transition-opacity duration-300 ${
+                    ohFade ? "opacity-100" : "opacity-0"
+                  }`}
+                >
+                  Oh.
+                </p>
+              </div>
+            </div>
+          ) : slur || swearing ? (
             <p
               role="alert"
               className="mt-3 flex items-start gap-2 rounded-2xl bg-destructive/10 px-4 py-3 text-[14px] leading-snug text-destructive"
