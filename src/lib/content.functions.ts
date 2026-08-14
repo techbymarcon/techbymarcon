@@ -440,6 +440,7 @@ export const addComment = createServerFn({ method: "POST" })
     }
     const profile = await profileByEmail(email);
     if (!profile) return { ok: false as const, error: "Sign in to comment." };
+    const tier = await effectiveTier(email, profile.tier);
 
     const { error } = await supabase.from("comments").insert({
       article_id: data.articleId,
@@ -447,7 +448,7 @@ export const addComment = createServerFn({ method: "POST" })
       handle: profile.handle,
       display_name: profile.display_name,
       avatar_url: profile.avatar_url ?? "",
-      tier: profile.tier,
+      tier,
       body,
       image_url: imageUrl,
       parent_id: data.parentId ?? null,
@@ -490,7 +491,7 @@ export const addComment = createServerFn({ method: "POST" })
         link,
         actorHandle: profile.handle,
         actorAvatar: profile.avatar_url ?? "",
-        actorTier: profile.tier,
+        actorTier: tier,
       });
     }
     return { ok: true as const };
