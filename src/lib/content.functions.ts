@@ -203,67 +203,11 @@ export const getSessionInfo = createServerFn({ method: "GET" }).handler(async ()
 });
 
 
-/** Code accounts: a random 5-digit code is the only credential. */
-export const codeSignUp = createServerFn({ method: "POST" }).handler(async () => {
-  const supabase = await db();
-  for (let attempt = 0; attempt < 25; attempt++) {
-    const code = String(Math.floor(Math.random() * 100000)).padStart(5, "0");
-    if (code === "99999") continue;
+/* Code-based accounts and code sign-in have been removed entirely.
+   There is no shortcut code and no developer bypass: the only way to sign in
+   as the developer is username "developer" plus the DEVELOPER_PASSWORD secret. */
 
-    const { data: taken } = await supabase
-      .from("profiles")
-      .select("email")
-      .eq("login_code", code)
-      .maybeSingle();
-    if (taken) continue;
 
-    const username = `code_${code}`;
-    if (await profileByEmail(username)) continue;
-    const handle = `member${code}`;
-    const { data: created, error } = await supabase
-      .from("profiles")
-      .insert({
-        email: username,
-        handle,
-        display_name: handle,
-        avatar_url: "",
-        tier: "blue",
-        password_hash: null,
-        login_code: code,
-      } as never)
-      .select("*")
-      .single();
-    if (error) continue;
-    await setUserSession(username);
-    await welcomeNotification(username, true);
-    const tier = await effectiveTier(username, (created as ProfileRow).tier);
-    return { ok: true as const, code, profile: publicProfile(created as ProfileRow, tier) };
-  }
-  return { ok: false as const, error: "Could not create a code right now. Try again." };
-});
-
-export const codeSignIn = createServerFn({ method: "POST" })
-  .inputValidator((data: { code: string }) => data)
-  .handler(async ({ data }) => {
-    const code = (data.code ?? "").replace(/\D/g, "");
-    if (code.length !== 5) return { ok: false as const, error: "Enter your 5-digit code." };
-    if (code === "99999") {
-      const session = await getGateSession();
-      await session.update({ developer: true, email: DEV_EMAIL });
-      return { ok: true as const, profile: publicProfile(await profileByEmail(DEV_EMAIL)) };
-    }
-    const supabase = await db();
-    const { data: row } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("login_code", code)
-      .maybeSingle();
-    if (!row) return { ok: false as const, error: "That code doesn't match an account." };
-
-    await setUserSession((row as ProfileRow).email);
-    await welcomeNotification((row as ProfileRow).email, false);
-    return { ok: true as const, profile: publicProfile(row as ProfileRow) };
-  });
 
 
 export const getDeveloperProfile = createServerFn({ method: "GET" }).handler(async () => {
