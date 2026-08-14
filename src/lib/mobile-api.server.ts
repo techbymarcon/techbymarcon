@@ -387,6 +387,13 @@ export async function updatePost(id: string, who: Caller, body: Record<string, u
     patch["title"] = title;
   }
   if (body["body"] !== undefined) patch["body"] = String(body["body"]).trim().slice(0, 8000);
+  if (hasProfanity(patch["title"] as string, patch["body"] as string)) {
+    let del = supabase.from("forum_posts").delete().eq("id", id);
+    if (!can(who, "forum:delete:any")) del = del.eq("author_email", who.username);
+    await del;
+    await supabase.from("comments").delete().eq("article_id", `forum:${id}`);
+    return json({ error: PROFANITY_REJECTION, deleted: true }, 400);
+  }
   if (body["imageUrl"] !== undefined || body["image_url"] !== undefined) {
     patch["image_url"] = String(body["imageUrl"] ?? body["image_url"] ?? "").trim().slice(0, 500);
   }
