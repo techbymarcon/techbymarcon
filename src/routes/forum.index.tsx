@@ -77,21 +77,24 @@ function Forum() {
   const night = isNight(title, body);
   const slur = night ? null : slurStage(title, body);
 
-  // "night" gets a brief, deadpan "Oh." — space first, then fade.
+  // "night" gets a brief, deadpan "Oh." — open the space first, then fade in;
+  // on the way out, fade first, then collapse the space.
   const [ohSpace, setOhSpace] = useState(false);
+  const [ohOpen, setOhOpen] = useState(false);
   const [ohFade, setOhFade] = useState(false);
   useEffect(() => {
     if (!night) return;
     setOhSpace(true);
-    const inId = setTimeout(() => setOhFade(true), 200);
+    const openId = setTimeout(() => setOhOpen(true), 20);
+    const inId = setTimeout(() => setOhFade(true), 250);
     const outId = setTimeout(() => setOhFade(false), 5000);
-    const doneId = setTimeout(() => setOhSpace(false), 5300);
+    const collapseId = setTimeout(() => setOhOpen(false), 5300);
+    const doneId = setTimeout(() => setOhSpace(false), 5550);
     return () => {
-      clearTimeout(inId);
-      clearTimeout(outId);
-      clearTimeout(doneId);
+      [openId, inId, outId, collapseId, doneId].forEach(clearTimeout);
     };
   }, [night]);
+
 
   // Shake the whole page while the slur is being typed; intensity is 0-100.
   useEffect(() => {
