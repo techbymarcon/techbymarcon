@@ -316,7 +316,7 @@ export const userSignUp = createServerFn({ method: "POST" })
       }
       await setUserSession(username);
       await welcomeNotification(username, true);
-      return { ok: true as const, profile: publicProfile(created as ProfileRow) };
+      return { ok: true as const, profile: await publicProfile(created as ProfileRow) };
     } catch (err) {
       return {
         ok: false as const,
