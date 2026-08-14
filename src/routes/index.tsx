@@ -83,22 +83,6 @@ function Index() {
                     <Icon name="arrow_forward" className="text-[20px]" />
                   </M3Button>
                 </Link>
-                <div className="flex flex-col items-start gap-2">
-                  <a
-                    href={home.apkUrl}
-                    download="TechByMarcon_App_v1.0.0.apk"
-                    className="m3-transition inline-block hover:-translate-y-0.5 hover:opacity-90"
-                  >
-                    <img
-                      src={githubBadge.url}
-                      alt="Get it on GitHub — download the Tech by Marcon app"
-                      width={646}
-                      height={250}
-                      className="h-[52px] w-auto"
-                    />
-                  </a>
-                  <span className="text-[14px] text-muted-foreground">{home.downloadCaption}</span>
-                </div>
               </div>
               {articles.length > 0 ? (
                 <dl className="mt-10 flex flex-wrap gap-8 border-t border-border/70 pt-6">
