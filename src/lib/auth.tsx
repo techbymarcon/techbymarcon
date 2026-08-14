@@ -178,7 +178,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             },
           });
           if (!res.ok) return { ok: false, error: res.error };
-          setProfile((res.profile as Profile) ?? null);
+          setProfile(res.profile ?? null);
           return { ok: true };
         },
         uploadAvatarFile: async (file: File) => {
@@ -192,7 +192,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           });
           const res = await uploadAvatar({ data: { dataUrl } });
           if (!res.ok) return { ok: false, error: res.error };
-          if (res.profile) setProfile(res.profile as Profile);
+          if (res.profile) setProfile(res.profile);
           return { ok: true, url: res.url };
         },
       }}
