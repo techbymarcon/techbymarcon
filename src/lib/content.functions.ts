@@ -395,21 +395,23 @@ export const listComments = createServerFn({ method: "POST" })
       .eq("article_id", data.articleId)
       .order("created_at", { ascending: false });
     if (error) throw new Error(error.message);
-    return (rows ?? []).map((c) => ({
-      id: c.id as string,
-      article_id: c.article_id as string,
-      handle: c.handle as string,
-      display_name: c.display_name as string,
-      avatar_url: (c.avatar_url as string) ?? "",
-      tier: c.tier as string,
-      body: c.body as string,
-      image_url: ((c as Record<string, unknown>)["image_url"] as string) ?? "",
-      parent_id: (((c as Record<string, unknown>)["parent_id"] as string) ?? null) as
-        | string
-        | null,
-      created_at: c.created_at as string,
-      mine: Boolean(id.email && c.author_email === id.email),
-    }));
+    return await Promise.all(
+      (rows ?? []).map(async (c) => ({
+        id: c.id as string,
+        article_id: c.article_id as string,
+        handle: c.handle as string,
+        display_name: c.display_name as string,
+        avatar_url: (c.avatar_url as string) ?? "",
+        tier: await effectiveTier(c.author_email as string, c.tier as string),
+        body: c.body as string,
+        image_url: ((c as Record<string, unknown>)["image_url"] as string) ?? "",
+        parent_id: (((c as Record<string, unknown>)["parent_id"] as string) ?? null) as
+          | string
+          | null,
+        created_at: c.created_at as string,
+        mine: Boolean(id.email && c.author_email === id.email),
+      })),
+    );
   });
 
 export const addComment = createServerFn({ method: "POST" })
