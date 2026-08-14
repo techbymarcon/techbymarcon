@@ -235,7 +235,7 @@ export const codeSignUp = createServerFn({ method: "POST" }).handler(async () =>
     if (error) continue;
     await setUserSession(username);
     await welcomeNotification(username, true);
-    return { ok: true as const, code, profile: publicProfile(created as ProfileRow) };
+    return { ok: true as const, code, profile: await publicProfile(created as ProfileRow) };
   }
   return { ok: false as const, error: "Could not create a code right now. Try again." };
 });
@@ -265,7 +265,7 @@ export const codeSignIn = createServerFn({ method: "POST" })
 
 
 export const getDeveloperProfile = createServerFn({ method: "GET" }).handler(async () => ({
-  profile: publicProfile(await profileByEmail(DEV_EMAIL)),
+  profile: await publicProfile(await profileByEmail(DEV_EMAIL)),
 }));
 
 export const userSignUp = createServerFn({ method: "POST" })
@@ -376,7 +376,7 @@ export const updateProfile = createServerFn({ method: "POST" })
       .update({ handle: row.handle, display_name: row.display_name, avatar_url: row.avatar_url })
       .eq("author_email", email);
 
-    return { ok: true as const, profile: publicProfile(row as ProfileRow) };
+    return { ok: true as const, profile: await publicProfile(row as ProfileRow) };
   });
 
 export const listComments = createServerFn({ method: "POST" })
