@@ -29,22 +29,17 @@ function Login() {
   const {
     session,
     profile,
-    loginCode,
     signIn,
     signUp,
-    signUpWithCode,
-    signInWithCode,
     signOut,
     isDeveloper,
     saveProfile,
     uploadAvatarFile,
   } = useAuth();
-  const [mode, setMode] = useState<"signin" | "signup" | "code-signin" | "code-signup">("signin");
+  const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
-  const [newCode, setNewCode] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const [displayName, setDisplayName] = useState("");
@@ -84,19 +79,6 @@ function Login() {
                 </p>
               </div>
             </div>
-
-            {loginCode ? (
-              <div className="mt-6 rounded-3xl bg-accent p-5 text-accent-foreground">
-                <p className="inline-flex items-center gap-2 text-sm font-medium">
-                  <Icon name="pin" className="text-[18px]" />
-                  Your sign-in code
-                </p>
-                <p className="mt-2 font-display text-[32px] tracking-[0.3em]">{loginCode}</p>
-                <p className="mt-1 text-[14px] leading-relaxed">
-                  Keep it safe — this 5-digit code is the only way back into this account.
-                </p>
-              </div>
-            ) : null}
 
             <div className="mt-8 space-y-4">
 
@@ -188,15 +170,7 @@ function Login() {
     );
   }
 
-  const isCode = mode === "code-signin" || mode === "code-signup";
-  const title =
-    mode === "signin"
-      ? "Sign in"
-      : mode === "signup"
-        ? "Create account"
-        : mode === "code-signin"
-          ? "Sign in with a code"
-          : "Get a sign-in code";
+  const title = mode === "signin" ? "Sign in" : "Create account";
 
   return (
     <div className="mx-auto max-w-[620px] px-5 py-16 md:py-24">
@@ -205,9 +179,8 @@ function Login() {
           {title}
         </h1>
         <p className="mt-4 text-[17px] leading-relaxed text-muted-foreground">
-          {isCode
-            ? "No username, no password — just a random 5-digit code. Save it: it's how you get back in."
-            : "Sign up with just a username and a password — no email, no personal details. You get a handle, a profile picture (animated GIFs work) and a blue verified check."}
+          Sign up with just a username and a password — no email, no personal details. You get a
+          handle, a profile picture (animated GIFs work) and a blue verified check.
         </p>
 
         <form
@@ -218,17 +191,6 @@ function Login() {
             setBusy(true);
             setError(null);
             try {
-              if (mode === "code-signup") {
-                const res = await signUpWithCode();
-                if (!res.ok) setError(res.error ?? "Could not create a code.");
-                else setNewCode(res.code ?? null);
-                return;
-              }
-              if (mode === "code-signin") {
-                const res = await signInWithCode(code);
-                setError(res.ok ? null : (res.error ?? "Sign in failed."));
-                return;
-              }
               const res =
                 mode === "signup"
                   ? await signUp(username, password)
@@ -239,52 +201,27 @@ function Login() {
             }
           }}
         >
-          {mode === "code-signin" ? (
-            <input
-              className={`${field} tracking-[0.4em]`}
-              placeholder="5-digit code"
-              inputMode="numeric"
-              maxLength={5}
-              value={code}
-              onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 5))}
-            />
-          ) : mode === "code-signup" ? null : (
-            <>
-              <input
-                className={field}
-                placeholder="Username"
-                autoComplete="username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-              />
+          <input
+            className={field}
+            placeholder="Username"
+            autoComplete="username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
 
-              <input
-                className={field}
-                type="password"
-                placeholder="Password"
-                autoComplete={mode === "signup" ? "new-password" : "current-password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </>
-          )}
-          {newCode ? (
-            <p className="text-sm text-muted-foreground">Your code is {newCode}</p>
-          ) : null}
+          <input
+            className={field}
+            type="password"
+            placeholder="Password"
+            autoComplete={mode === "signup" ? "new-password" : "current-password"}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
           {error ? <p className="text-sm text-destructive">{error}</p> : null}
           <M3Button type="submit" variant="filled" className="w-full" disabled={busy}>
-            {busy
-              ? "Please wait…"
-              : mode === "signin"
-                ? "Sign in"
-                : mode === "signup"
-                  ? "Create account"
-                  : mode === "code-signin"
-                    ? "Sign in with my code"
-                    : "Generate my code"}
+            {busy ? "Please wait…" : mode === "signin" ? "Sign in" : "Create account"}
           </M3Button>
-          {!isCode ? (
-            <M3Button
+          <M3Button
               type="button"
               variant="text"
               className="w-full"
@@ -293,43 +230,8 @@ function Login() {
                 setMode(mode === "signin" ? "signup" : "signin");
               }}
             >
-              {mode === "signin" ? "New here? Create an account" : "Already a member? Sign in"}
-            </M3Button>
-          ) : null}
-          <div className="flex flex-wrap justify-center gap-2">
-            <M3Button
-              type="button"
-              variant="text"
-              onClick={() => {
-                setError(null);
-                setMode("code-signin");
-              }}
-            >
-              Log in with code
-            </M3Button>
-            <M3Button
-              type="button"
-              variant="text"
-              onClick={() => {
-                setError(null);
-                setMode("code-signup");
-              }}
-            >
-              Sign up with a code
-            </M3Button>
-            {isCode ? (
-              <M3Button
-                type="button"
-                variant="text"
-                onClick={() => {
-                  setError(null);
-                  setMode("signin");
-                }}
-              >
-                Use a username instead
-              </M3Button>
-            ) : null}
-          </div>
+            {mode === "signin" ? "New here? Create an account" : "Already a member? Sign in"}
+          </M3Button>
         </form>
 
         <VerifiedInfo className="mt-8" />
