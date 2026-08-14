@@ -30,9 +30,10 @@ export const developerSignIn = createServerFn({ method: "POST" })
     const expected = process.env["DEVELOPER_PASSWORD"];
     if (!expected) throw new Error("Developer password is not configured");
     const throttle = await throttleLogin("developer");
-    if (throttle.blocked) return { ok: false as const, error: throttle.error };
+    if (throttle.blocked)
+      return { ok: false as const, error: throttle.error, retryAfter: throttle.retryAfter };
     if (!data.password || !passwordMatches(data.password, expected)) {
-      return { ok: false as const };
+      return { ok: false as const, retryAfter: throttle.wait };
     }
     await throttle.clear();
     const session = await getGateSession();
@@ -398,11 +399,16 @@ export const userSignIn = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const username = normalizeUsername(data.username ?? "");
     const throttle = await throttleLogin(username);
-    if (throttle.blocked) return { ok: false as const, error: throttle.error };
+    if (throttle.blocked)
+      return { ok: false as const, error: throttle.error, retryAfter: throttle.retryAfter };
     const row = await profileByEmail(username);
     const ok = row ? await verifyPassword(data.password ?? "", row.password_hash) : false;
     if (!row || !ok || row.tier === "gold") {
-      return { ok: false as const, error: "Wrong username or password." };
+      return {
+        ok: false as const,
+        error: "Wrong username or password.",
+        retryAfter: throttle.wait,
+      };
     }
     await throttle.clear();
     await setUserSession(username);

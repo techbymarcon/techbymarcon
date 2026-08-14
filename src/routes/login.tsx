@@ -42,6 +42,7 @@ function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
   const [codeMode, setCodeMode] = useState(false);
@@ -60,6 +61,12 @@ function Login() {
     setHandle(profile.handle);
     setAvatarUrl(profile.avatar_url);
   }, [profile]);
+
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const id = window.setInterval(() => setCooldown((s) => (s <= 1 ? 0 : s - 1)), 1000);
+    return () => window.clearInterval(id);
+  }, [cooldown]);
 
   const field =
     "w-full rounded-2xl border border-border bg-surface px-5 py-4 text-[16px] outline-none focus:border-primary m3-transition";
@@ -194,7 +201,7 @@ function Login() {
           className="mt-8 space-y-4"
           onSubmit={async (e) => {
             e.preventDefault();
-            if (busy) return;
+            if (busy || cooldown > 0) return;
             setBusy(true);
             setError(null);
             try {
@@ -203,6 +210,7 @@ function Login() {
                   ? await signUp(username, password)
                   : await signIn(username, password);
               setError(res.ok ? null : (res.error ?? "Sign in failed."));
+              setCooldown(res.ok ? 0 : Math.ceil(res.retryAfter ?? 0));
             } finally {
               setBusy(false);
             }
@@ -225,8 +233,19 @@ function Login() {
             onChange={(e) => setPassword(e.target.value)}
           />
           {error ? <p className="text-sm text-destructive">{error}</p> : null}
-          <M3Button type="submit" variant="filled" className="w-full" disabled={busy}>
-            {busy ? "Please wait…" : mode === "signin" ? "Sign in" : "Create account"}
+          <M3Button
+            type="submit"
+            variant="filled"
+            className={`w-full ${cooldown > 0 ? "brightness-50" : ""}`}
+            disabled={busy || cooldown > 0}
+          >
+            {cooldown > 0
+              ? `Wait ${cooldown} sec. before your next attempt.`
+              : busy
+                ? "Please wait…"
+                : mode === "signin"
+                  ? "Sign in"
+                  : "Create account"}
           </M3Button>
           <M3Button
               type="button"
