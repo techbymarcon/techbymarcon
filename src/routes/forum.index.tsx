@@ -97,9 +97,10 @@ function Forum() {
 
 
   // Shake the whole page while the slur is being typed; intensity is 0-100.
+  // The innocent "night" case overrides everything and stops the shake.
   useEffect(() => {
     const root = document.documentElement;
-    const amp = slur?.shake ?? 0;
+    const amp = night ? 0 : (slur?.shake ?? 0);
     if (amp > 0) {
       root.style.setProperty("--shake-amp", `${(amp / 100) * 12}px`);
       root.classList.add("screen-shake");
@@ -111,7 +112,7 @@ function Forum() {
       root.classList.remove("screen-shake");
       root.style.removeProperty("--shake-amp");
     };
-  }, [slur?.shake]);
+  }, [night, slur?.shake]);
 
 
   const publish = async () => {
