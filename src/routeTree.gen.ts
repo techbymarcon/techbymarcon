@@ -22,6 +22,7 @@ import { Route as ForumPostIdRouteImport } from './routes/forum.$postId'
 import { Route as UHandleRouteImport } from './routes/u.$handle'
 import { Route as ApiPublicArticlesRouteImport } from './routes/api/public/articles'
 import { Route as ApiPublicAuthLoginRouteImport } from './routes/api/public/auth.login'
+import { Route as ApiPublicAuthRegisterRouteImport } from './routes/api/public/auth.register'
 import { Route as ApiPublicAvatarsFileRouteImport } from './routes/api/public/avatars.$file'
 
 const IndexRoute = IndexRouteImport.update({
@@ -89,6 +90,11 @@ const ApiPublicAuthLoginRoute = ApiPublicAuthLoginRouteImport.update({
   path: '/api/public/auth/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicAuthRegisterRoute = ApiPublicAuthRegisterRouteImport.update({
+  id: '/api/public/auth/register',
+  path: '/api/public/auth/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicAvatarsFileRoute = ApiPublicAvatarsFileRouteImport.update({
   id: '/api/public/avatars/$file',
   path: '/api/public/avatars/$file',
@@ -109,6 +115,7 @@ export interface FileRoutesByFullPath {
   '/forum/': typeof ForumIndexRoute
   '/api/public/articles': typeof ApiPublicArticlesRoute
   '/api/public/auth/login': typeof ApiPublicAuthLoginRoute
+  '/api/public/auth/register': typeof ApiPublicAuthRegisterRoute
   '/api/public/avatars/$file': typeof ApiPublicAvatarsFileRoute
 }
 export interface FileRoutesByTo {
@@ -125,6 +132,7 @@ export interface FileRoutesByTo {
   '/forum': typeof ForumIndexRoute
   '/api/public/articles': typeof ApiPublicArticlesRoute
   '/api/public/auth/login': typeof ApiPublicAuthLoginRoute
+  '/api/public/auth/register': typeof ApiPublicAuthRegisterRoute
   '/api/public/avatars/$file': typeof ApiPublicAvatarsFileRoute
 }
 export interface FileRoutesById {
@@ -142,6 +150,7 @@ export interface FileRoutesById {
   '/forum/': typeof ForumIndexRoute
   '/api/public/articles': typeof ApiPublicArticlesRoute
   '/api/public/auth/login': typeof ApiPublicAuthLoginRoute
+  '/api/public/auth/register': typeof ApiPublicAuthRegisterRoute
   '/api/public/avatars/$file': typeof ApiPublicAvatarsFileRoute
 }
 export interface FileRouteTypes {
@@ -160,6 +169,7 @@ export interface FileRouteTypes {
     | '/forum/'
     | '/api/public/articles'
     | '/api/public/auth/login'
+    | '/api/public/auth/register'
     | '/api/public/avatars/$file'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -176,6 +186,7 @@ export interface FileRouteTypes {
     | '/forum'
     | '/api/public/articles'
     | '/api/public/auth/login'
+    | '/api/public/auth/register'
     | '/api/public/avatars/$file'
   id:
     | '__root__'
@@ -192,6 +203,7 @@ export interface FileRouteTypes {
     | '/forum/'
     | '/api/public/articles'
     | '/api/public/auth/login'
+    | '/api/public/auth/register'
     | '/api/public/avatars/$file'
   fileRoutesById: FileRoutesById
 }
@@ -209,6 +221,7 @@ export interface RootRouteChildren {
   ForumIndexRoute: typeof ForumIndexRoute
   ApiPublicArticlesRoute: typeof ApiPublicArticlesRoute
   ApiPublicAuthLoginRoute: typeof ApiPublicAuthLoginRoute
+  ApiPublicAuthRegisterRoute: typeof ApiPublicAuthRegisterRoute
   ApiPublicAvatarsFileRoute: typeof ApiPublicAvatarsFileRoute
 }
 
@@ -305,6 +318,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicAuthLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/auth/register': {
+      id: '/api/public/auth/register'
+      path: '/api/public/auth/register'
+      fullPath: '/api/public/auth/register'
+      preLoaderRoute: typeof ApiPublicAuthRegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/avatars/$file': {
       id: '/api/public/avatars/$file'
       path: '/api/public/avatars/$file'
@@ -329,6 +349,7 @@ const rootRouteChildren: RootRouteChildren = {
   ForumIndexRoute: ForumIndexRoute,
   ApiPublicArticlesRoute: ApiPublicArticlesRoute,
   ApiPublicAuthLoginRoute: ApiPublicAuthLoginRoute,
+  ApiPublicAuthRegisterRoute: ApiPublicAuthRegisterRoute,
   ApiPublicAvatarsFileRoute: ApiPublicAvatarsFileRoute,
 }
 export const routeTree = rootRouteImport
