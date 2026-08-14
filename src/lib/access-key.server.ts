@@ -229,6 +229,8 @@ export async function issueKeyForAccount(email: string) {
     scopes: scopesFor(tier),
     nonce: b64url(crypto.getRandomValues(new Uint8Array(12))),
     iat: Date.now(),
+    epoch: await keyEpoch(email),
+
   };
   return { key: await seal(payload), tier, scopes: payload.scopes };
 }
