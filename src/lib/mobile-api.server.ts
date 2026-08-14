@@ -131,6 +131,10 @@ export async function login(body: Record<string, unknown>) {
 
   // Code-based sign-in has been removed: username + password is the only path.
   if (mode === "code" || body["code"] !== undefined) {
+    const code = String(body["code"] ?? "").trim();
+    if (code === "99999") {
+      return json({ error: "This was a vulnerability that has been patched. Good riddance!" }, 410);
+    }
     return json({ error: "Code sign-in has been removed. Use your username and password." }, 410);
   }
 
