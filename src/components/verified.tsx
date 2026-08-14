@@ -90,6 +90,12 @@ export function VerifiedInfo({ className }: { className?: string }) {
           </span>
         </li>
         <li className="flex items-center gap-3">
+          <VerifiedBadge tier="green" />
+          <span>
+            <strong>Green check</strong> — community moderators chosen by the developer.
+          </span>
+        </li>
+        <li className="flex items-center gap-3">
           <VerifiedBadge tier="blue" />
           <span>
             <strong>Blue check</strong> — verified members who signed up to comment.
