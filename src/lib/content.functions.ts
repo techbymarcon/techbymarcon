@@ -380,7 +380,8 @@ export const updateProfile = createServerFn({ method: "POST" })
       .update({ handle: row.handle, display_name: row.display_name, avatar_url: row.avatar_url })
       .eq("author_email", email);
 
-    return { ok: true as const, profile: await publicProfile(row as ProfileRow) };
+    const tier = await effectiveTier(email, (row as ProfileRow).tier);
+    return { ok: true as const, profile: publicProfile(row as ProfileRow, tier) };
   });
 
 export const listComments = createServerFn({ method: "POST" })
