@@ -340,7 +340,7 @@ export const userSignIn = createServerFn({ method: "POST" })
     }
     await setUserSession(username);
     await welcomeNotification(username, false);
-    return { ok: true as const, profile: publicProfile(row) };
+    return { ok: true as const, profile: publicProfile(row, await effectiveTier(username, row.tier)) };
   });
 
 
