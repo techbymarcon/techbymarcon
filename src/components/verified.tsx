@@ -1,5 +1,6 @@
 import checkBlue from "@/assets/check-blue.png.asset.json";
 import checkGold from "@/assets/check-gold.png.asset.json";
+import checkGreen from "@/assets/check-green.png";
 import { cn } from "@/lib/utils";
 
 export type Tier = string;
@@ -13,11 +14,16 @@ export function VerifiedBadge({
   className?: string;
   size?: number;
 }) {
-  const gold = tier === "gold";
-  const label = gold ? "Verified developer — Tech by Marcon" : "Verified member";
+  const src = tier === "gold" ? checkGold.url : tier === "green" ? checkGreen : checkBlue.url;
+  const label =
+    tier === "gold"
+      ? "Verified developer — Tech by Marcon"
+      : tier === "green"
+        ? "Moderator"
+        : "Verified member";
   return (
     <img
-      src={gold ? checkGold.url : checkBlue.url}
+      src={src}
       alt={label}
       title={label}
       width={size}
@@ -81,6 +87,12 @@ export function VerifiedInfo({ className }: { className?: string }) {
           <VerifiedBadge tier="gold" />
           <span>
             <strong>Golden check</strong> — @techbymarcon, the developer and author of this site.
+          </span>
+        </li>
+        <li className="flex items-center gap-3">
+          <VerifiedBadge tier="green" />
+          <span>
+            <strong>Green check</strong> — community moderators chosen by the developer.
           </span>
         </li>
         <li className="flex items-center gap-3">

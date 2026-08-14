@@ -4,10 +4,10 @@ import { getDeveloperProfile } from "@/lib/content.functions";
 import { cn } from "@/lib/utils";
 
 type DevProfile = {
-  display_name?: string | null;
-  handle?: string | null;
-  avatar_url?: string | null;
-  tier?: string | null;
+  display_name: string;
+  handle: string;
+  avatar_url: string;
+  tier: string;
 };
 
 let cached: DevProfile | null = null;
@@ -20,7 +20,7 @@ export function AuthorByline({ className, size = 40 }: { className?: string; siz
     let active = true;
     getDeveloperProfile()
       .then((res: { profile: DevProfile | null }) => {
-        cached = (res.profile as DevProfile) ?? null;
+        cached = res.profile ?? null;
         if (active) setProfile(cached);
       })
       .catch(() => undefined);

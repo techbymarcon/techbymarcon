@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { currentStaff, db, requireDeveloper, requireIdentity } from "./content.server";
+import { currentStaff, db, effectiveTier, requireDeveloper, requireIdentity } from "./content.server";
 import { actorFor, notify } from "./notifications.server";
 
 export type ForumPost = {
@@ -45,17 +45,17 @@ async function voteTally(postIds: string[], email: string) {
   return tally;
 }
 
-const shape = (
+const shape = async (
   row: Record<string, unknown>,
   email: string,
   staff: boolean,
   votes?: { up: number; down: number; mine: number },
-): ForumPost => ({
+): Promise<ForumPost> => ({
   id: row["id"] as string,
   handle: row["handle"] as string,
   display_name: row["display_name"] as string,
   avatar_url: (row["avatar_url"] as string) ?? "",
-  tier: (row["tier"] as string) ?? "blue",
+  tier: await effectiveTier(row["author_email"] as string, (row["tier"] as string) ?? "blue"),
   title: row["title"] as string,
   body: (row["body"] as string) ?? "",
   image_url: (row["image_url"] as string) ?? "",
@@ -84,7 +84,9 @@ export const listForumPosts = createServerFn({ method: "GET" }).handler(async ()
   if (error) throw new Error(error.message);
   const rows = (data ?? []) as Record<string, unknown>[];
   const tally = await voteTally(rows.map((r) => r["id"] as string), me.email);
-  return rows.map((row) => shape(row, me.email, staff, tally.get(row["id"] as string)));
+  return await Promise.all(
+    rows.map((row) => shape(row, me.email, staff, tally.get(row["id"] as string))),
+  );
 });
 
 export const getForumPost = createServerFn({ method: "POST" })
@@ -100,7 +102,9 @@ export const getForumPost = createServerFn({ method: "POST" })
       .maybeSingle();
     if (!row) return { post: null };
     const tally = await voteTally([data.id], me.email);
-    return { post: shape(row as Record<string, unknown>, me.email, staff, tally.get(data.id)) };
+    return {
+      post: await shape(row as Record<string, unknown>, me.email, staff, tally.get(data.id)),
+    };
   });
 
 /** One vote per member per post; sending the same value again clears it. */
@@ -179,7 +183,7 @@ export const createForumPost = createServerFn({ method: "POST" })
         handle: profile.handle,
         display_name: profile.display_name,
         avatar_url: profile.avatar_url ?? "",
-        tier: profile.tier,
+        tier: await effectiveTier(email, profile.tier),
         title,
         body,
         image_url: (data.imageUrl ?? "").trim().slice(0, 500),
@@ -254,14 +258,16 @@ export const listMembers = createServerFn({ method: "GET" }).handler(async () =>
     .select("username")
     .eq("role", "moderator");
   const mods = new Set((roles ?? []).map((r) => (r as { username: string }).username));
-  return (profiles ?? []).map((p) => ({
-    username: p.email as string,
-    handle: p.handle as string,
-    display_name: p.display_name as string,
-    avatar_url: (p.avatar_url as string) ?? "",
-    tier: p.tier as string,
-    moderator: mods.has(p.email as string),
-  }));
+  return await Promise.all(
+    (profiles ?? []).map(async (p) => ({
+      username: p.email as string,
+      handle: p.handle as string,
+      display_name: p.display_name as string,
+      avatar_url: (p.avatar_url as string) ?? "",
+      tier: await effectiveTier(p.email as string, p.tier as string),
+      moderator: mods.has(p.email as string),
+    })),
+  );
 });
 
 export const setModerator = createServerFn({ method: "POST" })

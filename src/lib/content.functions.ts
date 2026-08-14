@@ -3,6 +3,7 @@ import {
   currentIdentity,
   currentStaff,
   db,
+  effectiveTier,
   getGateSession,
   hashPassword,
   isDeveloperSession,
@@ -153,13 +154,16 @@ export type PublicProfile = {
   tier: string;
 };
 
-const publicProfile = (row: ProfileRow | null | undefined): PublicProfile | null =>
+const publicProfile = (
+  row: ProfileRow | null | undefined,
+  tierOverride?: string,
+): PublicProfile | null =>
   row
     ? {
         handle: row.handle,
         display_name: row.display_name,
         avatar_url: row.avatar_url ?? "",
-        tier: row.tier,
+        tier: tierOverride ?? row.tier,
       }
     : null;
 
@@ -193,7 +197,7 @@ export const getSessionInfo = createServerFn({ method: "GET" }).handler(async ()
     signedIn: true as const,
     developer: id.developer,
     moderator: id.developer ? true : await isModerator(id.email),
-    profile: publicProfile(row),
+    profile: publicProfile(row, await effectiveTier(id.email, row?.tier)),
     loginCode: row?.login_code ?? "",
   };
 });
@@ -232,7 +236,8 @@ export const codeSignUp = createServerFn({ method: "POST" }).handler(async () =>
     if (error) continue;
     await setUserSession(username);
     await welcomeNotification(username, true);
-    return { ok: true as const, code, profile: publicProfile(created as ProfileRow) };
+    const tier = await effectiveTier(username, (created as ProfileRow).tier);
+    return { ok: true as const, code, profile: publicProfile(created as ProfileRow, tier) };
   }
   return { ok: false as const, error: "Could not create a code right now. Try again." };
 });
@@ -261,9 +266,10 @@ export const codeSignIn = createServerFn({ method: "POST" })
   });
 
 
-export const getDeveloperProfile = createServerFn({ method: "GET" }).handler(async () => ({
-  profile: publicProfile(await profileByEmail(DEV_EMAIL)),
-}));
+export const getDeveloperProfile = createServerFn({ method: "GET" }).handler(async () => {
+  const row = await profileByEmail(DEV_EMAIL);
+  return { profile: publicProfile(row, await effectiveTier(DEV_EMAIL, row?.tier)) };
+});
 
 export const userSignUp = createServerFn({ method: "POST" })
   .inputValidator((data: { username: string; password: string; displayName?: string }) => data)
@@ -313,7 +319,8 @@ export const userSignUp = createServerFn({ method: "POST" })
       }
       await setUserSession(username);
       await welcomeNotification(username, true);
-      return { ok: true as const, profile: publicProfile(created as ProfileRow) };
+      const tier = await effectiveTier(username, (created as ProfileRow).tier);
+      return { ok: true as const, profile: publicProfile(created as ProfileRow, tier) };
     } catch (err) {
       return {
         ok: false as const,
@@ -333,7 +340,7 @@ export const userSignIn = createServerFn({ method: "POST" })
     }
     await setUserSession(username);
     await welcomeNotification(username, false);
-    return { ok: true as const, profile: publicProfile(row) };
+    return { ok: true as const, profile: publicProfile(row, await effectiveTier(username, row.tier)) };
   });
 
 
@@ -373,7 +380,8 @@ export const updateProfile = createServerFn({ method: "POST" })
       .update({ handle: row.handle, display_name: row.display_name, avatar_url: row.avatar_url })
       .eq("author_email", email);
 
-    return { ok: true as const, profile: publicProfile(row as ProfileRow) };
+    const tier = await effectiveTier(email, (row as ProfileRow).tier);
+    return { ok: true as const, profile: publicProfile(row as ProfileRow, tier) };
   });
 
 export const listComments = createServerFn({ method: "POST" })
@@ -387,21 +395,23 @@ export const listComments = createServerFn({ method: "POST" })
       .eq("article_id", data.articleId)
       .order("created_at", { ascending: false });
     if (error) throw new Error(error.message);
-    return (rows ?? []).map((c) => ({
-      id: c.id as string,
-      article_id: c.article_id as string,
-      handle: c.handle as string,
-      display_name: c.display_name as string,
-      avatar_url: (c.avatar_url as string) ?? "",
-      tier: c.tier as string,
-      body: c.body as string,
-      image_url: ((c as Record<string, unknown>)["image_url"] as string) ?? "",
-      parent_id: (((c as Record<string, unknown>)["parent_id"] as string) ?? null) as
-        | string
-        | null,
-      created_at: c.created_at as string,
-      mine: Boolean(id.email && c.author_email === id.email),
-    }));
+    return await Promise.all(
+      (rows ?? []).map(async (c) => ({
+        id: c.id as string,
+        article_id: c.article_id as string,
+        handle: c.handle as string,
+        display_name: c.display_name as string,
+        avatar_url: (c.avatar_url as string) ?? "",
+        tier: await effectiveTier(c.author_email as string, c.tier as string),
+        body: c.body as string,
+        image_url: ((c as Record<string, unknown>)["image_url"] as string) ?? "",
+        parent_id: (((c as Record<string, unknown>)["parent_id"] as string) ?? null) as
+          | string
+          | null,
+        created_at: c.created_at as string,
+        mine: Boolean(id.email && c.author_email === id.email),
+      })),
+    );
   });
 
 export const addComment = createServerFn({ method: "POST" })
@@ -430,6 +440,7 @@ export const addComment = createServerFn({ method: "POST" })
     }
     const profile = await profileByEmail(email);
     if (!profile) return { ok: false as const, error: "Sign in to comment." };
+    const tier = await effectiveTier(email, profile.tier);
 
     const { error } = await supabase.from("comments").insert({
       article_id: data.articleId,
@@ -437,7 +448,7 @@ export const addComment = createServerFn({ method: "POST" })
       handle: profile.handle,
       display_name: profile.display_name,
       avatar_url: profile.avatar_url ?? "",
-      tier: profile.tier,
+      tier,
       body,
       image_url: imageUrl,
       parent_id: data.parentId ?? null,
@@ -480,7 +491,7 @@ export const addComment = createServerFn({ method: "POST" })
         link,
         actorHandle: profile.handle,
         actorAvatar: profile.avatar_url ?? "",
-        actorTier: profile.tier,
+        actorTier: tier,
       });
     }
     return { ok: true as const };
@@ -547,7 +558,8 @@ export const uploadAvatar = createServerFn({ method: "POST" })
       .select("*")
       .single();
     await supabase.from("comments").update({ avatar_url: url }).eq("author_email", email);
-    return { ok: true as const, url, profile: publicProfile(row as ProfileRow) };
+    const tier = await effectiveTier(email, (row as ProfileRow).tier);
+    return { ok: true as const, url, profile: publicProfile(row as ProfileRow, tier) };
   });
 
 export const uploadArticleImage = createServerFn({ method: "POST" })

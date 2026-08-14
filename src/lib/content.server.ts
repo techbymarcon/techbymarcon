@@ -77,6 +77,15 @@ export async function isModerator(email: string | null | undefined) {
   return Boolean(data);
 }
 
+/** Return the badge tier that should be shown for a member.
+ *  Developers keep gold; moderators get green; everyone else keeps their stored tier. */
+export async function effectiveTier(email: string | null | undefined, storedTier?: string | null) {
+  if (!email) return storedTier ?? "blue";
+  if (email === "developer") return "gold";
+  if (await isModerator(email)) return "green";
+  return storedTier ?? "blue";
+}
+
 export type Staff = { email: string; developer: boolean; moderator: boolean };
 
 /** Signed-in identity plus staff powers (developer or moderator). */
