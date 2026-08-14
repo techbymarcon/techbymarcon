@@ -74,7 +74,24 @@ function Forum() {
   };
 
   const swearing = hasProfanity(title, body);
-  const slur = slurStage(title, body);
+  const night = isNight(title, body);
+  const slur = night ? null : slurStage(title, body);
+
+  // "night" gets a brief, deadpan "Oh." — space first, then fade.
+  const [ohSpace, setOhSpace] = useState(false);
+  const [ohFade, setOhFade] = useState(false);
+  useEffect(() => {
+    if (!night) return;
+    setOhSpace(true);
+    const inId = setTimeout(() => setOhFade(true), 200);
+    const outId = setTimeout(() => setOhFade(false), 5000);
+    const doneId = setTimeout(() => setOhSpace(false), 5300);
+    return () => {
+      clearTimeout(inId);
+      clearTimeout(outId);
+      clearTimeout(doneId);
+    };
+  }, [night]);
 
   // Shake the whole page while the slur is being typed; intensity is 0-100.
   useEffect(() => {
@@ -92,6 +109,7 @@ function Forum() {
       root.style.removeProperty("--shake-amp");
     };
   }, [slur?.shake]);
+
 
   const publish = async () => {
     setBusy(true);
