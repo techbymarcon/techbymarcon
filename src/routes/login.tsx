@@ -42,6 +42,7 @@ function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
   const [codeMode, setCodeMode] = useState(false);
