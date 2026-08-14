@@ -45,17 +45,17 @@ async function voteTally(postIds: string[], email: string) {
   return tally;
 }
 
-const shape = (
+const shape = async (
   row: Record<string, unknown>,
   email: string,
   staff: boolean,
   votes?: { up: number; down: number; mine: number },
-): ForumPost => ({
+): Promise<ForumPost> => ({
   id: row["id"] as string,
   handle: row["handle"] as string,
   display_name: row["display_name"] as string,
   avatar_url: (row["avatar_url"] as string) ?? "",
-  tier: (row["tier"] as string) ?? "blue",
+  tier: await effectiveTier(row["author_email"] as string, (row["tier"] as string) ?? "blue"),
   title: row["title"] as string,
   body: (row["body"] as string) ?? "",
   image_url: (row["image_url"] as string) ?? "",
