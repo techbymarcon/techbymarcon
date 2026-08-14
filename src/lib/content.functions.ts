@@ -397,15 +397,19 @@ export const userSignIn = createServerFn({ method: "POST" })
   .inputValidator((data: { username: string; password: string }) => data)
   .handler(async ({ data }) => {
     const username = normalizeUsername(data.username ?? "");
+    const throttle = await throttleLogin(username);
+    if (throttle.blocked) return { ok: false as const, error: throttle.error };
     const row = await profileByEmail(username);
     const ok = row ? await verifyPassword(data.password ?? "", row.password_hash) : false;
     if (!row || !ok || row.tier === "gold") {
       return { ok: false as const, error: "Wrong username or password." };
     }
+    await throttle.clear();
     await setUserSession(username);
     await welcomeNotification(username, false);
     return { ok: true as const, profile: publicProfile(row, await effectiveTier(username, row.tier)) };
   });
+
 
 
 export const updateProfile = createServerFn({ method: "POST" })
