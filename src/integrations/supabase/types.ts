@@ -201,6 +201,54 @@ export type Database = {
           },
         ]
       }
+      key_epochs: {
+        Row: {
+          created_at: string
+          epoch: number
+          updated_at: string
+          username: string
+        }
+        Insert: {
+          created_at?: string
+          epoch?: number
+          updated_at?: string
+          username: string
+        }
+        Update: {
+          created_at?: string
+          epoch?: number
+          updated_at?: string
+          username?: string
+        }
+        Relationships: []
+      }
+      login_attempts: {
+        Row: {
+          attempts: number
+          blocked_until: string | null
+          created_at: string
+          identifier: string
+          last_attempt_at: string
+          updated_at: string
+        }
+        Insert: {
+          attempts?: number
+          blocked_until?: string | null
+          created_at?: string
+          identifier: string
+          last_attempt_at?: string
+          updated_at?: string
+        }
+        Update: {
+          attempts?: number
+          blocked_until?: string | null
+          created_at?: string
+          identifier?: string
+          last_attempt_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           actor_avatar: string
