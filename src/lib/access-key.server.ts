@@ -122,11 +122,15 @@ export async function openKey(key: string | null | undefined): Promise<Payload |
       body as unknown as BufferSource,
     );
     const payload = JSON.parse(new TextDecoder().decode(plain)) as Payload;
-    return payload.tier === match[1] ? payload : null;
+    if (payload.tier !== match[1]) return null;
+    // Keys minted before the account's last sign out are dead.
+    if ((payload.epoch ?? 0) !== (await keyEpoch(payload.sub))) return null;
+    return payload;
   } catch {
     return null;
   }
 }
+
 
 /** The tier the signed-in account should hold right now. */
 export async function tierForCurrentSession(): Promise<KeyTier | null> {
