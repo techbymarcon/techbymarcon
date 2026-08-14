@@ -191,7 +191,7 @@ export const createForumPost = createServerFn({ method: "POST" })
             error: `Daily limit reached — members can post ${rules.maxPostsPerDay} times per day.`,
           };
         }
-        const last = rows[0］ ? new Date(rows[0]!.created_at).getTime() : 0;
+        const last = rows[0] ? new Date(rows[0]!.created_at).getTime() : 0;
         const wait = Math.ceil((rules.postCooldownSeconds * 1000 - (Date.now() - last)) / 1000);
         if (last && wait > 0) {
           return { ok: false as const, error: `Slow down — you can post again in ${wait}s.` };
