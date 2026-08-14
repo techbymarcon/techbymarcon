@@ -1,4 +1,4 @@
-import { db } from "./content.server";
+import { db, effectiveTier } from "./content.server";
 
 export type NotifyInput = {
   recipient: string;
