@@ -4,7 +4,8 @@ import { preflight, readJson, register, registerWithCode } from "@/lib/mobile-ap
 /**
  * POST /api/public/auth/register
  *   { username, password, displayName? } -> account + key
- *   { mode: "code" }                     -> anonymous 5-digit code account + key
+ *
+ * Code accounts have been removed; { mode: "code" } now returns 410 Gone.
  */
 export const Route = createFileRoute("/api/public/auth/register")({
   server: {
@@ -18,3 +19,4 @@ export const Route = createFileRoute("/api/public/auth/register")({
     },
   },
 });
+
