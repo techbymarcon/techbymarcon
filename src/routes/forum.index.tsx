@@ -16,6 +16,7 @@ import {
   moderateForumPost,
   type ForumPost,
 } from "@/lib/forum.functions";
+import { PROFANITY_WARNING, hasProfanity } from "@/lib/profanity";
 
 export const Route = createFileRoute("/forum/")({
   head: () => ({
@@ -71,6 +72,8 @@ function Forum() {
     }
     setImage(res.url);
   };
+
+  const swearing = hasProfanity(title, body);
 
   const publish = async () => {
     setBusy(true);
@@ -170,6 +173,15 @@ function Forum() {
             className="hidden"
             onChange={(e) => void pick(e.target.files?.[0])}
           />
+          {swearing ? (
+            <p
+              role="alert"
+              className="mt-3 flex items-start gap-2 rounded-2xl bg-destructive/10 px-4 py-3 text-[14px] leading-snug text-destructive"
+            >
+              <Icon name="warning" className="text-[18px]" />
+              {PROFANITY_WARNING}
+            </p>
+          ) : null}
           <div className="mt-3 flex flex-wrap justify-end gap-2">
             <M3Button variant="text" disabled={busy} onClick={() => fileRef.current?.click()}>
               <Icon name="image" className="text-[20px]" />
@@ -180,6 +192,7 @@ function Forum() {
               Publish
             </M3Button>
           </div>
+
         </section>
       ) : (
         <div className="mb-10 rounded-[28px] border border-border/60 glass p-5">

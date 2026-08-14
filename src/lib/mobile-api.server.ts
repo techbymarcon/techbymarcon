@@ -19,6 +19,7 @@ import {
 import { db, effectiveTier, hashPassword, passwordMatches, verifyPassword } from "./content.server";
 import { actorFor, notify, welcomeNotification } from "./notifications.server";
 import { throttleLogin } from "./rate-limit.server";
+import { PROFANITY_REJECTION, hasProfanity } from "./profanity";
 
 export const CORS = {
   "access-control-allow-origin": "*",
@@ -331,6 +332,7 @@ export async function createPost(who: Caller, body: Record<string, unknown>) {
   const title = String(body["title"] ?? "").trim().slice(0, 140);
   const text = String(body["body"] ?? "").trim().slice(0, 8000);
   if (!title) return json({ error: "Give your post a title." }, 400);
+  if (hasProfanity(title, text)) return json({ error: PROFANITY_REJECTION }, 400);
 
   const supabase = await db();
   if (!can(who, "forum:moderate")) {
@@ -385,6 +387,13 @@ export async function updatePost(id: string, who: Caller, body: Record<string, u
     patch["title"] = title;
   }
   if (body["body"] !== undefined) patch["body"] = String(body["body"]).trim().slice(0, 8000);
+  if (hasProfanity(patch["title"] as string, patch["body"] as string)) {
+    let del = supabase.from("forum_posts").delete().eq("id", id);
+    if (!can(who, "forum:delete:any")) del = del.eq("author_email", who.username);
+    await del;
+    await supabase.from("comments").delete().eq("article_id", `forum:${id}`);
+    return json({ error: PROFANITY_REJECTION, deleted: true }, 400);
+  }
   if (body["imageUrl"] !== undefined || body["image_url"] !== undefined) {
     patch["image_url"] = String(body["imageUrl"] ?? body["image_url"] ?? "").trim().slice(0, 500);
   }
