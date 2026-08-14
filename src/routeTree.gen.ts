@@ -21,6 +21,7 @@ import { Route as ForumIndexRouteImport } from './routes/forum.index'
 import { Route as ForumPostIdRouteImport } from './routes/forum.$postId'
 import { Route as UHandleRouteImport } from './routes/u.$handle'
 import { Route as ApiPublicArticlesRouteImport } from './routes/api/public/articles'
+import { Route as ApiPublicForumRouteImport } from './routes/api/public/forum'
 import { Route as ApiPublicAuthLoginRouteImport } from './routes/api/public/auth.login'
 import { Route as ApiPublicAuthMeRouteImport } from './routes/api/public/auth.me'
 import { Route as ApiPublicAuthRegisterRouteImport } from './routes/api/public/auth.register'
@@ -86,6 +87,11 @@ const ApiPublicArticlesRoute = ApiPublicArticlesRouteImport.update({
   path: '/api/public/articles',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicForumRoute = ApiPublicForumRouteImport.update({
+  id: '/api/public/forum',
+  path: '/api/public/forum',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicAuthLoginRoute = ApiPublicAuthLoginRouteImport.update({
   id: '/api/public/auth/login',
   path: '/api/public/auth/login',
@@ -120,6 +126,7 @@ export interface FileRoutesByFullPath {
   '/articles/': typeof ArticlesIndexRoute
   '/forum/': typeof ForumIndexRoute
   '/api/public/articles': typeof ApiPublicArticlesRoute
+  '/api/public/forum': typeof ApiPublicForumRoute
   '/api/public/auth/login': typeof ApiPublicAuthLoginRoute
   '/api/public/auth/me': typeof ApiPublicAuthMeRoute
   '/api/public/auth/register': typeof ApiPublicAuthRegisterRoute
@@ -138,6 +145,7 @@ export interface FileRoutesByTo {
   '/articles': typeof ArticlesIndexRoute
   '/forum': typeof ForumIndexRoute
   '/api/public/articles': typeof ApiPublicArticlesRoute
+  '/api/public/forum': typeof ApiPublicForumRoute
   '/api/public/auth/login': typeof ApiPublicAuthLoginRoute
   '/api/public/auth/me': typeof ApiPublicAuthMeRoute
   '/api/public/auth/register': typeof ApiPublicAuthRegisterRoute
@@ -157,6 +165,7 @@ export interface FileRoutesById {
   '/articles/': typeof ArticlesIndexRoute
   '/forum/': typeof ForumIndexRoute
   '/api/public/articles': typeof ApiPublicArticlesRoute
+  '/api/public/forum': typeof ApiPublicForumRoute
   '/api/public/auth/login': typeof ApiPublicAuthLoginRoute
   '/api/public/auth/me': typeof ApiPublicAuthMeRoute
   '/api/public/auth/register': typeof ApiPublicAuthRegisterRoute
@@ -177,6 +186,7 @@ export interface FileRouteTypes {
     | '/articles/'
     | '/forum/'
     | '/api/public/articles'
+    | '/api/public/forum'
     | '/api/public/auth/login'
     | '/api/public/auth/me'
     | '/api/public/auth/register'
@@ -195,6 +205,7 @@ export interface FileRouteTypes {
     | '/articles'
     | '/forum'
     | '/api/public/articles'
+    | '/api/public/forum'
     | '/api/public/auth/login'
     | '/api/public/auth/me'
     | '/api/public/auth/register'
@@ -213,6 +224,7 @@ export interface FileRouteTypes {
     | '/articles/'
     | '/forum/'
     | '/api/public/articles'
+    | '/api/public/forum'
     | '/api/public/auth/login'
     | '/api/public/auth/me'
     | '/api/public/auth/register'
@@ -232,6 +244,7 @@ export interface RootRouteChildren {
   ArticlesIndexRoute: typeof ArticlesIndexRoute
   ForumIndexRoute: typeof ForumIndexRoute
   ApiPublicArticlesRoute: typeof ApiPublicArticlesRoute
+  ApiPublicForumRoute: typeof ApiPublicForumRoute
   ApiPublicAuthLoginRoute: typeof ApiPublicAuthLoginRoute
   ApiPublicAuthMeRoute: typeof ApiPublicAuthMeRoute
   ApiPublicAuthRegisterRoute: typeof ApiPublicAuthRegisterRoute
@@ -324,6 +337,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicArticlesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/forum': {
+      id: '/api/public/forum'
+      path: '/api/public/forum'
+      fullPath: '/api/public/forum'
+      preLoaderRoute: typeof ApiPublicForumRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/auth/login': {
       id: '/api/public/auth/login'
       path: '/api/public/auth/login'
@@ -368,6 +388,7 @@ const rootRouteChildren: RootRouteChildren = {
   ArticlesIndexRoute: ArticlesIndexRoute,
   ForumIndexRoute: ForumIndexRoute,
   ApiPublicArticlesRoute: ApiPublicArticlesRoute,
+  ApiPublicForumRoute: ApiPublicForumRoute,
   ApiPublicAuthLoginRoute: ApiPublicAuthLoginRoute,
   ApiPublicAuthMeRoute: ApiPublicAuthMeRoute,
   ApiPublicAuthRegisterRoute: ApiPublicAuthRegisterRoute,
