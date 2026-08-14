@@ -215,7 +215,24 @@ function Forum() {
             className="hidden"
             onChange={(e) => void pick(e.target.files?.[0])}
           />
-          {slur || swearing ? (
+          {ohSpace ? (
+            <div
+              className={`grid transition-[grid-template-rows] duration-200 ease-out ${
+                ohFade ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+              }`}
+            >
+              <div className="overflow-hidden">
+                <p
+                  role="status"
+                  className={`mt-3 rounded-2xl bg-surface-container px-4 py-3 text-[14px] leading-snug transition-opacity duration-300 ${
+                    ohFade ? "opacity-100" : "opacity-0"
+                  }`}
+                >
+                  Oh.
+                </p>
+              </div>
+            </div>
+          ) : slur || swearing ? (
             <p
               role="alert"
               className="mt-3 flex items-start gap-2 rounded-2xl bg-destructive/10 px-4 py-3 text-[14px] leading-snug text-destructive"
