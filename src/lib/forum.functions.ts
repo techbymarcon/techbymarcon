@@ -164,11 +164,41 @@ export const createForumPost = createServerFn({ method: "POST" })
   .inputValidator((data: { title: string; body: string; imageUrl?: string }) => data)
   .handler(async ({ data }) => {
     const { email } = await requireIdentity();
+    if (!(await keyAllows("forum:post"))) {
+      return { ok: false as const, error: "Your key does not allow posting in the forum." };
+    }
     const title = data.title.trim().slice(0, 140);
     const body = data.body.trim().slice(0, 8000);
     if (!title) return { ok: false as const, error: "Give your post a title." };
 
     const supabase = await db();
+
+    // Posting limits set by moderators (0 = off). Staff keys are exempt.
+    if (!(await keyAllows("forum:moderate"))) {
+      const rules = await forumRules();
+      if (rules.postCooldownSeconds > 0 || rules.maxPostsPerDay > 0) {
+        const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+        const { data: recent } = await supabase
+          .from("forum_posts")
+          .select("created_at")
+          .eq("author_email", email)
+          .gte("created_at", since)
+          .order("created_at", { ascending: false });
+        const rows = (recent ?? []) as { created_at: string }[];
+        if (rules.maxPostsPerDay > 0 && rows.length >= rules.maxPostsPerDay) {
+          return {
+            ok: false as const,
+            error: `Daily limit reached — members can post ${rules.maxPostsPerDay} times per day.`,
+          };
+        }
+        const last = rows[0］ ? new Date(rows[0]!.created_at).getTime() : 0;
+        const wait = Math.ceil((rules.postCooldownSeconds * 1000 - (Date.now() - last)) / 1000);
+        if (last && wait > 0) {
+          return { ok: false as const, error: `Slow down — you can post again in ${wait}s.` };
+        }
+      }
+    }
+
     const { data: profile } = await supabase
       .from("profiles")
       .select("*")
