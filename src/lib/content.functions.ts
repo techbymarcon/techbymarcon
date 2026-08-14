@@ -319,7 +319,8 @@ export const userSignUp = createServerFn({ method: "POST" })
       }
       await setUserSession(username);
       await welcomeNotification(username, true);
-      return { ok: true as const, profile: await publicProfile(created as ProfileRow) };
+      const tier = await effectiveTier(username, (created as ProfileRow).tier);
+      return { ok: true as const, profile: publicProfile(created as ProfileRow, tier) };
     } catch (err) {
       return {
         ok: false as const,
