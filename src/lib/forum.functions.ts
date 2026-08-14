@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { forumRules, keyAllows } from "./access-key.server";
 import { currentStaff, db, effectiveTier, requireDeveloper, requireIdentity } from "./content.server";
 import { actorFor, notify } from "./notifications.server";
+import { PROFANITY_REJECTION, hasProfanity } from "./profanity";
 
 export type ForumPost = {
   id: string;
@@ -171,6 +172,8 @@ export const createForumPost = createServerFn({ method: "POST" })
     const title = data.title.trim().slice(0, 140);
     const body = data.body.trim().slice(0, 8000);
     if (!title) return { ok: false as const, error: "Give your post a title." };
+    // No swearing: the post is dropped before it ever reaches the forum.
+    if (hasProfanity(title, body)) return { ok: false as const, error: PROFANITY_REJECTION };
 
     const supabase = await db();
 
@@ -232,6 +235,14 @@ export const updateForumPost = createServerFn({ method: "POST" })
     if (!me.signedIn) return { ok: false as const, error: "Sign in first." };
     const title = data.title.trim().slice(0, 140);
     if (!title) return { ok: false as const, error: "Give your post a title." };
+    if (hasProfanity(title, data.body)) {
+      const supabase = await db();
+      let del = supabase.from("forum_posts").delete().eq("id", data.id);
+      if (!me.developer && !me.moderator) del = del.eq("author_email", me.email);
+      await del;
+      await supabase.from("comments").delete().eq("article_id", `forum:${data.id}`);
+      return { ok: false as const, error: PROFANITY_REJECTION, deleted: true as const };
+    }
     const supabase = await db();
     let query = supabase
       .from("forum_posts")

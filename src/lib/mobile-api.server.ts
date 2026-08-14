@@ -19,6 +19,7 @@ import {
 import { db, effectiveTier, hashPassword, passwordMatches, verifyPassword } from "./content.server";
 import { actorFor, notify, welcomeNotification } from "./notifications.server";
 import { throttleLogin } from "./rate-limit.server";
+import { PROFANITY_REJECTION, hasProfanity } from "./profanity";
 
 export const CORS = {
   "access-control-allow-origin": "*",
