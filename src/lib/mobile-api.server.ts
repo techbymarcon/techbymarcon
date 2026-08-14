@@ -118,17 +118,6 @@ export async function login(body: Record<string, unknown>) {
   const username = normalizeUsername(String(body["username"] ?? ""));
   const password = String(body["password"] ?? "");
 
-  // Developer sign-in: username "developer" + the developer password.
-  if (mode === "developer" || username === "developer") {
-    const expected = process.env["DEVELOPER_PASSWORD"];
-    if (!expected) return json({ error: "Developer login is not configured" }, 500);
-    if (!password || !passwordMatches(password, expected)) {
-      return json({ error: "Invalid credentials" }, 401);
-    }
-    await welcomeNotification("developer", false);
-    return json(await session("developer"));
-  }
-
   // Code-based sign-in has been removed: username + password is the only path.
   if (mode === "code" || body["code"] !== undefined) {
     const code = String(body["code"] ?? "").trim();
@@ -138,15 +127,42 @@ export async function login(body: Record<string, unknown>) {
     return json({ error: "Code sign-in has been removed. Use your username and password." }, 410);
   }
 
+  // Developer sign-in: username "developer" + the developer password.
+  if (mode === "developer" || username === "developer") {
+    const expected = process.env["DEVELOPER_PASSWORD"];
+    if (!expected) return json({ error: "Developer login is not configured" }, 500);
+    const throttle = await throttleLogin("developer");
+    if (throttle.blocked) {
+      return json({ error: throttle.error, retry_after: throttle.retryAfter }, 429);
+    }
+    if (!password || !passwordMatches(password, expected)) {
+      return json({ error: "Invalid credentials" }, 401);
+    }
+    await throttle.clear();
+    await welcomeNotification("developer", false);
+    return json(await session("developer"));
+  }
 
+  const throttle = await throttleLogin(username || "unknown");
+  if (throttle.blocked) {
+    return json({ error: throttle.error, retry_after: throttle.retryAfter }, 429);
+  }
   if (!isUsername(username)) return json({ error: "Invalid credentials" }, 401);
   const row = await profileFor(username);
   if (!row || !(await verifyPassword(password, row.password_hash))) {
     return json({ error: "Invalid credentials" }, 401);
   }
+  await throttle.clear();
   await welcomeNotification(username, false);
   return json(await session(username));
 }
+
+/** Sign out a native client: bumps the account's key epoch, killing every key. */
+export async function logout(who: Caller) {
+  await bumpKeyEpoch(who.email);
+  return json({ ok: true });
+}
+
 
 export async function register(body: Record<string, unknown>) {
   const username = normalizeUsername(String(body["username"] ?? ""));
