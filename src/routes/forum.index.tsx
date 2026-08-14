@@ -221,7 +221,7 @@ function Forum() {
           {ohSpace ? (
             <div
               className={`grid transition-[grid-template-rows] duration-200 ease-out ${
-                ohFade ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+                ohOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
               }`}
             >
               <div className="overflow-hidden">
