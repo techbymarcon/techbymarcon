@@ -28,8 +28,6 @@ const BLOCKS: Record<number, number> = {
 /** Attempts older than this are forgiven. */
 const WINDOW_MS = 60 * 60 * 1000;
 
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
 export const delayForAttempt = (attempts: number) =>
   DELAYS.find((d) => attempts >= d.from)!.seconds;
 
@@ -44,7 +42,8 @@ type Row = {
 
 export type Throttle =
   | { blocked: true; retryAfter: number; error: string }
-  | { blocked: false; attempts: number; clear: () => Promise<void> };
+  | { blocked: false; attempts: number; wait: number; clear: () => Promise<void> };
+
 
 const humanWait = (seconds: number) =>
   seconds >= 60
