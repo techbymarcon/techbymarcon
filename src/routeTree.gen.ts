@@ -22,6 +22,7 @@ import { Route as ForumPostIdRouteImport } from './routes/forum.$postId'
 import { Route as UHandleRouteImport } from './routes/u.$handle'
 import { Route as ApiPublicArticlesRouteImport } from './routes/api/public/articles'
 import { Route as ApiPublicCommentsRouteImport } from './routes/api/public/comments'
+import { Route as ApiPublicDocsRouteImport } from './routes/api/public/docs'
 import { Route as ApiPublicForumRouteImport } from './routes/api/public/forum'
 import { Route as ApiPublicNotificationsRouteImport } from './routes/api/public/notifications'
 import { Route as ApiPublicAuthLoginRouteImport } from './routes/api/public/auth.login'
@@ -98,6 +99,11 @@ const ApiPublicCommentsRoute = ApiPublicCommentsRouteImport.update({
   path: '/api/public/comments',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicDocsRoute = ApiPublicDocsRouteImport.update({
+  id: '/api/public/docs',
+  path: '/api/public/docs',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicForumRoute = ApiPublicForumRouteImport.update({
   id: '/api/public/forum',
   path: '/api/public/forum',
@@ -164,6 +170,7 @@ export interface FileRoutesByFullPath {
   '/forum/': typeof ForumIndexRoute
   '/api/public/articles': typeof ApiPublicArticlesRoute
   '/api/public/comments': typeof ApiPublicCommentsRoute
+  '/api/public/docs': typeof ApiPublicDocsRoute
   '/api/public/forum': typeof ApiPublicForumRouteWithChildren
   '/api/public/notifications': typeof ApiPublicNotificationsRoute
   '/api/public/auth/login': typeof ApiPublicAuthLoginRoute
@@ -189,6 +196,7 @@ export interface FileRoutesByTo {
   '/forum': typeof ForumIndexRoute
   '/api/public/articles': typeof ApiPublicArticlesRoute
   '/api/public/comments': typeof ApiPublicCommentsRoute
+  '/api/public/docs': typeof ApiPublicDocsRoute
   '/api/public/forum': typeof ApiPublicForumRouteWithChildren
   '/api/public/notifications': typeof ApiPublicNotificationsRoute
   '/api/public/auth/login': typeof ApiPublicAuthLoginRoute
@@ -215,6 +223,7 @@ export interface FileRoutesById {
   '/forum/': typeof ForumIndexRoute
   '/api/public/articles': typeof ApiPublicArticlesRoute
   '/api/public/comments': typeof ApiPublicCommentsRoute
+  '/api/public/docs': typeof ApiPublicDocsRoute
   '/api/public/forum': typeof ApiPublicForumRouteWithChildren
   '/api/public/notifications': typeof ApiPublicNotificationsRoute
   '/api/public/auth/login': typeof ApiPublicAuthLoginRoute
@@ -242,6 +251,7 @@ export interface FileRouteTypes {
     | '/forum/'
     | '/api/public/articles'
     | '/api/public/comments'
+    | '/api/public/docs'
     | '/api/public/forum'
     | '/api/public/notifications'
     | '/api/public/auth/login'
@@ -267,6 +277,7 @@ export interface FileRouteTypes {
     | '/forum'
     | '/api/public/articles'
     | '/api/public/comments'
+    | '/api/public/docs'
     | '/api/public/forum'
     | '/api/public/notifications'
     | '/api/public/auth/login'
@@ -292,6 +303,7 @@ export interface FileRouteTypes {
     | '/forum/'
     | '/api/public/articles'
     | '/api/public/comments'
+    | '/api/public/docs'
     | '/api/public/forum'
     | '/api/public/notifications'
     | '/api/public/auth/login'
@@ -318,6 +330,7 @@ export interface RootRouteChildren {
   ForumIndexRoute: typeof ForumIndexRoute
   ApiPublicArticlesRoute: typeof ApiPublicArticlesRoute
   ApiPublicCommentsRoute: typeof ApiPublicCommentsRoute
+  ApiPublicDocsRoute: typeof ApiPublicDocsRoute
   ApiPublicForumRoute: typeof ApiPublicForumRouteWithChildren
   ApiPublicNotificationsRoute: typeof ApiPublicNotificationsRoute
   ApiPublicAuthLoginRoute: typeof ApiPublicAuthLoginRoute
@@ -418,6 +431,13 @@ declare module '@tanstack/react-router' {
       path: '/api/public/comments'
       fullPath: '/api/public/comments'
       preLoaderRoute: typeof ApiPublicCommentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/docs': {
+      id: '/api/public/docs'
+      path: '/api/public/docs'
+      fullPath: '/api/public/docs'
+      preLoaderRoute: typeof ApiPublicDocsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/forum': {
@@ -532,6 +552,7 @@ const rootRouteChildren: RootRouteChildren = {
   ForumIndexRoute: ForumIndexRoute,
   ApiPublicArticlesRoute: ApiPublicArticlesRoute,
   ApiPublicCommentsRoute: ApiPublicCommentsRoute,
+  ApiPublicDocsRoute: ApiPublicDocsRoute,
   ApiPublicForumRoute: ApiPublicForumRouteWithChildren,
   ApiPublicNotificationsRoute: ApiPublicNotificationsRoute,
   ApiPublicAuthLoginRoute: ApiPublicAuthLoginRoute,
