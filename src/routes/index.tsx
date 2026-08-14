@@ -2,7 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import heroBanner from "@/assets/hero-banner.png.asset.json";
 import heroBannerDark from "@/assets/hero-banner-dark.png.asset.json";
-import githubBadge from "@/assets/get-it-on-github.png.asset.json";
 import { useArticles } from "@/lib/articles";
 import { useTheme } from "@/lib/theme";
 import { ArticleCard } from "@/components/article-card";
