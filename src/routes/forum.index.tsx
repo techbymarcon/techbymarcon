@@ -16,6 +16,7 @@ import {
   moderateForumPost,
   type ForumPost,
 } from "@/lib/forum.functions";
+import { PROFANITY_WARNING, hasProfanity } from "@/lib/profanity";
 
 export const Route = createFileRoute("/forum/")({
   head: () => ({
@@ -71,6 +72,8 @@ function Forum() {
     }
     setImage(res.url);
   };
+
+  const swearing = hasProfanity(title, body);
 
   const publish = async () => {
     setBusy(true);
