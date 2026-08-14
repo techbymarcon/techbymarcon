@@ -198,14 +198,21 @@ export const getSessionInfo = createServerFn({ method: "GET" }).handler(async ()
       developer: false,
       moderator: false,
       profile: null,
+      banned: false,
+      banReason: "",
+      mutedUntil: null as string | null,
     };
   }
   const row = await profileByEmail(id.email);
+  const sanction = await sanctionState(id.email);
   return {
     signedIn: true as const,
     developer: id.developer,
     moderator: id.developer ? true : await isModerator(id.email),
     profile: publicProfile(row, await effectiveTier(id.email, row?.tier)),
+    banned: sanction.banned,
+    banReason: sanction.banReason,
+    mutedUntil: sanction.mutedUntil,
   };
 });
 
