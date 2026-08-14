@@ -507,6 +507,8 @@ export const addComment = createServerFn({ method: "POST" })
   )
   .handler(async ({ data }) => {
     const { email } = await requireIdentity();
+    const blocked = await postingBlock(email);
+    if (blocked) return { ok: false as const, error: blocked };
     const body = data.body.trim().slice(0, 2000);
     const imageUrl = (data.imageUrl ?? "").trim().slice(0, 500);
     if (!body && !imageUrl) return { ok: false as const, error: "Write something first." };
