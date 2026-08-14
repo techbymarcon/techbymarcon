@@ -62,6 +62,12 @@ function Login() {
     setAvatarUrl(profile.avatar_url);
   }, [profile]);
 
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const id = window.setInterval(() => setCooldown((s) => (s <= 1 ? 0 : s - 1)), 1000);
+    return () => window.clearInterval(id);
+  }, [cooldown]);
+
   const field =
     "w-full rounded-2xl border border-border bg-surface px-5 py-4 text-[16px] outline-none focus:border-primary m3-transition";
 
