@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { Icon, M3Button } from "@/components/m3";
 import { ForumVotes } from "@/components/forum-votes";
+import { ForumLimits } from "@/components/forum-limits";
 
 import { Reveal } from "@/components/reveal";
 import { Avatar, VerifiedBadge } from "@/components/verified";
@@ -118,6 +119,10 @@ function Forum() {
         </header>
       </Reveal>
 
+      <ForumLimits className="mb-8" />
+
+
+
       {error ? (
         <p className="mb-5 rounded-2xl bg-destructive/10 px-4 py-3 text-[15px] text-destructive">
           {error}
@@ -204,7 +209,9 @@ function Forum() {
                     {p.display_name}
                     <VerifiedBadge tier={p.tier} />
                   </span>
-                  <span>@{p.handle}</span>
+                  <Link to="/u/$handle" params={{ handle: p.handle }} className="hover:underline">
+                    @{p.handle}
+                  </Link>
                   {p.pinned ? (
                     <span className="inline-flex items-center gap-1 rounded-full bg-primary-container px-2 py-0.5 text-[12px] text-on-primary-container">
                       <Icon name="push_pin" className="text-[14px]" /> Pinned

@@ -650,3 +650,38 @@ export const getArticleDownload = createServerFn({ method: "POST" })
     if (error || !signed) return { ok: false as const, error: "This file is no longer available." };
     return { ok: true as const, url: signed.signedUrl };
   });
+
+/** Read-only public profile lookup — anyone can view a member card, nobody can change it. */
+export const getProfileByHandle = createServerFn({ method: "POST" })
+  .inputValidator((data: { handle: string }) => data)
+  .handler(async ({ data }) => {
+    const handle = slugHandle(data.handle ?? "");
+    if (!handle) return { profile: null, stats: null };
+    const supabase = await db();
+    const { data: row } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("handle", handle)
+      .maybeSingle();
+    if (!row) return { profile: null, stats: null };
+    const email = (row as ProfileRow).email;
+    const tier = await effectiveTier(email, (row as ProfileRow).tier);
+    const { count: posts } = await supabase
+      .from("forum_posts")
+      .select("id", { count: "exact", head: true })
+      .eq("author_email", email);
+    const { count: comments } = await supabase
+      .from("comments")
+      .select("id", { count: "exact", head: true })
+      .eq("author_email", email);
+    return {
+      profile: publicProfile(row as ProfileRow, tier),
+      stats: {
+        posts: posts ?? 0,
+        comments: comments ?? 0,
+        joined: (row as unknown as { created_at?: string }).created_at ?? "",
+        moderator: tier === "green",
+        developer: tier === "gold",
+      },
+    };
+  });

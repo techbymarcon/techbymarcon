@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { AccessKeyCard } from "@/components/access-key-card";
 import { Icon, M3Button } from "@/components/m3";
 import { Reveal } from "@/components/reveal";
 import { Avatar, VerifiedBadge, VerifiedInfo } from "@/components/verified";
@@ -75,9 +76,11 @@ function Login() {
                 </h1>
                 <p className="text-[15px] text-muted-foreground">@{handle || "…"}</p>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  {isDeveloper
+                  {profile?.tier === "gold"
                     ? "Golden check — developer account"
-                    : "Blue check — verified member"}
+                    : profile?.tier === "green"
+                      ? "Green check — moderator"
+                      : "Blue check — verified member"}
                 </p>
               </div>
             </div>
@@ -172,6 +175,10 @@ function Login() {
               </div>
             </div>
           </div>
+        </Reveal>
+
+        <Reveal delay={60}>
+          <AccessKeyCard className="mt-6" />
         </Reveal>
 
         <Reveal delay={80}>
