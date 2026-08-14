@@ -46,7 +46,7 @@ export async function actorFor(email: string) {
     handle: row?.handle ?? "someone",
     displayName: row?.display_name ?? "Someone",
     avatar: row?.avatar_url ?? "",
-    tier: row?.tier ?? "blue",
+    tier: await effectiveTier(email, row?.tier),
   };
 }
 
