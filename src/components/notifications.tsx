@@ -62,7 +62,8 @@ export function NotificationsButton() {
     return () => document.removeEventListener("mousedown", onDown);
   }, [open]);
 
-  if (!session) return null;
+  // TEMP: render for visual overlap check
+  // if (!session) return null;
 
   const toggle = async () => {
     const next = !open;
