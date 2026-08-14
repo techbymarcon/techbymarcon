@@ -16,7 +16,7 @@ import {
   moderateForumPost,
   type ForumPost,
 } from "@/lib/forum.functions";
-import { PROFANITY_WARNING, hasProfanity, slurStage } from "@/lib/profanity";
+import { PROFANITY_WARNING, hasProfanity, isNight, slurStage } from "@/lib/profanity";
 
 export const Route = createFileRoute("/forum/")({
   head: () => ({
