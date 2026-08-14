@@ -30,9 +30,10 @@ export const developerSignIn = createServerFn({ method: "POST" })
     const expected = process.env["DEVELOPER_PASSWORD"];
     if (!expected) throw new Error("Developer password is not configured");
     const throttle = await throttleLogin("developer");
-    if (throttle.blocked) return { ok: false as const, error: throttle.error };
+    if (throttle.blocked)
+      return { ok: false as const, error: throttle.error, retryAfter: throttle.retryAfter };
     if (!data.password || !passwordMatches(data.password, expected)) {
-      return { ok: false as const };
+      return { ok: false as const, retryAfter: throttle.wait };
     }
     await throttle.clear();
     const session = await getGateSession();
