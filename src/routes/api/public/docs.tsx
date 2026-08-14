@@ -33,8 +33,8 @@ const DOCS = {
     },
   },
   endpoints: [
-    { method: "POST", path: "/api/public/auth/login", body: "{username,password} | {mode:'code',code} | {username:'developer',password}", auth: false },
-    { method: "POST", path: "/api/public/auth/register", body: "{username,password,displayName?} | {mode:'code'}", auth: false },
+    { method: "POST", path: "/api/public/auth/login", body: "{username,password} | {username:'developer',password}", auth: false },
+    { method: "POST", path: "/api/public/auth/register", body: "{username,password,displayName?}", auth: false },
     { method: "GET", path: "/api/public/auth/me", auth: true },
     { method: "PATCH", path: "/api/public/auth/me", body: "{displayName?,avatarUrl?,handle?}", auth: true },
     { method: "GET", path: "/api/public/forum?limit&offset", auth: "optional" },

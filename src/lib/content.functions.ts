@@ -144,7 +144,6 @@ type ProfileRow = {
   avatar_url: string | null;
   tier: string;
   password_hash?: string | null;
-  login_code?: string | null;
 };
 
 export type PublicProfile = {
@@ -189,7 +188,6 @@ export const getSessionInfo = createServerFn({ method: "GET" }).handler(async ()
       developer: false,
       moderator: false,
       profile: null,
-      loginCode: "",
     };
   }
   const row = await profileByEmail(id.email);
@@ -198,7 +196,6 @@ export const getSessionInfo = createServerFn({ method: "GET" }).handler(async ()
     developer: id.developer,
     moderator: id.developer ? true : await isModerator(id.email),
     profile: publicProfile(row, await effectiveTier(id.email, row?.tier)),
-    loginCode: row?.login_code ?? "",
   };
 });
 
