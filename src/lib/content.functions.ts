@@ -236,7 +236,8 @@ export const codeSignUp = createServerFn({ method: "POST" }).handler(async () =>
     if (error) continue;
     await setUserSession(username);
     await welcomeNotification(username, true);
-    return { ok: true as const, code, profile: await publicProfile(created as ProfileRow) };
+    const tier = await effectiveTier(username, (created as ProfileRow).tier);
+    return { ok: true as const, code, profile: publicProfile(created as ProfileRow, tier) };
   }
   return { ok: false as const, error: "Could not create a code right now. Try again." };
 });
