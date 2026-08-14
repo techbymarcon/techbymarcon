@@ -8,6 +8,7 @@
 import {
   DEFAULT_FORUM_RULES,
   forumRules,
+  bumpKeyEpoch,
   issueKeyForAccount,
   openKey,
   scopesFor,
@@ -17,6 +18,7 @@ import {
 } from "./access-key.server";
 import { db, effectiveTier, hashPassword, passwordMatches, verifyPassword } from "./content.server";
 import { actorFor, notify, welcomeNotification } from "./notifications.server";
+import { throttleLogin } from "./rate-limit.server";
 
 export const CORS = {
   "access-control-allow-origin": "*",
@@ -159,7 +161,7 @@ export async function login(body: Record<string, unknown>) {
 
 /** Sign out a native client: bumps the account's key epoch, killing every key. */
 export async function logout(who: Caller) {
-  await bumpKeyEpoch(who.email);
+  await bumpKeyEpoch(who.username);
   return json({ ok: true });
 }
 
