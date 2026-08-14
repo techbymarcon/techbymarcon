@@ -87,13 +87,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       if (normalized === DEV_USERNAME) {
         const res = await developerSignIn({ data: { password } });
-        if (!res.ok) return { ok: false, error: "Wrong developer password." };
+        if (!res.ok)
+          return {
+            ok: false,
+            error: res.error ?? "Wrong developer password.",
+            retryAfter: res.retryAfter,
+          };
         await sync();
         return { ok: true };
       }
 
       const res = await userSignIn({ data: { username: normalized, password } });
-      if (!res.ok) return { ok: false, error: res.error };
+      if (!res.ok) return { ok: false, error: res.error, retryAfter: res.retryAfter };
       await sync();
       return { ok: true };
     } catch {
