@@ -133,3 +133,9 @@ export function slurStage(...parts: (string | null | undefined)[]): SlurStage | 
   }
   return found;
 }
+
+/** "nig" followed by "ht" — an innocent word, so we just say "Oh." */
+export function isNight(...parts: (string | null | undefined)[]): boolean {
+  return normalize(parts.filter(Boolean).join(" ")).replace(/\s+/g, "").includes("night");
+}
+
