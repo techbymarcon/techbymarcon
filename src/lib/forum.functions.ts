@@ -84,7 +84,9 @@ export const listForumPosts = createServerFn({ method: "GET" }).handler(async ()
   if (error) throw new Error(error.message);
   const rows = (data ?? []) as Record<string, unknown>[];
   const tally = await voteTally(rows.map((r) => r["id"] as string), me.email);
-  return rows.map((row) => shape(row, me.email, staff, tally.get(row["id"] as string)));
+  return await Promise.all(
+    rows.map((row) => shape(row, me.email, staff, tally.get(row["id"] as string))),
+  );
 });
 
 export const getForumPost = createServerFn({ method: "POST" })
