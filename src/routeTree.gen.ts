@@ -27,6 +27,7 @@ import { Route as ApiPublicAuthMeRouteImport } from './routes/api/public/auth.me
 import { Route as ApiPublicAuthRegisterRouteImport } from './routes/api/public/auth.register'
 import { Route as ApiPublicAvatarsFileRouteImport } from './routes/api/public/avatars.$file'
 import { Route as ApiPublicForumPostIdRouteImport } from './routes/api/public/forum.$postId'
+import { Route as ApiPublicForumPostIdVoteRouteImport } from './routes/api/public/forum.$postId.vote'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -118,6 +119,12 @@ const ApiPublicForumPostIdRoute = ApiPublicForumPostIdRouteImport.update({
   path: '/$postId',
   getParentRoute: () => ApiPublicForumRoute,
 } as any)
+const ApiPublicForumPostIdVoteRoute =
+  ApiPublicForumPostIdVoteRouteImport.update({
+    id: '/vote',
+    path: '/vote',
+    getParentRoute: () => ApiPublicForumPostIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -137,7 +144,8 @@ export interface FileRoutesByFullPath {
   '/api/public/auth/me': typeof ApiPublicAuthMeRoute
   '/api/public/auth/register': typeof ApiPublicAuthRegisterRoute
   '/api/public/avatars/$file': typeof ApiPublicAvatarsFileRoute
-  '/api/public/forum/$postId': typeof ApiPublicForumPostIdRoute
+  '/api/public/forum/$postId': typeof ApiPublicForumPostIdRouteWithChildren
+  '/api/public/forum/$postId/vote': typeof ApiPublicForumPostIdVoteRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -157,7 +165,8 @@ export interface FileRoutesByTo {
   '/api/public/auth/me': typeof ApiPublicAuthMeRoute
   '/api/public/auth/register': typeof ApiPublicAuthRegisterRoute
   '/api/public/avatars/$file': typeof ApiPublicAvatarsFileRoute
-  '/api/public/forum/$postId': typeof ApiPublicForumPostIdRoute
+  '/api/public/forum/$postId': typeof ApiPublicForumPostIdRouteWithChildren
+  '/api/public/forum/$postId/vote': typeof ApiPublicForumPostIdVoteRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -178,7 +187,8 @@ export interface FileRoutesById {
   '/api/public/auth/me': typeof ApiPublicAuthMeRoute
   '/api/public/auth/register': typeof ApiPublicAuthRegisterRoute
   '/api/public/avatars/$file': typeof ApiPublicAvatarsFileRoute
-  '/api/public/forum/$postId': typeof ApiPublicForumPostIdRoute
+  '/api/public/forum/$postId': typeof ApiPublicForumPostIdRouteWithChildren
+  '/api/public/forum/$postId/vote': typeof ApiPublicForumPostIdVoteRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -201,6 +211,7 @@ export interface FileRouteTypes {
     | '/api/public/auth/register'
     | '/api/public/avatars/$file'
     | '/api/public/forum/$postId'
+    | '/api/public/forum/$postId/vote'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -221,6 +232,7 @@ export interface FileRouteTypes {
     | '/api/public/auth/register'
     | '/api/public/avatars/$file'
     | '/api/public/forum/$postId'
+    | '/api/public/forum/$postId/vote'
   id:
     | '__root__'
     | '/'
@@ -241,6 +253,7 @@ export interface FileRouteTypes {
     | '/api/public/auth/register'
     | '/api/public/avatars/$file'
     | '/api/public/forum/$postId'
+    | '/api/public/forum/$postId/vote'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -391,15 +404,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicForumPostIdRouteImport
       parentRoute: typeof ApiPublicForumRoute
     }
+    '/api/public/forum/$postId/vote': {
+      id: '/api/public/forum/$postId/vote'
+      path: '/vote'
+      fullPath: '/api/public/forum/$postId/vote'
+      preLoaderRoute: typeof ApiPublicForumPostIdVoteRouteImport
+      parentRoute: typeof ApiPublicForumPostIdRoute
+    }
   }
 }
 
+interface ApiPublicForumPostIdRouteChildren {
+  ApiPublicForumPostIdVoteRoute: typeof ApiPublicForumPostIdVoteRoute
+}
+
+const ApiPublicForumPostIdRouteChildren: ApiPublicForumPostIdRouteChildren = {
+  ApiPublicForumPostIdVoteRoute: ApiPublicForumPostIdVoteRoute,
+}
+
+const ApiPublicForumPostIdRouteWithChildren =
+  ApiPublicForumPostIdRoute._addFileChildren(ApiPublicForumPostIdRouteChildren)
+
 interface ApiPublicForumRouteChildren {
-  ApiPublicForumPostIdRoute: typeof ApiPublicForumPostIdRoute
+  ApiPublicForumPostIdRoute: typeof ApiPublicForumPostIdRouteWithChildren
 }
 
 const ApiPublicForumRouteChildren: ApiPublicForumRouteChildren = {
-  ApiPublicForumPostIdRoute: ApiPublicForumPostIdRoute,
+  ApiPublicForumPostIdRoute: ApiPublicForumPostIdRouteWithChildren,
 }
 
 const ApiPublicForumRouteWithChildren = ApiPublicForumRoute._addFileChildren(
