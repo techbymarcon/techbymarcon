@@ -197,7 +197,7 @@ export const getSessionInfo = createServerFn({ method: "GET" }).handler(async ()
     signedIn: true as const,
     developer: id.developer,
     moderator: id.developer ? true : await isModerator(id.email),
-    profile: await publicProfile(row),
+    profile: publicProfile(row, await effectiveTier(id.email, row?.tier)),
     loginCode: row?.login_code ?? "",
   };
 });
