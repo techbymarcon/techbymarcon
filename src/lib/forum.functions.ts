@@ -183,7 +183,7 @@ export const createForumPost = createServerFn({ method: "POST" })
         handle: profile.handle,
         display_name: profile.display_name,
         avatar_url: profile.avatar_url ?? "",
-        tier: profile.tier,
+        tier: await effectiveTier(email, profile.tier),
         title,
         body,
         image_url: (data.imageUrl ?? "").trim().slice(0, 500),
