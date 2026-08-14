@@ -180,36 +180,14 @@ export async function register(body: Record<string, unknown>) {
   return json(await session(username), 201);
 }
 
-/** Create an anonymous 5-digit-code account, the same way the website does. */
+/** Code accounts have been removed — registration is username + password only. */
 export async function registerWithCode() {
-  const supabase = await db();
-  for (let attempt = 0; attempt < 25; attempt++) {
-    const code = String(Math.floor(Math.random() * 100000)).padStart(5, "0");
-    if (code === "99999") continue;
-    const { data: taken } = await supabase
-      .from("profiles")
-      .select("email")
-      .eq("login_code", code)
-      .maybeSingle();
-    if (taken) continue;
-    const username = `code_${code}`;
-    if (await profileFor(username)) continue;
-    const handle = `member${code}`;
-    const { error } = await supabase.from("profiles").insert({
-      email: username,
-      handle,
-      display_name: handle,
-      avatar_url: "",
-      tier: "blue",
-      password_hash: null,
-      login_code: code,
-    } as never);
-    if (error) continue;
-    await welcomeNotification(username, true);
-    return json({ code, ...(await session(username)) }, 201);
-  }
-  return json({ error: "Could not create a code right now. Try again." }, 503);
+  return json(
+    { error: "Code accounts have been removed. Register with a username and password." },
+    410,
+  );
 }
+
 
 export async function me(who: Caller) {
   const row = await profileFor(who.username);
