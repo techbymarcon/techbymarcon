@@ -555,7 +555,8 @@ export const uploadAvatar = createServerFn({ method: "POST" })
       .select("*")
       .single();
     await supabase.from("comments").update({ avatar_url: url }).eq("author_email", email);
-    return { ok: true as const, url, profile: publicProfile(row as ProfileRow) };
+    const tier = await effectiveTier(email, (row as ProfileRow).tier);
+    return { ok: true as const, url, profile: publicProfile(row as ProfileRow, tier) };
   });
 
 export const uploadArticleImage = createServerFn({ method: "POST" })
