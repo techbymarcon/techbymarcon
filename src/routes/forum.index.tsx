@@ -117,6 +117,12 @@ function Forum() {
                   Moderators
                 </M3Button>
               </Link>
+              <Link to="/accounts">
+                <M3Button variant="text">
+                  <Icon name="manage_accounts" className="text-[20px]" />
+                  Accounts
+                </M3Button>
+              </Link>
             </div>
           )}
         </header>
