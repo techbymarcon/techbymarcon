@@ -22,7 +22,7 @@ export type Profile = {
 
 const DEV_USERNAME = "developer";
 
-type Result = { ok: boolean; error?: string };
+type Result = { ok: boolean; error?: string; retryAfter?: number };
 
 const AuthCtx = createContext<{
   session: Session;
