@@ -10,8 +10,10 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as LlmsDottxtRouteImport } from './routes/llms[.]txt'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ModeratorsRouteImport } from './routes/moderators'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SocialsRouteImport } from './routes/socials'
 import { Route as ArticlesIndexRouteImport } from './routes/articles.index'
 import { Route as ArticlesArticleIdRouteImport } from './routes/articles.$articleId'
@@ -24,6 +26,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LlmsDottxtRoute = LlmsDottxtRouteImport.update({
+  id: '/llms.txt',
+  path: '/llms.txt',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -32,6 +39,11 @@ const LoginRoute = LoginRouteImport.update({
 const ModeratorsRoute = ModeratorsRouteImport.update({
   id: '/moderators',
   path: '/moderators',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SocialsRoute = SocialsRouteImport.update({
@@ -67,8 +79,10 @@ const ApiPublicAvatarsFileRoute = ApiPublicAvatarsFileRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/llms.txt': typeof LlmsDottxtRoute
   '/login': typeof LoginRoute
   '/moderators': typeof ModeratorsRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/socials': typeof SocialsRoute
   '/articles/$articleId': typeof ArticlesArticleIdRoute
   '/forum/$postId': typeof ForumPostIdRoute
@@ -78,8 +92,10 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/llms.txt': typeof LlmsDottxtRoute
   '/login': typeof LoginRoute
   '/moderators': typeof ModeratorsRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/socials': typeof SocialsRoute
   '/articles/$articleId': typeof ArticlesArticleIdRoute
   '/forum/$postId': typeof ForumPostIdRoute
@@ -90,8 +106,10 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/llms.txt': typeof LlmsDottxtRoute
   '/login': typeof LoginRoute
   '/moderators': typeof ModeratorsRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/socials': typeof SocialsRoute
   '/articles/$articleId': typeof ArticlesArticleIdRoute
   '/forum/$postId': typeof ForumPostIdRoute
@@ -103,8 +121,10 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/llms.txt'
     | '/login'
     | '/moderators'
+    | '/sitemap.xml'
     | '/socials'
     | '/articles/$articleId'
     | '/forum/$postId'
@@ -114,8 +134,10 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/llms.txt'
     | '/login'
     | '/moderators'
+    | '/sitemap.xml'
     | '/socials'
     | '/articles/$articleId'
     | '/forum/$postId'
@@ -125,8 +147,10 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/llms.txt'
     | '/login'
     | '/moderators'
+    | '/sitemap.xml'
     | '/socials'
     | '/articles/$articleId'
     | '/forum/$postId'
@@ -137,8 +161,10 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  LlmsDottxtRoute: typeof LlmsDottxtRoute
   LoginRoute: typeof LoginRoute
   ModeratorsRoute: typeof ModeratorsRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SocialsRoute: typeof SocialsRoute
   ArticlesArticleIdRoute: typeof ArticlesArticleIdRoute
   ForumPostIdRoute: typeof ForumPostIdRoute
@@ -156,6 +182,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/llms.txt': {
+      id: '/llms.txt'
+      path: '/llms.txt'
+      fullPath: '/llms.txt'
+      preLoaderRoute: typeof LlmsDottxtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -168,6 +201,13 @@ declare module '@tanstack/react-router' {
       path: '/moderators'
       fullPath: '/moderators'
       preLoaderRoute: typeof ModeratorsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/socials': {
@@ -217,8 +257,10 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  LlmsDottxtRoute: LlmsDottxtRoute,
   LoginRoute: LoginRoute,
   ModeratorsRoute: ModeratorsRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   SocialsRoute: SocialsRoute,
   ArticlesArticleIdRoute: ArticlesArticleIdRoute,
   ForumPostIdRoute: ForumPostIdRoute,
