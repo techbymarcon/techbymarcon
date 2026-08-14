@@ -26,6 +26,7 @@ import { Route as ApiPublicDocsRouteImport } from './routes/api/public/docs'
 import { Route as ApiPublicForumRouteImport } from './routes/api/public/forum'
 import { Route as ApiPublicNotificationsRouteImport } from './routes/api/public/notifications'
 import { Route as ApiPublicAuthLoginRouteImport } from './routes/api/public/auth.login'
+import { Route as ApiPublicAuthLogoutRouteImport } from './routes/api/public/auth.logout'
 import { Route as ApiPublicAuthMeRouteImport } from './routes/api/public/auth.me'
 import { Route as ApiPublicAuthRegisterRouteImport } from './routes/api/public/auth.register'
 import { Route as ApiPublicAvatarsFileRouteImport } from './routes/api/public/avatars.$file'
@@ -119,6 +120,11 @@ const ApiPublicAuthLoginRoute = ApiPublicAuthLoginRouteImport.update({
   path: '/api/public/auth/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicAuthLogoutRoute = ApiPublicAuthLogoutRouteImport.update({
+  id: '/api/public/auth/logout',
+  path: '/api/public/auth/logout',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicAuthMeRoute = ApiPublicAuthMeRouteImport.update({
   id: '/api/public/auth/me',
   path: '/api/public/auth/me',
@@ -174,6 +180,7 @@ export interface FileRoutesByFullPath {
   '/api/public/forum': typeof ApiPublicForumRouteWithChildren
   '/api/public/notifications': typeof ApiPublicNotificationsRoute
   '/api/public/auth/login': typeof ApiPublicAuthLoginRoute
+  '/api/public/auth/logout': typeof ApiPublicAuthLogoutRoute
   '/api/public/auth/me': typeof ApiPublicAuthMeRoute
   '/api/public/auth/register': typeof ApiPublicAuthRegisterRoute
   '/api/public/avatars/$file': typeof ApiPublicAvatarsFileRoute
@@ -200,6 +207,7 @@ export interface FileRoutesByTo {
   '/api/public/forum': typeof ApiPublicForumRouteWithChildren
   '/api/public/notifications': typeof ApiPublicNotificationsRoute
   '/api/public/auth/login': typeof ApiPublicAuthLoginRoute
+  '/api/public/auth/logout': typeof ApiPublicAuthLogoutRoute
   '/api/public/auth/me': typeof ApiPublicAuthMeRoute
   '/api/public/auth/register': typeof ApiPublicAuthRegisterRoute
   '/api/public/avatars/$file': typeof ApiPublicAvatarsFileRoute
@@ -227,6 +235,7 @@ export interface FileRoutesById {
   '/api/public/forum': typeof ApiPublicForumRouteWithChildren
   '/api/public/notifications': typeof ApiPublicNotificationsRoute
   '/api/public/auth/login': typeof ApiPublicAuthLoginRoute
+  '/api/public/auth/logout': typeof ApiPublicAuthLogoutRoute
   '/api/public/auth/me': typeof ApiPublicAuthMeRoute
   '/api/public/auth/register': typeof ApiPublicAuthRegisterRoute
   '/api/public/avatars/$file': typeof ApiPublicAvatarsFileRoute
@@ -255,6 +264,7 @@ export interface FileRouteTypes {
     | '/api/public/forum'
     | '/api/public/notifications'
     | '/api/public/auth/login'
+    | '/api/public/auth/logout'
     | '/api/public/auth/me'
     | '/api/public/auth/register'
     | '/api/public/avatars/$file'
@@ -281,6 +291,7 @@ export interface FileRouteTypes {
     | '/api/public/forum'
     | '/api/public/notifications'
     | '/api/public/auth/login'
+    | '/api/public/auth/logout'
     | '/api/public/auth/me'
     | '/api/public/auth/register'
     | '/api/public/avatars/$file'
@@ -307,6 +318,7 @@ export interface FileRouteTypes {
     | '/api/public/forum'
     | '/api/public/notifications'
     | '/api/public/auth/login'
+    | '/api/public/auth/logout'
     | '/api/public/auth/me'
     | '/api/public/auth/register'
     | '/api/public/avatars/$file'
@@ -334,6 +346,7 @@ export interface RootRouteChildren {
   ApiPublicForumRoute: typeof ApiPublicForumRouteWithChildren
   ApiPublicNotificationsRoute: typeof ApiPublicNotificationsRoute
   ApiPublicAuthLoginRoute: typeof ApiPublicAuthLoginRoute
+  ApiPublicAuthLogoutRoute: typeof ApiPublicAuthLogoutRoute
   ApiPublicAuthMeRoute: typeof ApiPublicAuthMeRoute
   ApiPublicAuthRegisterRoute: typeof ApiPublicAuthRegisterRoute
   ApiPublicAvatarsFileRoute: typeof ApiPublicAvatarsFileRoute
@@ -461,6 +474,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicAuthLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/auth/logout': {
+      id: '/api/public/auth/logout'
+      path: '/api/public/auth/logout'
+      fullPath: '/api/public/auth/logout'
+      preLoaderRoute: typeof ApiPublicAuthLogoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/auth/me': {
       id: '/api/public/auth/me'
       path: '/api/public/auth/me'
@@ -556,6 +576,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicForumRoute: ApiPublicForumRouteWithChildren,
   ApiPublicNotificationsRoute: ApiPublicNotificationsRoute,
   ApiPublicAuthLoginRoute: ApiPublicAuthLoginRoute,
+  ApiPublicAuthLogoutRoute: ApiPublicAuthLogoutRoute,
   ApiPublicAuthMeRoute: ApiPublicAuthMeRoute,
   ApiPublicAuthRegisterRoute: ApiPublicAuthRegisterRoute,
   ApiPublicAvatarsFileRoute: ApiPublicAvatarsFileRoute,

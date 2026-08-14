@@ -47,7 +47,34 @@ type Payload = {
   scopes: Scope[];
   nonce: string;
   iat: number;
+  epoch?: number;
 };
+
+/**
+ * Every account has a key epoch. Signing out bumps it, which instantly voids
+ * every key ever issued to that account — cookie session and native bearer
+ * tokens alike.
+ */
+export async function keyEpoch(username: string): Promise<number> {
+  const supabase = await db();
+  const { data } = await supabase
+    .from("key_epochs")
+    .select("epoch")
+    .eq("username", username)
+    .maybeSingle();
+  return Number((data as { epoch?: number } | null)?.epoch ?? 0);
+}
+
+export async function bumpKeyEpoch(username: string) {
+  if (!username) return;
+  const supabase = await db();
+  const next = (await keyEpoch(username)) + 1;
+  await supabase
+    .from("key_epochs")
+    .upsert({ username, epoch: next } as never, { onConflict: "username" });
+  return next;
+}
+
 
 const b64url = (bytes: Uint8Array) =>
   btoa(String.fromCharCode(...bytes)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
@@ -95,11 +122,15 @@ export async function openKey(key: string | null | undefined): Promise<Payload |
       body as unknown as BufferSource,
     );
     const payload = JSON.parse(new TextDecoder().decode(plain)) as Payload;
-    return payload.tier === match[1] ? payload : null;
+    if (payload.tier !== match[1]) return null;
+    // Keys minted before the account's last sign out are dead.
+    if ((payload.epoch ?? 0) !== (await keyEpoch(payload.sub))) return null;
+    return payload;
   } catch {
     return null;
   }
 }
+
 
 /** The tier the signed-in account should hold right now. */
 export async function tierForCurrentSession(): Promise<KeyTier | null> {
@@ -128,7 +159,9 @@ export async function currentKey(): Promise<{ key: string; payload: Payload } | 
     scopes: scopesFor(tier),
     nonce: b64url(crypto.getRandomValues(new Uint8Array(12))),
     iat: Date.now(),
+    epoch: await keyEpoch(me.email),
   };
+
   const key = await seal(payload);
   await session.update({ ...session.data, accessKey: key });
   return { key, payload };
@@ -196,6 +229,8 @@ export async function issueKeyForAccount(email: string) {
     scopes: scopesFor(tier),
     nonce: b64url(crypto.getRandomValues(new Uint8Array(12))),
     iat: Date.now(),
+    epoch: await keyEpoch(email),
+
   };
   return { key: await seal(payload), tier, scopes: payload.scopes };
 }

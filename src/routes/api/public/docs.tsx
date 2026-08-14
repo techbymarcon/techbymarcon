@@ -37,6 +37,7 @@ const DOCS = {
     { method: "POST", path: "/api/public/auth/register", body: "{username,password,displayName?}", auth: false },
     { method: "GET", path: "/api/public/auth/me", auth: true },
     { method: "PATCH", path: "/api/public/auth/me", body: "{displayName?,avatarUrl?,handle?}", auth: true },
+    { method: "POST", path: "/api/public/auth/logout", auth: true, note: "voids every key issued to this account" },
     { method: "GET", path: "/api/public/forum?limit&offset", auth: "optional" },
     { method: "POST", path: "/api/public/forum", body: "{title,body,imageUrl?}", auth: true, scope: "forum:post" },
     { method: "GET", path: "/api/public/forum/{postId}", auth: "optional" },
