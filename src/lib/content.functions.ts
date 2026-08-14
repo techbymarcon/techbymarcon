@@ -399,11 +399,16 @@ export const userSignIn = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const username = normalizeUsername(data.username ?? "");
     const throttle = await throttleLogin(username);
-    if (throttle.blocked) return { ok: false as const, error: throttle.error };
+    if (throttle.blocked)
+      return { ok: false as const, error: throttle.error, retryAfter: throttle.retryAfter };
     const row = await profileByEmail(username);
     const ok = row ? await verifyPassword(data.password ?? "", row.password_hash) : false;
     if (!row || !ok || row.tier === "gold") {
-      return { ok: false as const, error: "Wrong username or password." };
+      return {
+        ok: false as const,
+        error: "Wrong username or password.",
+        retryAfter: throttle.wait,
+      };
     }
     await throttle.clear();
     await setUserSession(username);
