@@ -83,6 +83,9 @@ function Index() {
                     <Icon name="arrow_forward" className="text-[20px]" />
                   </M3Button>
                 </Link>
+                <span className="text-[14px] text-muted-foreground">
+                  Please wait, the app is being reworked.
+                </span>
               </div>
               {articles.length > 0 ? (
                 <dl className="mt-10 flex flex-wrap gap-8 border-t border-border/70 pt-6">
