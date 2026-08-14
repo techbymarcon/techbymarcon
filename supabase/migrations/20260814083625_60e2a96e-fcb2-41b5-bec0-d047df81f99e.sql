@@ -1,0 +1,1 @@
+delete from public.profiles where email = 'sectest_x1';
