@@ -142,7 +142,8 @@ export async function keyAllows(scope: Scope) {
 
 export async function clearKey() {
   const session = await getGateSession();
-  await session.update({ ...session.data, accessKey: undefined });
+  const { accessKey: _dropped, ...rest } = session.data;
+  await session.update(rest);
 }
 
 export type ForumRules = { postCooldownSeconds: number; maxPostsPerDay: number };
