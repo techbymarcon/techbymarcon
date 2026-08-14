@@ -23,6 +23,7 @@ import { Route as UHandleRouteImport } from './routes/u.$handle'
 import { Route as ApiPublicArticlesRouteImport } from './routes/api/public/articles'
 import { Route as ApiPublicCommentsRouteImport } from './routes/api/public/comments'
 import { Route as ApiPublicForumRouteImport } from './routes/api/public/forum'
+import { Route as ApiPublicNotificationsRouteImport } from './routes/api/public/notifications'
 import { Route as ApiPublicAuthLoginRouteImport } from './routes/api/public/auth.login'
 import { Route as ApiPublicAuthMeRouteImport } from './routes/api/public/auth.me'
 import { Route as ApiPublicAuthRegisterRouteImport } from './routes/api/public/auth.register'
@@ -102,6 +103,11 @@ const ApiPublicForumRoute = ApiPublicForumRouteImport.update({
   path: '/api/public/forum',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicNotificationsRoute = ApiPublicNotificationsRouteImport.update({
+  id: '/api/public/notifications',
+  path: '/api/public/notifications',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicAuthLoginRoute = ApiPublicAuthLoginRouteImport.update({
   id: '/api/public/auth/login',
   path: '/api/public/auth/login',
@@ -159,6 +165,7 @@ export interface FileRoutesByFullPath {
   '/api/public/articles': typeof ApiPublicArticlesRoute
   '/api/public/comments': typeof ApiPublicCommentsRoute
   '/api/public/forum': typeof ApiPublicForumRouteWithChildren
+  '/api/public/notifications': typeof ApiPublicNotificationsRoute
   '/api/public/auth/login': typeof ApiPublicAuthLoginRoute
   '/api/public/auth/me': typeof ApiPublicAuthMeRoute
   '/api/public/auth/register': typeof ApiPublicAuthRegisterRoute
@@ -183,6 +190,7 @@ export interface FileRoutesByTo {
   '/api/public/articles': typeof ApiPublicArticlesRoute
   '/api/public/comments': typeof ApiPublicCommentsRoute
   '/api/public/forum': typeof ApiPublicForumRouteWithChildren
+  '/api/public/notifications': typeof ApiPublicNotificationsRoute
   '/api/public/auth/login': typeof ApiPublicAuthLoginRoute
   '/api/public/auth/me': typeof ApiPublicAuthMeRoute
   '/api/public/auth/register': typeof ApiPublicAuthRegisterRoute
@@ -208,6 +216,7 @@ export interface FileRoutesById {
   '/api/public/articles': typeof ApiPublicArticlesRoute
   '/api/public/comments': typeof ApiPublicCommentsRoute
   '/api/public/forum': typeof ApiPublicForumRouteWithChildren
+  '/api/public/notifications': typeof ApiPublicNotificationsRoute
   '/api/public/auth/login': typeof ApiPublicAuthLoginRoute
   '/api/public/auth/me': typeof ApiPublicAuthMeRoute
   '/api/public/auth/register': typeof ApiPublicAuthRegisterRoute
@@ -234,6 +243,7 @@ export interface FileRouteTypes {
     | '/api/public/articles'
     | '/api/public/comments'
     | '/api/public/forum'
+    | '/api/public/notifications'
     | '/api/public/auth/login'
     | '/api/public/auth/me'
     | '/api/public/auth/register'
@@ -258,6 +268,7 @@ export interface FileRouteTypes {
     | '/api/public/articles'
     | '/api/public/comments'
     | '/api/public/forum'
+    | '/api/public/notifications'
     | '/api/public/auth/login'
     | '/api/public/auth/me'
     | '/api/public/auth/register'
@@ -282,6 +293,7 @@ export interface FileRouteTypes {
     | '/api/public/articles'
     | '/api/public/comments'
     | '/api/public/forum'
+    | '/api/public/notifications'
     | '/api/public/auth/login'
     | '/api/public/auth/me'
     | '/api/public/auth/register'
@@ -307,6 +319,7 @@ export interface RootRouteChildren {
   ApiPublicArticlesRoute: typeof ApiPublicArticlesRoute
   ApiPublicCommentsRoute: typeof ApiPublicCommentsRoute
   ApiPublicForumRoute: typeof ApiPublicForumRouteWithChildren
+  ApiPublicNotificationsRoute: typeof ApiPublicNotificationsRoute
   ApiPublicAuthLoginRoute: typeof ApiPublicAuthLoginRoute
   ApiPublicAuthMeRoute: typeof ApiPublicAuthMeRoute
   ApiPublicAuthRegisterRoute: typeof ApiPublicAuthRegisterRoute
@@ -414,6 +427,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicForumRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/notifications': {
+      id: '/api/public/notifications'
+      path: '/api/public/notifications'
+      fullPath: '/api/public/notifications'
+      preLoaderRoute: typeof ApiPublicNotificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/auth/login': {
       id: '/api/public/auth/login'
       path: '/api/public/auth/login'
@@ -513,6 +533,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicArticlesRoute: ApiPublicArticlesRoute,
   ApiPublicCommentsRoute: ApiPublicCommentsRoute,
   ApiPublicForumRoute: ApiPublicForumRouteWithChildren,
+  ApiPublicNotificationsRoute: ApiPublicNotificationsRoute,
   ApiPublicAuthLoginRoute: ApiPublicAuthLoginRoute,
   ApiPublicAuthMeRoute: ApiPublicAuthMeRoute,
   ApiPublicAuthRegisterRoute: ApiPublicAuthRegisterRoute,
