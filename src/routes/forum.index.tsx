@@ -209,7 +209,9 @@ function Forum() {
                     {p.display_name}
                     <VerifiedBadge tier={p.tier} />
                   </span>
-                  <span>@{p.handle}</span>
+                  <Link to="/u/$handle" params={{ handle: p.handle }} className="hover:underline">
+                    @{p.handle}
+                  </Link>
                   {p.pinned ? (
                     <span className="inline-flex items-center gap-1 rounded-full bg-primary-container px-2 py-0.5 text-[12px] text-on-primary-container">
                       <Icon name="push_pin" className="text-[14px]" /> Pinned
