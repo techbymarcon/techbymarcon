@@ -154,17 +154,18 @@ export type PublicProfile = {
   tier: string;
 };
 
-const publicProfile = async (
+const publicProfile = (
   row: ProfileRow | null | undefined,
-): Promise<PublicProfile | null> => {
-  if (!row) return null;
-  return {
-    handle: row.handle,
-    display_name: row.display_name,
-    avatar_url: row.avatar_url ?? "",
-    tier: await effectiveTier(row.email, row.tier),
-  };
-};
+  tierOverride?: string,
+): PublicProfile | null =>
+  row
+    ? {
+        handle: row.handle,
+        display_name: row.display_name,
+        avatar_url: row.avatar_url ?? "",
+        tier: tierOverride ?? row.tier,
+      }
+    : null;
 
 /** Usernames are the only identifier we collect — no email addresses, for privacy. */
 const normalizeUsername = (value: string) =>
