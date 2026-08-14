@@ -60,12 +60,6 @@ function Index() {
             value={home.articlesLabel}
             onChange={(v) => patch({ articlesLabel: v })}
           />
-          <Field
-            label="Download caption"
-            value={home.downloadCaption}
-            onChange={(v) => patch({ downloadCaption: v })}
-          />
-          <Field label="APK link" value={home.apkUrl} onChange={(v) => patch({ apkUrl: v })} />
         </section>
       ) : (
         <section className="reveal in-view relative">
