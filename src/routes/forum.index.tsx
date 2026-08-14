@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { Icon, M3Button } from "@/components/m3";
 import { ForumVotes } from "@/components/forum-votes";
+import { ForumLimits } from "@/components/forum-limits";
 
 import { Reveal } from "@/components/reveal";
 import { Avatar, VerifiedBadge } from "@/components/verified";
@@ -117,6 +118,10 @@ function Forum() {
           )}
         </header>
       </Reveal>
+
+      <ForumLimits className="mb-8" />
+
+
 
       {error ? (
         <p className="mb-5 rounded-2xl bg-destructive/10 px-4 py-3 text-[15px] text-destructive">
