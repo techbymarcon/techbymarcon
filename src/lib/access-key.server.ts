@@ -47,7 +47,34 @@ type Payload = {
   scopes: Scope[];
   nonce: string;
   iat: number;
+  epoch?: number;
 };
+
+/**
+ * Every account has a key epoch. Signing out bumps it, which instantly voids
+ * every key ever issued to that account — cookie session and native bearer
+ * tokens alike.
+ */
+export async function keyEpoch(username: string): Promise<number> {
+  const supabase = await db();
+  const { data } = await supabase
+    .from("key_epochs")
+    .select("epoch")
+    .eq("username", username)
+    .maybeSingle();
+  return Number((data as { epoch?: number } | null)?.epoch ?? 0);
+}
+
+export async function bumpKeyEpoch(username: string) {
+  if (!username) return;
+  const supabase = await db();
+  const next = (await keyEpoch(username)) + 1;
+  await supabase
+    .from("key_epochs")
+    .upsert({ username, epoch: next } as never, { onConflict: "username" });
+  return next;
+}
+
 
 const b64url = (bytes: Uint8Array) =>
   btoa(String.fromCharCode(...bytes)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
