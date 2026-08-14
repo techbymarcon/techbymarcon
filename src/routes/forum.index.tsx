@@ -74,6 +74,24 @@ function Forum() {
   };
 
   const swearing = hasProfanity(title, body);
+  const slur = slurStage(title, body);
+
+  // Shake the whole page while the slur is being typed; intensity is 0-100.
+  useEffect(() => {
+    const root = document.documentElement;
+    const amp = slur?.shake ?? 0;
+    if (amp > 0) {
+      root.style.setProperty("--shake-amp", `${(amp / 100) * 12}px`);
+      root.classList.add("screen-shake");
+    } else {
+      root.classList.remove("screen-shake");
+      root.style.removeProperty("--shake-amp");
+    }
+    return () => {
+      root.classList.remove("screen-shake");
+      root.style.removeProperty("--shake-amp");
+    };
+  }, [slur?.shake]);
 
   const publish = async () => {
     setBusy(true);
