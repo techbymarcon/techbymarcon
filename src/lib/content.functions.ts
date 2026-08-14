@@ -202,7 +202,121 @@ export const getSessionInfo = createServerFn({ method: "GET" }).handler(async ()
 
 /* Code-based accounts and code sign-in have been removed entirely.
    There is no shortcut code and no developer bypass: the only way to sign in
-   as the developer is username "developer" plus the DEVELOPER_PASSWORD secret. */
+   as the developer is username "developer" plus the DEVELOPER_PASSWORD secret.
+
+   Legacy code-only accounts (no password) can be claimed once by handle and
+   converted to username + password. Their codes are already gone. */
+
+/** Is this handle a legacy code-only account that still needs migrating? */
+export const lookupLegacyAccount = createServerFn({ method: "POST" })
+  .inputValidator((data: { handle: string }) => data)
+  .handler(async ({ data }) => {
+    const handle = slugHandle(data.handle ?? "");
+    if (!handle) return { ok: false as const, error: "Enter your handle." };
+    const supabase = await db();
+    const { data: row } = await supabase
+      .from("profiles")
+      .select("handle, display_name, avatar_url, tier, password_hash")
+      .eq("handle", handle)
+      .maybeSingle();
+    const legacy = row as ProfileRow | null;
+    if (!legacy || legacy.tier === "gold") {
+      return { ok: false as const, error: "No account found with that handle." };
+    }
+    if (legacy.password_hash) {
+      return {
+        ok: false as const,
+        error: "That account already has a password — sign in with your username and password.",
+      };
+    }
+    return {
+      ok: true as const,
+      handle: legacy.handle,
+      displayName: legacy.display_name,
+      avatarUrl: legacy.avatar_url ?? "",
+      message: "Your account will be migrated to username and password login.",
+    };
+  });
+
+/** Claim a legacy code-only account: set a username + password, then sign in. */
+export const migrateLegacyAccount = createServerFn({ method: "POST" })
+  .inputValidator((data: { handle: string; username: string; password: string }) => data)
+  .handler(async ({ data }) => {
+    try {
+      const handle = slugHandle(data.handle ?? "");
+      const username = normalizeUsername(data.username ?? "");
+      const password = data.password ?? "";
+      if (!isUsername(username)) {
+        return {
+          ok: false as const,
+          error: "Username must be 3–20 characters: letters, numbers or underscores.",
+        };
+      }
+      if (!password) return { ok: false as const, error: "Choose a password." };
+      if (username === "developer" || username === "techbymarcon") {
+        return { ok: false as const, error: "That username is reserved." };
+      }
+
+      const supabase = await db();
+      const { data: found } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("handle", handle)
+        .maybeSingle();
+      const legacy = found as ProfileRow | null;
+      if (!legacy || legacy.tier === "gold") {
+        return { ok: false as const, error: "No account found with that handle." };
+      }
+      if (legacy.password_hash) {
+        return { ok: false as const, error: "That account has already been migrated." };
+      }
+
+      const oldKey = legacy.email;
+      if (username !== oldKey) {
+        const taken = await profileByEmail(username);
+        if (taken) return { ok: false as const, error: "That username is taken." };
+      }
+
+      const { error } = await supabase
+        .from("profiles")
+        .update({ email: username, password_hash: await hashPassword(password) })
+        .eq("email", oldKey);
+      if (error) {
+        return {
+          ok: false as const,
+          error: /duplicate|unique/i.test(error.message)
+            ? "That username is taken."
+            : "Could not migrate that account.",
+        };
+      }
+
+      if (username !== oldKey) {
+        // Carry the account key across everything that references it.
+        await supabase.from("comments").update({ author_email: username }).eq("author_email", oldKey);
+        await supabase
+          .from("forum_posts")
+          .update({ author_email: username })
+          .eq("author_email", oldKey);
+        await supabase.from("forum_votes").update({ voter_email: username }).eq("voter_email", oldKey);
+        await supabase
+          .from("notifications")
+          .update({ recipient_email: username })
+          .eq("recipient_email", oldKey);
+      }
+
+      await setUserSession(username);
+      const row = { ...legacy, email: username } as ProfileRow;
+      return {
+        ok: true as const,
+        profile: publicProfile(row, await effectiveTier(username, row.tier)),
+      };
+    } catch (err) {
+      return {
+        ok: false as const,
+        error: `Migration failed: ${err instanceof Error ? err.message : "unknown error"}`,
+      };
+    }
+  });
 
 
 
