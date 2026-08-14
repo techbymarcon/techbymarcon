@@ -170,3 +170,32 @@ export async function saveForumRules(rules: ForumRules) {
     .from("site_content")
     .upsert({ key: "forum_rules", value: rules } as never, { onConflict: "key" });
 }
+
+/** Tier for any account, independent of the browser session (used by the mobile API). */
+export async function tierForAccount(email: string): Promise<KeyTier> {
+  if (email === "developer") return "gold";
+  const supabase = await db();
+  const { data } = await supabase
+    .from("user_roles")
+    .select("username")
+    .eq("username", email)
+    .eq("role", "moderator")
+    .maybeSingle();
+  return data ? "green" : "blue";
+}
+
+/**
+ * Mint a bearer key for an account without touching the cookie session.
+ * Native clients keep this string and send it as `Authorization: Bearer <key>`.
+ */
+export async function issueKeyForAccount(email: string) {
+  const tier = await tierForAccount(email);
+  const payload: Payload = {
+    sub: email,
+    tier,
+    scopes: scopesFor(tier),
+    nonce: b64url(crypto.getRandomValues(new Uint8Array(12))),
+    iat: Date.now(),
+  };
+  return { key: await seal(payload), tier, scopes: payload.scopes };
+}
