@@ -16,6 +16,7 @@ import {
   verifyPassword,
 } from "./content.server";
 import { notify, welcomeNotification } from "./notifications.server";
+import { postingBlock, sanctionState } from "./moderation.server";
 import { bumpKeyEpoch } from "./access-key.server";
 import { throttleLogin } from "./rate-limit.server";
 
