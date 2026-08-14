@@ -109,19 +109,19 @@ export const PROFANITY_REJECTION =
 export type SlurStage = { message: string; shake: number };
 
 const SLUR_STAGES: { prefix: string; stage: SlurStage }[] = [
-  { prefix: "nig", stage: { message: "Be careful what you type here.", shake: 1 } },
+  { prefix: "nig", stage: { message: "Be careful what you type here.", shake: 5 } },
   {
     prefix: "nigg",
     stage: {
       message: "Not only will your post get deleted, but also your account will be banned.",
-      shake: 25,
+      shake: 15,
     },
   },
   {
     prefix: "nigga",
     stage: { message: "Don't you dare send that. I swear, you will be banned.", shake: 0 },
   },
-  { prefix: "nigge", stage: { message: "TRUST ME! You do not want to do this.", shake: 75 } },
+  { prefix: "nigge", stage: { message: "TRUST ME! You do not want to do this.", shake: 30 } },
   { prefix: "nigger", stage: { message: "Don't send that. I swear to everyone.", shake: 0 } },
 ];
 
