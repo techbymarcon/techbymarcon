@@ -329,6 +329,5 @@ export const setModerator = createServerFn({ method: "POST" })
       await supabase.from("forum_posts").update({ tier }).eq("author_email", data.username);
       await supabase.from("comments").update({ tier }).eq("author_email", data.username);
     }
-    await supabase.from("comments").update({ tier }).eq("author_email", data.username);
     return { ok: true as const };
   });
