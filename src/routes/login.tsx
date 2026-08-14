@@ -42,6 +42,9 @@ function Login() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const [codeMode, setCodeMode] = useState(false);
+  const [code, setCode] = useState("");
+
   const [displayName, setDisplayName] = useState("");
   const [handle, setHandle] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
