@@ -3,6 +3,7 @@ import {
   currentIdentity,
   currentStaff,
   db,
+  effectiveTier,
   getGateSession,
   hashPassword,
   isDeveloperSession,
