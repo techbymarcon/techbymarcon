@@ -332,6 +332,7 @@ export async function createPost(who: Caller, body: Record<string, unknown>) {
   const title = String(body["title"] ?? "").trim().slice(0, 140);
   const text = String(body["body"] ?? "").trim().slice(0, 8000);
   if (!title) return json({ error: "Give your post a title." }, 400);
+  if (hasProfanity(title, text)) return json({ error: PROFANITY_REJECTION }, 400);
 
   const supabase = await db();
   if (!can(who, "forum:moderate")) {
