@@ -182,7 +182,7 @@ export function Comments({ articleId }: { articleId: string }) {
         <div className="min-w-0 flex-1">
           <p className="flex flex-wrap items-center gap-x-2 gap-y-1">
             <span className="inline-flex items-center gap-1.5 font-medium">
-              <TierName tier={c.tier}>{c.display_name}</TierName>
+              <TierName tier={c.tier} handle={c.handle}>{c.display_name}</TierName>
               <VerifiedBadge tier={c.tier} />
             </span>
             <span className="text-sm text-muted-foreground">@{c.handle}</span>
@@ -315,7 +315,7 @@ export function Comments({ articleId }: { articleId: string }) {
             <Avatar src={profile.avatar_url || undefined} name={profile.display_name} />
             <div className="min-w-0">
               <p className="flex items-center gap-1.5 font-medium">
-                <TierName tier={profile.tier} className="truncate">{profile.display_name}</TierName>
+                <TierName tier={profile.tier} handle={profile.handle} className="truncate">{profile.display_name}</TierName>
                 <VerifiedBadge tier={profile.tier} />
               </p>
               <p className="text-sm text-muted-foreground">@{profile.handle}</p>

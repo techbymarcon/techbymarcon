@@ -150,7 +150,7 @@ function Accounts() {
                 <Avatar src={a.avatar_url || undefined} name={a.display_name} />
                 <div className="min-w-0">
                   <p className="inline-flex items-center gap-1.5 font-medium">
-                    <TierName tier={a.tier}>{a.display_name}</TierName>
+                    <TierName tier={a.tier} handle={a.handle}>{a.display_name}</TierName>
                     <VerifiedBadge tier={a.tier} />
                   </p>
                   <p className="truncate text-sm text-muted-foreground">@{a.handle}</p>

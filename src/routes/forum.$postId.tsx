@@ -89,7 +89,7 @@ function ForumPostPage() {
           <Avatar src={post.avatar_url || undefined} name={post.display_name} />
           <div>
             <p className="inline-flex items-center gap-1.5 font-medium">
-              <TierName tier={post.tier}>{post.display_name}</TierName>
+              <TierName tier={post.tier} handle={post.handle}>{post.display_name}</TierName>
               <VerifiedBadge tier={post.tier} />
             </p>
             <p className="text-sm text-muted-foreground">@{post.handle}</p>

@@ -95,7 +95,7 @@ function Moderators() {
             <Avatar src={m.avatar_url || undefined} name={m.display_name} />
             <div className="min-w-0">
               <p className="inline-flex items-center gap-1.5 font-medium">
-                <TierName tier={m.tier}>{m.display_name}</TierName>
+                <TierName tier={m.tier} handle={m.handle}>{m.display_name}</TierName>
                 <VerifiedBadge tier={m.tier} />
               </p>
               <p className="truncate text-sm text-muted-foreground">@{m.handle}</p>
