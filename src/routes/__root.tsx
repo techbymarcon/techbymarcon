@@ -17,7 +17,6 @@ import { ArticlesProvider } from "@/lib/articles";
 import { SiteContentProvider } from "@/lib/site-content";
 import { HamburgerMenu } from "@/components/hamburger-menu";
 import { BackToTop } from "@/components/back-to-top";
-import { NotificationsButton } from "@/components/notifications";
 import { BannedGate } from "@/components/banned-gate";
 
 function NotFoundComponent() {
@@ -148,7 +147,6 @@ function RootComponent() {
                 {/* Required: nested routes render here. */}
                 <Outlet />
               </main>
-              <NotificationsButton />
               <BackToTop />
               </BannedGate>
             </div>
