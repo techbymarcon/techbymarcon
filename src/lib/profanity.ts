@@ -97,45 +97,8 @@ export const hasProfanity = (...parts: (string | null | undefined)[]) =>
   findProfanity(...parts) !== null;
 
 export const PROFANITY_WARNING =
-  "You included a swear word! The post has a high chance of being deleted.";
+  "This isn't gonna send because it has a swear.";
 
 export const PROFANITY_REJECTION =
-  "Your post contained a swear word, so it was deleted. Please keep the forum clean.";
-
-/**
- * Escalating live warning for the worst slur, used by the forum composer while
- * the user is still typing. Returns the strongest stage found in the text.
- */
-export type SlurStage = { message: string; shake: number };
-
-const SLUR_STAGES: { prefix: string; stage: SlurStage }[] = [
-  { prefix: "nig", stage: { message: "Be careful what you type here.", shake: 5 } },
-  {
-    prefix: "nigg",
-    stage: {
-      message: "Not only will your post get deleted, but also your account will be banned.",
-      shake: 15,
-    },
-  },
-  {
-    prefix: "nigga",
-    stage: { message: "Don't you dare send that. I swear, you will be banned.", shake: 0 },
-  },
-  { prefix: "nigge", stage: { message: "TRUST ME! You do not want to do this.", shake: 30 } },
-  { prefix: "nigger", stage: { message: "Don't send that. I swear to everyone.", shake: 0 } },
-];
-
-export function slurStage(...parts: (string | null | undefined)[]): SlurStage | null {
-  const text = normalize(parts.filter(Boolean).join(" ")).replace(/\s+/g, "");
-  let found: SlurStage | null = null;
-  for (const { prefix, stage } of SLUR_STAGES) {
-    if (text.includes(prefix)) found = stage;
-  }
-  return found;
-}
-
-/** "nig" followed by "ht" — an innocent word, so we just say "Oh." */
-export function isNight(...parts: (string | null | undefined)[]): boolean {
-  return normalize(parts.filter(Boolean).join(" ")).replace(/\s+/g, "").includes("night");
-}
+  "Not sent because of the swear. Please keep the forum clean!";
 

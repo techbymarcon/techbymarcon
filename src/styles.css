@@ -301,33 +301,3 @@
     animation: none;
   }
 }
-
-/* Escalating warning shake used by the forum composer. */
-@keyframes screen-shake {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0);
-  }
-  20% {
-    transform: translate3d(calc(var(--shake-amp, 0px) * -1), var(--shake-amp, 0px), 0);
-  }
-  40% {
-    transform: translate3d(var(--shake-amp, 0px), calc(var(--shake-amp, 0px) * -0.6), 0);
-  }
-  60% {
-    transform: translate3d(calc(var(--shake-amp, 0px) * -0.6), calc(var(--shake-amp, 0px) * -1), 0);
-  }
-  80% {
-    transform: translate3d(var(--shake-amp, 0px), var(--shake-amp, 0px), 0);
-  }
-}
-
-.screen-shake {
-  animation: screen-shake 0.12s linear infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .screen-shake {
-    animation: none;
-  }
-}
