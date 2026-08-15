@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { forumRules, keyAllows } from "./access-key.server";
-import { currentStaff, db, effectiveTier, requireDeveloper, requireIdentity } from "./content.server";
+import { currentStaff, db, effectiveTier, isDeveloperAccount, requireDeveloper, requireIdentity } from "./content.server";
 import { actorFor, notify } from "./notifications.server";
 import { postingBlock } from "./moderation.server";
 import { PROFANITY_REJECTION, hasProfanity } from "./profanity";
@@ -301,9 +301,11 @@ export const listMembers = createServerFn({ method: "GET" }).handler(async () =>
     .order("created_at", { ascending: false });
   const { data: roles } = await supabase
     .from("user_roles")
-    .select("username")
-    .eq("role", "moderator");
-  const mods = new Set((roles ?? []).map((r) => (r as { username: string }).username));
+    .select("username, role")
+    .in("role", ["moderator", "developer"]);
+  const rows = (roles ?? []) as { username: string; role: string }[];
+  const mods = new Set(rows.filter((r) => r.role === "moderator").map((r) => r.username));
+  const devs = new Set(rows.filter((r) => r.role === "developer").map((r) => r.username));
   return await Promise.all(
     (profiles ?? []).map(async (p) => ({
       username: p.email as string,
@@ -311,10 +313,12 @@ export const listMembers = createServerFn({ method: "GET" }).handler(async () =>
       display_name: p.display_name as string,
       avatar_url: (p.avatar_url as string) ?? "",
       tier: await effectiveTier(p.email as string, p.tier as string),
+      developer: devs.has(p.email as string) || p.email === "developer",
       moderator: mods.has(p.email as string),
     })),
   );
 });
+
 
 export const setModerator = createServerFn({ method: "POST" })
   .inputValidator((data: { username: string; moderator: boolean }) => data)
@@ -337,11 +341,14 @@ export const setModerator = createServerFn({ method: "POST" })
       if (error) return { ok: false as const, error: "Could not remove that role." };
     }
     // Keep the stored badge in sync so old posts and comments show the right check.
-    const tier = data.moderator ? "green" : "blue";
+    // Developer accounts always stay gold — toggling moderator must never demote them.
+    const isDev = await isDeveloperAccount(data.username);
+    const tier = isDev ? "gold" : data.moderator ? "green" : "blue";
     if (data.username !== "developer" && data.username !== "techbymarcon") {
       await supabase.from("profiles").update({ tier }).eq("email", data.username);
       await supabase.from("forum_posts").update({ tier }).eq("author_email", data.username);
       await supabase.from("comments").update({ tier }).eq("author_email", data.username);
     }
+
     return { ok: true as const };
   });
