@@ -38,12 +38,14 @@ export function TierName({
   tier,
   children,
   className,
+  handle,
 }: {
   tier: Tier;
   children: React.ReactNode;
   className?: string;
+  handle?: string | undefined;
 }) {
-  return (
+  const inner = (
     <span
       className={cn(
         tier === "gold" && "tier-name tier-name-gold",
@@ -54,7 +56,19 @@ export function TierName({
       {children}
     </span>
   );
+  if (!handle) return inner;
+  return (
+    <Link
+      to="/u/$handle"
+      params={{ handle }}
+      className="rounded-sm hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      title={`View @${handle}'s profile`}
+    >
+      {inner}
+    </Link>
+  );
 }
+
 
 export function Avatar({
   src,
