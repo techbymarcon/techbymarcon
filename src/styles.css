@@ -226,7 +226,7 @@
   background:
     var(--glass-sheen),
     linear-gradient(165deg, color-mix(in oklab, var(--color-surface) 46%, transparent), color-mix(in oklab, var(--color-surface-container) 64%, transparent));
-  backdrop-filter: blur(34px) saturate(1.55);
+  backdrop-filter: blur(16px) saturate(1.3);
   border: 1px solid var(--glass-border);
   box-shadow:
     inset 0 1px 0.5px var(--glass-highlight),
@@ -249,7 +249,7 @@
   background:
     var(--glass-sheen),
     linear-gradient(165deg, color-mix(in oklab, var(--color-surface) 38%, transparent), color-mix(in oklab, var(--color-surface-container) 58%, transparent));
-  backdrop-filter: blur(48px) saturate(1.65);
+  backdrop-filter: blur(20px) saturate(1.35);
   border: 1px solid var(--glass-border);
   box-shadow:
     inset 0 1px 0.75px var(--glass-highlight),
