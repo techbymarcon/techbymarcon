@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Icon } from "@/components/m3";
 import { Avatar, VerifiedBadge } from "@/components/verified";
+import { NotificationsPanel } from "@/components/notifications";
 import { useAuth } from "@/lib/auth";
 import { useTheme } from "@/lib/theme";
 import { cn } from "@/lib/utils";
@@ -12,12 +13,17 @@ type Item =
 
 export function HamburgerMenu() {
   const [open, setOpen] = useState(false);
+  const [notif, setNotif] = useState(false);
   const path = useRouterState({ select: (r) => r.location.pathname });
   const { theme, toggle } = useTheme();
 
   useEffect(() => {
     setOpen(false);
   }, [path]);
+
+  useEffect(() => {
+    if (!open) setNotif(false);
+  }, [open]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -44,7 +50,7 @@ export function HamburgerMenu() {
       kind: "action",
       label: "Notifications",
       icon: "notifications",
-      onSelect: () => window.dispatchEvent(new CustomEvent("tbm:open-notifications")),
+      onSelect: () => setNotif(true),
     },
     {
       kind: "action",
@@ -85,13 +91,20 @@ export function HamburgerMenu() {
         aria-hidden={!open}
         className={cn(
           "fixed top-4 left-4 z-[65] origin-top-left overflow-hidden border border-border/60 glass elevation-2",
-          "transition-[width,height,border-radius,opacity] duration-[550ms] ease-[cubic-bezier(0.3,1.5,0.5,1)]",
+          "transition-[width,height,border-radius,opacity] duration-[550ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
           open
-            ? "h-[430px] w-[min(19rem,calc(100vw-2rem))] rounded-[32px] opacity-100"
+            ? notif
+              ? "h-[min(30rem,calc(100vh-2rem))] w-[min(23rem,calc(100vw-2rem))] rounded-[32px] opacity-100"
+              : "h-[430px] w-[min(19rem,calc(100vw-2rem))] rounded-[32px] opacity-100"
             : "pointer-events-none size-12 rounded-[18px] opacity-0",
         )}
       >
-        <ul className="flex h-full flex-col justify-center gap-0.5 px-4 pt-14 pb-4">
+        <ul
+          className={cn(
+            "flex h-full flex-col justify-center gap-0.5 px-4 pt-14 pb-4 transition-opacity duration-300",
+            notif && "pointer-events-none opacity-0",
+          )}
+        >
           {items.map((item, i) => (
             <li
               key={item.label}
@@ -129,7 +142,7 @@ export function HamburgerMenu() {
                   type="button"
                   onClick={() => {
                     item.onSelect();
-                    setOpen(false);
+                    if (item.icon !== "notifications") setOpen(false);
                   }}
                   className={itemClass()}
                 >
@@ -140,6 +153,32 @@ export function HamburgerMenu() {
             </li>
           ))}
         </ul>
+        <div
+          className={cn(
+            "absolute inset-0 flex flex-col px-4 pt-14 pb-4 transition-opacity duration-300",
+            notif ? "opacity-100" : "pointer-events-none opacity-0",
+          )}
+        >
+          <div className="mb-2 flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setNotif(false)}
+              aria-label="Back to menu"
+              className="grid size-8 place-items-center rounded-full text-muted-foreground m3-transition hover:bg-foreground/8 hover:text-foreground"
+            >
+              <Icon name="arrow_back" className="text-[20px]" />
+            </button>
+            <span
+              className={cn(
+                "font-display text-lg font-medium transition-transform duration-500 ease-out",
+                notif ? "translate-y-0" : "translate-y-40",
+              )}
+            >
+              Notifications
+            </span>
+          </div>
+          <div className="min-h-0 flex-1">{notif && <NotificationsPanel onNavigate={() => setOpen(false)} />}</div>
+        </div>
       </nav>
 
     </>
