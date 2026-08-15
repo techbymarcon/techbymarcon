@@ -16,6 +16,7 @@ import { AuthProvider } from "@/lib/auth";
 import { ArticlesProvider } from "@/lib/articles";
 import { SiteContentProvider } from "@/lib/site-content";
 import { Navigation } from "@/components/navigation";
+import { HamburgerMenu } from "@/components/hamburger-menu";
 import { BackToTop } from "@/components/back-to-top";
 import { NotificationsButton } from "@/components/notifications";
 import { BannedGate } from "@/components/banned-gate";
