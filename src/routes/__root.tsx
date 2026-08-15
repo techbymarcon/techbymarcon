@@ -143,7 +143,8 @@ function RootComponent() {
             <div className="relative min-h-screen w-full bg-background">
               <div className="aurora" aria-hidden="true" />
               <BannedGate>
-              <Navigation />
+               <Navigation />
+               <HamburgerMenu />
               <main className="pb-28 md:pb-0 md:pl-[90px]">
                 {/* Required: nested routes render here. */}
                 <Outlet />
