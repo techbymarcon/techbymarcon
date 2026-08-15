@@ -144,7 +144,7 @@ function Forum() {
           <div className="mb-3 flex items-center gap-3">
             <Avatar src={profile.avatar_url || undefined} name={profile.display_name} />
             <span className="inline-flex items-center gap-1.5 font-medium">
-              <TierName tier={profile.tier}>{profile.display_name}</TierName>
+              <TierName tier={profile.tier} handle={profile.handle}>{profile.display_name}</TierName>
               <VerifiedBadge tier={profile.tier} />
             </span>
           </div>
@@ -226,7 +226,7 @@ function Forum() {
               <div className="min-w-0 flex-1">
                 <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
                   <span className="inline-flex items-center gap-1.5 font-medium text-foreground">
-                    <TierName tier={p.tier}>{p.display_name}</TierName>
+                    <TierName tier={p.tier} handle={p.handle}>{p.display_name}</TierName>
                     <VerifiedBadge tier={p.tier} />
                   </span>
                   <Link to="/u/$handle" params={{ handle: p.handle }} className="hover:underline">
