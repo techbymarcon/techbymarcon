@@ -11,8 +11,10 @@ type Member = {
   display_name: string;
   avatar_url: string;
   tier: string;
+  developer: boolean;
   moderator: boolean;
 };
+
 
 export const Route = createFileRoute("/moderators")({
   head: () => ({
