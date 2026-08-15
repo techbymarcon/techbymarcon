@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Icon } from "@/components/m3";
+import { Avatar, VerifiedBadge } from "@/components/verified";
+import { useAuth } from "@/lib/auth";
 import { useTheme } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 
