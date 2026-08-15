@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Icon, M3Button } from "@/components/m3";
-import { Avatar, VerifiedBadge } from "@/components/verified";
+import { Avatar, TierName, VerifiedBadge } from "@/components/verified";
 import { Linkify } from "@/components/linkify";
 import {
   addComment,
@@ -182,7 +182,7 @@ export function Comments({ articleId }: { articleId: string }) {
         <div className="min-w-0 flex-1">
           <p className="flex flex-wrap items-center gap-x-2 gap-y-1">
             <span className="inline-flex items-center gap-1.5 font-medium">
-              {c.display_name}
+              <TierName tier={c.tier}>{c.display_name}</TierName>
               <VerifiedBadge tier={c.tier} />
             </span>
             <span className="text-sm text-muted-foreground">@{c.handle}</span>
@@ -315,7 +315,7 @@ export function Comments({ articleId }: { articleId: string }) {
             <Avatar src={profile.avatar_url || undefined} name={profile.display_name} />
             <div className="min-w-0">
               <p className="flex items-center gap-1.5 font-medium">
-                <span className="truncate">{profile.display_name}</span>
+                <TierName tier={profile.tier} className="truncate">{profile.display_name}</TierName>
                 <VerifiedBadge tier={profile.tier} />
               </p>
               <p className="text-sm text-muted-foreground">@{profile.handle}</p>

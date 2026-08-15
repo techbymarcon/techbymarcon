@@ -5,7 +5,7 @@ import { Icon, M3Button } from "@/components/m3";
 import { ForumVotes } from "@/components/forum-votes";
 
 import { Linkify } from "@/components/linkify";
-import { Avatar, VerifiedBadge } from "@/components/verified";
+import { Avatar, TierName, VerifiedBadge } from "@/components/verified";
 import { useAuth } from "@/lib/auth";
 import {
   deleteForumPost,
@@ -89,7 +89,7 @@ function ForumPostPage() {
           <Avatar src={post.avatar_url || undefined} name={post.display_name} />
           <div>
             <p className="inline-flex items-center gap-1.5 font-medium">
-              {post.display_name}
+              <TierName tier={post.tier}>{post.display_name}</TierName>
               <VerifiedBadge tier={post.tier} />
             </p>
             <p className="text-sm text-muted-foreground">@{post.handle}</p>

@@ -34,6 +34,28 @@ export function VerifiedBadge({
   );
 }
 
+export function TierName({
+  tier,
+  children,
+  className,
+}: {
+  tier: Tier;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <span
+      className={cn(
+        tier === "gold" && "tier-name tier-name-gold",
+        tier === "green" && "tier-name tier-name-green",
+        className,
+      )}
+    >
+      {children}
+    </span>
+  );
+}
+
 export function Avatar({
   src,
   name,
