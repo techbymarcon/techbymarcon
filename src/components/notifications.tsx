@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { Icon } from "@/components/m3";
 import { Avatar, VerifiedBadge } from "@/components/verified";
+import { BouncingText } from "@/components/bouncing-text";
 import { useAuth } from "@/lib/auth";
 import {
   clearNotifications,
@@ -141,7 +142,9 @@ export function NotificationsButton() {
                   <span className="min-w-0 flex-1">
                     <span className="flex items-center gap-1.5">
                       <Icon name={iconFor(n.kind)} className="text-[16px] text-muted-foreground" />
-                      <span className="truncate text-sm font-medium">{n.title}</span>
+                      <span className="truncate text-sm font-medium">
+                        <BouncingText>{n.title}</BouncingText>
+                      </span>
                     </span>
                     {n.body && (
                       <span className="mt-0.5 line-clamp-2 block text-xs text-muted-foreground">

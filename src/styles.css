@@ -301,3 +301,24 @@
     animation: none;
   }
 }
+
+@keyframes letter-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+.animate-letter-bounce {
+  animation: letter-bounce 2s ease-in-out infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-letter-bounce {
+    animation: none;
+  }
+}

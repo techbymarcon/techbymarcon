@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Icon, M3Button } from "@/components/m3";
 import { Reveal } from "@/components/reveal";
-import { Linkify } from "@/components/linkify";
+import { BouncingText } from "@/components/bouncing-text";
 import { EditToolbar, Field } from "@/components/editable";
 import { useAuth } from "@/lib/auth";
 import { newId, TONES, useSiteContent, type SiteContent } from "@/lib/site-content";
@@ -78,7 +78,7 @@ function Socials() {
             {socials.heading}
           </h1>
           <p className="mt-6 max-w-xl text-[18px] leading-relaxed text-muted-foreground">
-            <Linkify text={socials.intro} />
+            <BouncingText>{socials.intro}</BouncingText>
           </p>
         </Reveal>
       )}

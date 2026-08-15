@@ -8,6 +8,7 @@ import { ArticleCard } from "@/components/article-card";
 import { Icon, M3Button } from "@/components/m3";
 import { Reveal } from "@/components/reveal";
 import { VerifiedInfo } from "@/components/verified";
+import { BouncingText } from "@/components/bouncing-text";
 import { EditToolbar, Field } from "@/components/editable";
 import { useSiteContent, type SiteContent } from "@/lib/site-content";
 import { useAuth } from "@/lib/auth";
@@ -71,7 +72,9 @@ function Index() {
                 {home.badge}
               </p>
               <h1 className="font-display text-[42px] leading-[1.02] font-medium tracking-tight md:text-[60px] lg:text-[76px]">
-                <span className="text-gradient">{home.title}</span>
+                <span className="text-gradient">
+                  <BouncingText>{home.title}</BouncingText>
+                </span>
               </h1>
               <p className="mt-6 max-w-xl text-[18px] leading-relaxed text-muted-foreground">
                 {home.intro}
