@@ -25,12 +25,19 @@ export function HamburgerMenu() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
+  const { session, profile, isDeveloper } = useAuth();
+
   const items: Item[] = [
     { kind: "link", to: "/", label: "Home", icon: "home" },
     { kind: "link", to: "/articles", label: "Articles", icon: "article" },
     { kind: "link", to: "/forum", label: "Forum", icon: "forum" },
     { kind: "link", to: "/socials", label: "Socials", icon: "share" },
-    { kind: "link", to: "/login", label: "Profile", icon: "person" },
+    {
+      kind: "link",
+      to: "/login",
+      label: session ? `@${profile?.handle ?? "you"}` : "Profile",
+      icon: "person",
+    },
     {
       kind: "action",
       label: "Notifications",
@@ -47,7 +54,7 @@ export function HamburgerMenu() {
 
   const itemClass = (active?: boolean) =>
     cn(
-      "flex w-full items-center gap-4 rounded-[24px] px-4 py-2.5 text-left font-display text-2xl font-medium m3-transition hover:bg-foreground/8 sm:text-4xl",
+      "flex w-full items-center gap-3 rounded-[20px] px-3 py-2 text-left font-display text-lg font-medium m3-transition hover:bg-foreground/8",
       active ? "text-foreground" : "text-muted-foreground",
     );
 
@@ -67,7 +74,7 @@ export function HamburgerMenu() {
         aria-hidden={!open}
         onClick={() => setOpen(false)}
         className={cn(
-          "fixed inset-0 z-[60] bg-background/40 backdrop-blur-[2px] transition-opacity duration-300",
+          "fixed inset-0 z-[60] bg-background/20 transition-opacity duration-300",
           open ? "opacity-100" : "pointer-events-none opacity-0",
         )}
       />
@@ -75,14 +82,14 @@ export function HamburgerMenu() {
       <nav
         aria-hidden={!open}
         className={cn(
-          "fixed top-4 left-4 z-[65] origin-top-left overflow-hidden border border-border/60 glass-strong elevation-3",
-          "transition-[width,height,border-radius,opacity] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+          "fixed top-4 left-4 z-[65] origin-top-left overflow-hidden border border-border/60 glass elevation-2",
+          "transition-[width,height,border-radius,opacity] duration-[550ms] ease-[cubic-bezier(0.3,1.5,0.5,1)]",
           open
-            ? "h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] rounded-[44px] opacity-100"
+            ? "h-[430px] w-[min(19rem,calc(100vw-2rem))] rounded-[32px] opacity-100"
             : "pointer-events-none size-12 rounded-[18px] opacity-0",
         )}
       >
-        <ul className="flex h-full flex-col justify-center gap-1 px-6 pt-16 pb-8 sm:px-12">
+        <ul className="flex h-full flex-col justify-center gap-0.5 px-4 pt-14 pb-4">
           {items.map((item, i) => (
             <li
               key={item.label}
@@ -97,7 +104,22 @@ export function HamburgerMenu() {
                     item.to === "/" ? path === "/" : path.startsWith(item.to),
                   )}
                 >
-                  <Icon name={item.icon} className="text-[26px] sm:text-[30px]" />
+                  {item.to === "/login" && session ? (
+                    <span className="relative grid size-[26px] place-items-center">
+                      <Avatar
+                        src={profile?.avatar_url || undefined}
+                        name={profile?.display_name || "Member"}
+                        size={26}
+                      />
+                      <VerifiedBadge
+                        tier={profile?.tier ?? (isDeveloper ? "gold" : "blue")}
+                        size={12}
+                        className="absolute -right-0.5 -bottom-0.5"
+                      />
+                    </span>
+                  ) : (
+                    <Icon name={item.icon} className="text-[22px]" />
+                  )}
                   {item.label}
                 </Link>
               ) : (
@@ -109,7 +131,7 @@ export function HamburgerMenu() {
                   }}
                   className={itemClass()}
                 >
-                  <Icon name={item.icon} className="text-[26px] sm:text-[30px]" />
+                  <Icon name={item.icon} className="text-[22px]" />
                   {item.label}
                 </button>
               )}
@@ -117,6 +139,7 @@ export function HamburgerMenu() {
           ))}
         </ul>
       </nav>
+
     </>
   );
 }
