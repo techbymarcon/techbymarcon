@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import checkBlue from "@/assets/check-blue.png.asset.json";
 import checkGold from "@/assets/check-gold.png.asset.json";
 import checkGreen from "@/assets/check-green.png";
