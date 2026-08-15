@@ -304,20 +304,41 @@
 
 @keyframes letter-bounce {
   0%,
+  60%,
   100% {
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
+  }
+  25% {
+    transform: translateY(-4px) scale(1.04);
+  }
+  40% {
+    transform: translateY(1px) scale(0.99);
   }
   50% {
-    transform: translateY(-3px);
+    transform: translateY(-1px) scale(1);
   }
+}
+
+.brand-letter {
+  display: inline-block;
+  animation: letter-bounce 2s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+}
+
+.brand-letter-gradient {
+  background-image: var(--gradient-brand);
+  background-repeat: no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .animate-letter-bounce {
-  animation: letter-bounce 2s ease-in-out infinite;
+  animation: letter-bounce 2s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .animate-letter-bounce {
+  .animate-letter-bounce,
+  .brand-letter {
     animation: none;
   }
 }
