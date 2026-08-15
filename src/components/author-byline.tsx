@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Avatar, VerifiedBadge } from "@/components/verified";
 import { BouncingText } from "@/components/bouncing-text";
+import { Link } from "@tanstack/react-router";
 import { getDeveloperProfile } from "@/lib/content.functions";
 import { cn } from "@/lib/utils";
 
@@ -38,9 +39,11 @@ export function AuthorByline({ className, size = 40 }: { className?: string; siz
       <Avatar src={profile?.avatar_url ?? undefined} name={name} size={size} />
       <div className="leading-tight">
         <span className="flex items-center gap-1.5 font-medium">
-          <BouncingText tier={(profile?.tier || "gold") === "green" ? "green" : "gold"}>
-            {name}
-          </BouncingText>
+          <Link to="/u/$handle" params={{ handle }} className="hover:underline">
+            <BouncingText tier={(profile?.tier || "gold") === "green" ? "green" : "gold"}>
+              {name}
+            </BouncingText>
+          </Link>
           <VerifiedBadge tier={profile?.tier || "gold"} size={16} />
         </span>
         <span className="text-sm text-muted-foreground">@{handle}</span>
