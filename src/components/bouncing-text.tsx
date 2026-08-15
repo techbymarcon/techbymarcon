@@ -2,15 +2,7 @@ import { cn } from "@/lib/utils";
 
 const BRAND_NAMES = ["Tech by Marcon", "TechByMarcon"];
 
-function BouncingBrand({
-  text,
-  className,
-  gradient,
-}: {
-  text: string;
-  className?: string;
-  gradient?: boolean;
-}) {
+function BouncingBrand({ text, className }: { text: string; className?: string }) {
   let letterIndex = 0;
   return (
     <span className={cn("inline whitespace-nowrap", className)}>
@@ -27,10 +19,7 @@ function BouncingBrand({
         return (
           <span
             key={i}
-            className={cn(
-              "inline-block animate-letter-bounce",
-              gradient && "text-gradient",
-            )}
+            className="inline-block animate-letter-bounce"
             style={{ animationDelay: `${delay}s` }}
           >
             {char}
@@ -44,11 +33,9 @@ function BouncingBrand({
 export function BouncingText({
   children,
   className,
-  gradient,
 }: {
   children: string;
   className?: string;
-  gradient?: boolean;
 }) {
   const text = children;
   for (const brand of BRAND_NAMES) {
@@ -59,7 +46,7 @@ export function BouncingText({
       return (
         <span className={cn("inline", className)}>
           {before}
-          <BouncingBrand text={brand} gradient={gradient} />
+          <BouncingBrand text={brand} />
           {after}
         </span>
       );
