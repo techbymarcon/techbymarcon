@@ -103,18 +103,28 @@ function Moderators() {
               <p className="truncate text-sm text-muted-foreground">@{m.handle}</p>
             </div>
             <div className="ml-auto">
-              <M3Button
-                variant={m.moderator ? "filled" : "tonal"}
-                onClick={async () => {
-                  await setModerator({
-                    data: { username: m.username, moderator: !m.moderator },
-                  });
-                  await refresh();
-                }}
-              >
-                <Icon name={m.moderator ? "shield_person" : "add_moderator"} className="text-[20px]" />
-                {m.moderator ? "Moderator" : "Make moderator"}
-              </M3Button>
+              {m.developer ? (
+                <span className="rounded-full border border-border/70 px-3 py-2 text-sm text-muted-foreground">
+                  Developer
+                </span>
+              ) : (
+                <M3Button
+                  variant={m.moderator ? "filled" : "tonal"}
+                  onClick={async () => {
+                    await setModerator({
+                      data: { username: m.username, moderator: !m.moderator },
+                    });
+                    await refresh();
+                  }}
+                >
+                  <Icon
+                    name={m.moderator ? "shield_person" : "add_moderator"}
+                    className="text-[20px]"
+                  />
+                  {m.moderator ? "Moderator" : "Make moderator"}
+                </M3Button>
+              )}
+
             </div>
           </div>
         ))}
