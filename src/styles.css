@@ -120,6 +120,10 @@
   --grid-line: oklch(0.85 0.08 295 / 0.06);
   --halo-1: oklch(0.55 0.2 300 / 0.45);
   --halo-2: oklch(0.5 0.16 215 / 0.35);
+  --glass-border: oklch(1 0 0 / 0.10);
+  --glass-highlight: oklch(1 0 0 / 0.10);
+  --glass-shadow: oklch(0 0 0 / 0.18);
+  --glass-sheen: linear-gradient(105deg, oklch(1 0 0 / 0.07) 0%, oklch(1 0 0 / 0) 45%);
 }
 
 @layer base {
