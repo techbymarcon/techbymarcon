@@ -2,11 +2,21 @@ import { cn } from "@/lib/utils";
 
 const BRAND_NAMES = ["Tech by Marcon", "TechByMarcon"];
 
-function BouncingBrand({ text, className }: { text: string; className?: string }) {
+type BrandProps = {
+  text: string;
+  className?: string | undefined;
+  /** Paints a continuous brand gradient across the animated letters. */
+  gradient?: boolean | undefined;
+};
+
+function BouncingBrand({ text, className, gradient }: BrandProps) {
+  const chars = text.split("");
+  const letters = chars.filter((c) => c !== " ").length;
   let letterIndex = 0;
+
   return (
     <span className={cn("inline whitespace-nowrap", className)}>
-      {text.split("").map((char, i) => {
+      {chars.map((char, i) => {
         if (char === " ") {
           return (
             <span key={i} className="inline-block">
@@ -14,13 +24,20 @@ function BouncingBrand({ text, className }: { text: string; className?: string }
             </span>
           );
         }
-        const delay = letterIndex * 0.1;
+        const idx = letterIndex;
         letterIndex++;
+        const style: React.CSSProperties = {
+          animationDelay: `${idx * 0.1}s`,
+        };
+        if (gradient) {
+          style.backgroundSize = `${letters * 100}% 100%`;
+          style.backgroundPosition = `${letters > 1 ? (idx / (letters - 1)) * 100 : 0}% 0`;
+        }
         return (
           <span
             key={i}
-            className="inline-block animate-letter-bounce"
-            style={{ animationDelay: `${delay}s` }}
+            className={cn("brand-letter", gradient && "brand-letter-gradient")}
+            style={style}
           >
             {char}
           </span>
@@ -33,9 +50,11 @@ function BouncingBrand({ text, className }: { text: string; className?: string }
 export function BouncingText({
   children,
   className,
+  gradient,
 }: {
   children: string;
-  className?: string;
+  className?: string | undefined;
+  gradient?: boolean | undefined;
 }) {
   const text = children;
   for (const brand of BRAND_NAMES) {
@@ -46,7 +65,7 @@ export function BouncingText({
       return (
         <span className={cn("inline", className)}>
           {before}
-          <BouncingBrand text={brand} />
+          <BouncingBrand text={brand} gradient={gradient} />
           {after}
         </span>
       );
