@@ -324,25 +324,27 @@
 }
 
 @keyframes tier-name-shift {
-  0% {
-    background-position: 0% 0;
+  from {
+    background-position: 0% 50%;
   }
-  100% {
-    background-position: -200% 0;
+  to {
+    background-position: 200% 50%;
   }
 }
 
 .tier-name {
+  display: inline-block;
   background-size: 200% 100%;
-  background-repeat: repeat-x;
+  background-repeat: repeat;
   -webkit-background-clip: text;
   background-clip: text;
-  animation: tier-name-shift 5s linear infinite;
+  animation: tier-name-shift 3s linear infinite;
 }
 
 @supports (background-clip: text) or (-webkit-background-clip: text) {
   .tier-name {
     color: transparent;
+    -webkit-text-fill-color: transparent;
   }
 }
 
@@ -350,11 +352,9 @@
   color: oklch(0.78 0.15 85);
   background-image: linear-gradient(
     90deg,
-    oklch(0.86 0.16 90),
-    oklch(0.62 0.13 70) 25%,
-    oklch(0.86 0.16 90) 50%,
-    oklch(0.62 0.13 70) 75%,
-    oklch(0.86 0.16 90)
+    oklch(0.88 0.16 92),
+    oklch(0.52 0.11 68) 50%,
+    oklch(0.88 0.16 92)
   );
 }
 
@@ -362,13 +362,12 @@
   color: oklch(0.65 0.16 150);
   background-image: linear-gradient(
     90deg,
-    oklch(0.78 0.18 150),
-    oklch(0.48 0.13 155) 25%,
-    oklch(0.78 0.18 150) 50%,
-    oklch(0.48 0.13 155) 75%,
-    oklch(0.78 0.18 150)
+    oklch(0.85 0.19 148),
+    oklch(0.42 0.12 155) 50%,
+    oklch(0.85 0.19 148)
   );
 }
+
 
 .brand-letter-gradient {
   color: var(--primary);
@@ -387,6 +386,18 @@
   .animate-letter-bounce,
   .brand-letter,
   .tier-name {
+    animation: none;
+  }
+}
+
+.brand-letter.tier-name {
+  animation:
+    letter-bounce 1.2s ease-in-out infinite,
+    tier-name-shift 3s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand-letter.tier-name {
     animation: none;
   }
 }

@@ -38,7 +38,9 @@ export function AuthorByline({ className, size = 40 }: { className?: string; siz
       <Avatar src={profile?.avatar_url ?? undefined} name={name} size={size} />
       <div className="leading-tight">
         <span className="flex items-center gap-1.5 font-medium">
-          <BouncingText gradient>{name}</BouncingText>
+          <BouncingText tier={(profile?.tier || "gold") === "green" ? "green" : "gold"}>
+            {name}
+          </BouncingText>
           <VerifiedBadge tier={profile?.tier || "gold"} size={16} />
         </span>
         <span className="text-sm text-muted-foreground">@{handle}</span>
