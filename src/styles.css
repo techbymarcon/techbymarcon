@@ -45,13 +45,13 @@
 
 :root {
   --radius: 1.5rem;
-  --background: oklch(0.99 0.005 300);
-  --foreground: oklch(0.22 0.02 285);
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.2 0.01 285);
   --surface: oklch(1 0 0);
-  --surface-container: oklch(0.975 0.008 300);
-  --surface-container-high: oklch(0.95 0.014 300);
+  --surface-container: oklch(0.985 0 0);
+  --surface-container-high: oklch(0.965 0 0);
   --primary: oklch(0.55 0.16 295);
-  --primary-foreground: oklch(0.99 0.005 300);
+  --primary-foreground: oklch(1 0 0);
   --primary-container: oklch(0.92 0.05 295);
   --on-primary-container: oklch(0.3 0.11 295);
   --secondary: oklch(0.6 0.11 230);
@@ -60,14 +60,14 @@
   --on-secondary-container: oklch(0.32 0.09 245);
   --tertiary-container: oklch(0.93 0.05 30);
   --on-tertiary-container: oklch(0.36 0.09 30);
-  --muted: oklch(0.955 0.01 300);
-  --muted-foreground: oklch(0.51 0.02 290);
+  --muted: oklch(0.968 0 0);
+  --muted-foreground: oklch(0.5 0.008 290);
   --accent: oklch(0.94 0.03 175);
   --accent-foreground: oklch(0.33 0.07 190);
   --destructive: oklch(0.55 0.2 25);
   --destructive-foreground: oklch(0.99 0 0);
-  --border: oklch(0.9 0.012 295);
-  --input: oklch(0.9 0.012 295);
+  --border: oklch(0.915 0.003 295);
+  --input: oklch(0.915 0.003 295);
   --ring: oklch(0.55 0.16 295);
   --shadow-1: 0 1px 3px oklch(0.3 0.05 295 / 0.1), 0 1px 2px oklch(0.3 0.05 295 / 0.06);
   --shadow-2: 0 4px 14px oklch(0.3 0.05 295 / 0.1), 0 2px 6px oklch(0.3 0.05 295 / 0.05);
@@ -309,24 +309,17 @@
 
 @keyframes letter-bounce {
   0%,
-  60%,
   100% {
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
   }
-  25% {
-    transform: translateY(-4px) scale(1.04);
-  }
-  40% {
-    transform: translateY(1px) scale(0.99);
-  }
-  50% {
-    transform: translateY(-1px) scale(1);
+  45% {
+    transform: translateY(-3px);
   }
 }
 
 .brand-letter {
   display: inline-block;
-  animation: letter-bounce 2s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+  animation: letter-bounce 2s ease-in-out infinite;
 }
 
 .brand-letter-gradient {
@@ -339,7 +332,7 @@
 }
 
 .animate-letter-bounce {
-  animation: letter-bounce 2s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+  animation: letter-bounce 2s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
