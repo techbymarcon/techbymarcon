@@ -341,11 +341,14 @@ export const setModerator = createServerFn({ method: "POST" })
       if (error) return { ok: false as const, error: "Could not remove that role." };
     }
     // Keep the stored badge in sync so old posts and comments show the right check.
-    const tier = data.moderator ? "green" : "blue";
+    // Developer accounts always stay gold — toggling moderator must never demote them.
+    const isDev = await isDeveloperAccount(data.username);
+    const tier = isDev ? "gold" : data.moderator ? "green" : "blue";
     if (data.username !== "developer" && data.username !== "techbymarcon") {
       await supabase.from("profiles").update({ tier }).eq("email", data.username);
       await supabase.from("forum_posts").update({ tier }).eq("author_email", data.username);
       await supabase.from("comments").update({ tier }).eq("author_email", data.username);
     }
+
     return { ok: true as const };
   });
