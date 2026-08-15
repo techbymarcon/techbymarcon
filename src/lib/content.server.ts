@@ -55,8 +55,10 @@ export type Identity = { developer: boolean; email: string | null };
 export async function currentIdentity(): Promise<Identity> {
   const session = await getGateSession();
   if (session.data.developer === true) return { developer: true, email: "developer" };
-  return { developer: false, email: session.data.email ?? null };
+  const email = session.data.email ?? null;
+  return { developer: await isDeveloperAccount(email), email };
 }
+
 
 export async function requireIdentity(): Promise<{ developer: boolean; email: string }> {
   const id = await currentIdentity();
