@@ -7,9 +7,11 @@ type BrandProps = {
   className?: string | undefined;
   /** Paints a continuous brand gradient across the animated letters. */
   gradient?: boolean | undefined;
+  /** Paints an animated tier gradient (gold = developer, green = moderator). */
+  tier?: "gold" | "green" | undefined;
 };
 
-function BouncingBrand({ text, className, gradient }: BrandProps) {
+function BouncingBrand({ text, className, gradient, tier }: BrandProps) {
   const chars = text.split("");
   const letters = chars.filter((c) => c !== " ").length;
   let letterIndex = 0;
@@ -29,14 +31,17 @@ function BouncingBrand({ text, className, gradient }: BrandProps) {
         const style: React.CSSProperties = {
           animationDelay: `${idx * 0.1}s`,
         };
-        if (gradient) {
+        if (gradient && !tier) {
           style.backgroundSize = `${letters * 100}% 100%`;
           style.backgroundPosition = `${letters > 1 ? (idx / (letters - 1)) * 100 : 0}% 0`;
         }
         return (
           <span
             key={i}
-            className={cn("brand-letter", gradient && "brand-letter-gradient")}
+            className={cn(
+              "brand-letter",
+              tier ? `tier-name tier-name-${tier}` : gradient && "brand-letter-gradient",
+            )}
             style={style}
           >
             {char}
@@ -46,6 +51,7 @@ function BouncingBrand({ text, className, gradient }: BrandProps) {
     </span>
   );
 }
+
 
 export function BouncingText({
   children,
