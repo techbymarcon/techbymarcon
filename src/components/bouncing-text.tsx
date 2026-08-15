@@ -73,7 +73,7 @@ export function BouncingText({
       return (
         <span className={cn("inline", className)}>
           {before}
-          <BouncingBrand text={brand} gradient={gradient} />
+          <BouncingBrand text={brand} gradient={gradient} tier={tier} />
           {after}
         </span>
       );
