@@ -57,10 +57,12 @@ export function BouncingText({
   children,
   className,
   gradient,
+  tier,
 }: {
   children: string;
   className?: string | undefined;
   gradient?: boolean | undefined;
+  tier?: "gold" | "green" | undefined;
 }) {
   const text = children;
   for (const brand of BRAND_NAMES) {
