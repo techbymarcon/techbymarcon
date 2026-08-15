@@ -63,6 +63,18 @@ export function NotificationsButton() {
     return () => document.removeEventListener("mousedown", onDown);
   }, [open]);
 
+  useEffect(() => {
+    const onOpen = () => {
+      setOpen(true);
+      void load();
+      setUnread(0);
+      setItems((prev) => prev.map((n) => ({ ...n, read: true })));
+      void markNotificationsRead().catch(() => undefined);
+    };
+    window.addEventListener("tbm:open-notifications", onOpen);
+    return () => window.removeEventListener("tbm:open-notifications", onOpen);
+  }, []);
+
   if (!session) return null;
 
   const toggle = async () => {
