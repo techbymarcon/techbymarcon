@@ -1,24 +1,17 @@
 import { useEffect, useState } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Icon } from "@/components/m3";
-import { useAuth } from "@/lib/auth";
+import { useTheme } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 
-const links = [
-  { to: "/", label: "Home", icon: "home" },
-  { to: "/articles", label: "Articles", icon: "article" },
-  { to: "/forum", label: "Forum", icon: "forum" },
-  { to: "/socials", label: "Socials", icon: "share" },
-  { to: "/login", label: "Account", icon: "person" },
-];
+type Item =
+  | { kind: "link"; to: string; label: string; icon: string }
+  | { kind: "action"; label: string; icon: string; onSelect: () => void };
 
 export function HamburgerMenu() {
   const [open, setOpen] = useState(false);
   const path = useRouterState({ select: (r) => r.location.pathname });
-  const { isDeveloper, isModerator } = useAuth() as {
-    isDeveloper?: boolean;
-    isModerator?: boolean;
-  };
+  const { theme, toggle } = useTheme();
 
   useEffect(() => {
     setOpen(false);
@@ -32,17 +25,31 @@ export function HamburgerMenu() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  const items = [
-    ...links,
-    ...(isDeveloper || isModerator
-      ? [
-          { to: "/accounts", label: "Accounts", icon: "manage_accounts" },
-          ...(isDeveloper
-            ? [{ to: "/moderators", label: "Moderators", icon: "shield" }]
-            : []),
-        ]
-      : []),
+  const items: Item[] = [
+    { kind: "link", to: "/", label: "Home", icon: "home" },
+    { kind: "link", to: "/articles", label: "Articles", icon: "article" },
+    { kind: "link", to: "/forum", label: "Forum", icon: "forum" },
+    { kind: "link", to: "/socials", label: "Socials", icon: "share" },
+    { kind: "link", to: "/login", label: "Profile", icon: "person" },
+    {
+      kind: "action",
+      label: "Notifications",
+      icon: "notifications",
+      onSelect: () => window.dispatchEvent(new CustomEvent("tbm:open-notifications")),
+    },
+    {
+      kind: "action",
+      label: theme === "dark" ? "Light Mode" : "Dark Mode",
+      icon: theme === "dark" ? "light_mode" : "dark_mode",
+      onSelect: toggle,
+    },
   ];
+
+  const itemClass = (active?: boolean) =>
+    cn(
+      "flex w-full items-center gap-4 rounded-[24px] px-4 py-2.5 text-left font-display text-2xl font-medium m3-transition hover:bg-foreground/8 sm:text-4xl",
+      active ? "text-foreground" : "text-muted-foreground",
+    );
 
   return (
     <>
@@ -58,11 +65,11 @@ export function HamburgerMenu() {
 
       <div
         aria-hidden={!open}
+        onClick={() => setOpen(false)}
         className={cn(
           "fixed inset-0 z-[60] bg-background/40 backdrop-blur-[2px] transition-opacity duration-300",
           open ? "opacity-100" : "pointer-events-none opacity-0",
         )}
-        onClick={() => setOpen(false)}
       />
 
       <nav
@@ -75,29 +82,37 @@ export function HamburgerMenu() {
             : "pointer-events-none size-12 rounded-[18px] opacity-0",
         )}
       >
-        <ul className="flex h-full flex-col justify-center gap-2 px-8 pt-16 pb-8 sm:px-14">
+        <ul className="flex h-full flex-col justify-center gap-1 px-6 pt-16 pb-8 sm:px-12">
           {items.map((item, i) => (
             <li
-              key={item.to}
-              className={cn(
-                "m3-transition",
-                open ? "animate-menu-fly" : "opacity-0",
-              )}
+              key={item.label}
+              className={open ? "animate-menu-fly" : "opacity-0"}
               style={{ animationDelay: open ? `${0.1 + i * 0.1}s` : undefined }}
             >
-              <Link
-                to={item.to}
-                onClick={() => setOpen(false)}
-                className={cn(
-                  "flex items-center gap-4 rounded-[24px] px-4 py-3 font-display text-3xl font-medium m3-transition hover:bg-foreground/8 sm:text-5xl",
-                  (item.to === "/" ? path === "/" : path.startsWith(item.to))
-                    ? "text-foreground"
-                    : "text-muted-foreground",
-                )}
-              >
-                <Icon name={item.icon} className="text-[28px] sm:text-[32px]" />
-                {item.label}
-              </Link>
+              {item.kind === "link" ? (
+                <Link
+                  to={item.to}
+                  onClick={() => setOpen(false)}
+                  className={itemClass(
+                    item.to === "/" ? path === "/" : path.startsWith(item.to),
+                  )}
+                >
+                  <Icon name={item.icon} className="text-[26px] sm:text-[30px]" />
+                  {item.label}
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    item.onSelect();
+                    setOpen(false);
+                  }}
+                  className={itemClass()}
+                >
+                  <Icon name={item.icon} className="text-[26px] sm:text-[30px]" />
+                  {item.label}
+                </button>
+              )}
             </li>
           ))}
         </ul>
