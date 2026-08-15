@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Avatar, TierName, VerifiedBadge } from "@/components/verified";
+import { Avatar, VerifiedBadge } from "@/components/verified";
 import { BouncingText } from "@/components/bouncing-text";
 import { getDeveloperProfile } from "@/lib/content.functions";
 import { cn } from "@/lib/utils";
@@ -38,7 +38,7 @@ export function AuthorByline({ className, size = 40 }: { className?: string; siz
       <Avatar src={profile?.avatar_url ?? undefined} name={name} size={size} />
       <div className="leading-tight">
         <span className="flex items-center gap-1.5 font-medium">
-          <TierName tier={profile?.tier || "gold"}><BouncingText>{name}</BouncingText></TierName>
+          <BouncingText gradient>{name}</BouncingText>
           <VerifiedBadge tier={profile?.tier || "gold"} size={16} />
         </span>
         <span className="text-sm text-muted-foreground">@{handle}</span>
