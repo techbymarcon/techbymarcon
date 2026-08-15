@@ -313,13 +313,61 @@
     transform: translateY(0);
   }
   45% {
-    transform: translateY(-3px);
+    transform: translateY(calc(var(--bounce-h, 3px) * -1));
   }
 }
 
 .brand-letter {
   display: inline-block;
-  animation: letter-bounce 2s ease-in-out infinite;
+  --bounce-h: 5px;
+  animation: letter-bounce 1.2s ease-in-out infinite;
+}
+
+@keyframes tier-name-shift {
+  0% {
+    background-position: 0% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.tier-name {
+  background-size: 200% 100%;
+  background-repeat: repeat-x;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: tier-name-shift 5s linear infinite;
+}
+
+@supports (background-clip: text) or (-webkit-background-clip: text) {
+  .tier-name {
+    color: transparent;
+  }
+}
+
+.tier-name-gold {
+  color: oklch(0.78 0.15 85);
+  background-image: linear-gradient(
+    90deg,
+    oklch(0.86 0.16 90),
+    oklch(0.62 0.13 70) 25%,
+    oklch(0.86 0.16 90) 50%,
+    oklch(0.62 0.13 70) 75%,
+    oklch(0.86 0.16 90)
+  );
+}
+
+.tier-name-green {
+  color: oklch(0.65 0.16 150);
+  background-image: linear-gradient(
+    90deg,
+    oklch(0.78 0.18 150),
+    oklch(0.48 0.13 155) 25%,
+    oklch(0.78 0.18 150) 50%,
+    oklch(0.48 0.13 155) 75%,
+    oklch(0.78 0.18 150)
+  );
 }
 
 .brand-letter-gradient {
@@ -332,12 +380,13 @@
 }
 
 .animate-letter-bounce {
-  animation: letter-bounce 2s ease-in-out infinite;
+  animation: letter-bounce 1.2s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .animate-letter-bounce,
-  .brand-letter {
+  .brand-letter,
+  .tier-name {
     animation: none;
   }
 }
