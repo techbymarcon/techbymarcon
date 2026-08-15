@@ -73,7 +73,7 @@ function Index() {
               </p>
               <h1 className="font-display text-[42px] leading-[1.02] font-medium tracking-tight md:text-[60px] lg:text-[76px]">
                 <span className="text-gradient">
-                  <BouncingText>{home.title}</BouncingText>
+                  <BouncingText gradient>{home.title}</BouncingText>
                 </span>
               </h1>
               <p className="mt-6 max-w-xl text-[18px] leading-relaxed text-muted-foreground">
