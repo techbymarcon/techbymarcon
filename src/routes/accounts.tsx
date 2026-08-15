@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Icon, M3Button } from "@/components/m3";
-import { Avatar, VerifiedBadge } from "@/components/verified";
+import { Avatar, TierName, VerifiedBadge } from "@/components/verified";
 import { useAuth } from "@/lib/auth";
 import { accountActivity, listAccounts, moderateAccount } from "@/lib/moderation.functions";
 
@@ -150,7 +150,7 @@ function Accounts() {
                 <Avatar src={a.avatar_url || undefined} name={a.display_name} />
                 <div className="min-w-0">
                   <p className="inline-flex items-center gap-1.5 font-medium">
-                    {a.display_name}
+                    <TierName tier={a.tier}>{a.display_name}</TierName>
                     <VerifiedBadge tier={a.tier} />
                   </p>
                   <p className="truncate text-sm text-muted-foreground">@{a.handle}</p>

@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Icon, M3Button } from "@/components/m3";
 import { Reveal } from "@/components/reveal";
-import { Avatar, VerifiedBadge } from "@/components/verified";
+import { Avatar, TierName, VerifiedBadge } from "@/components/verified";
 import { getProfileByHandle } from "@/lib/content.functions";
 
 type Profile = { handle: string; display_name: string; avatar_url: string; tier: string };
@@ -76,7 +76,7 @@ function ProfilePage() {
               <Avatar src={profile.avatar_url || undefined} name={profile.display_name} size={76} />
               <div className="min-w-0">
                 <h1 className="flex items-center gap-2 font-display text-[28px] font-medium">
-                  <span className="truncate">{profile.display_name}</span>
+                  <TierName tier={profile.tier} className="truncate">{profile.display_name}</TierName>
                   <VerifiedBadge tier={profile.tier} size={20} />
                 </h1>
                 <p className="text-[15px] text-muted-foreground">@{profile.handle}</p>

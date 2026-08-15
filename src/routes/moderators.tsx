@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Icon, M3Button } from "@/components/m3";
-import { Avatar, VerifiedBadge } from "@/components/verified";
+import { Avatar, TierName, VerifiedBadge } from "@/components/verified";
 import { useAuth } from "@/lib/auth";
 import { listMembers, setModerator } from "@/lib/forum.functions";
 
@@ -95,7 +95,7 @@ function Moderators() {
             <Avatar src={m.avatar_url || undefined} name={m.display_name} />
             <div className="min-w-0">
               <p className="inline-flex items-center gap-1.5 font-medium">
-                {m.display_name}
+                <TierName tier={m.tier}>{m.display_name}</TierName>
                 <VerifiedBadge tier={m.tier} />
               </p>
               <p className="truncate text-sm text-muted-foreground">@{m.handle}</p>
