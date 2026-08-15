@@ -80,6 +80,10 @@
   --grid-line: oklch(0.55 0.16 295 / 0.07);
   --halo-1: oklch(0.72 0.15 295 / 0.35);
   --halo-2: oklch(0.78 0.12 210 / 0.3);
+  --glass-border: oklch(1 0 0 / 0.16);
+  --glass-highlight: oklch(1 0 0 / 0.18);
+  --glass-shadow: oklch(0 0 0 / 0.04);
+  --glass-sheen: linear-gradient(105deg, oklch(1 0 0 / 0.12) 0%, oklch(1 0 0 / 0) 45%);
 }
 
 .dark {
