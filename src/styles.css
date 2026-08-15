@@ -314,7 +314,6 @@
 
 .animate-letter-bounce {
   animation: letter-bounce 2s ease-in-out infinite;
-  will-change: transform;
 }
 
 @media (prefers-reduced-motion: reduce) {
