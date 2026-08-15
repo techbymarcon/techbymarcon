@@ -19,6 +19,7 @@ import {
 import { db, effectiveTier, hashPassword, passwordMatches, verifyPassword } from "./content.server";
 import { actorFor, notify, welcomeNotification } from "./notifications.server";
 import { throttleLogin } from "./rate-limit.server";
+import { postingBlock, sanctionState } from "./moderation.server";
 import { PROFANITY_REJECTION, hasProfanity } from "./profanity";
 
 export const CORS = {
@@ -70,6 +71,15 @@ export const unauthorized = () =>
   json({ error: "Unauthorized", detail: "Send Authorization: Bearer <access key>." }, 401);
 
 export const forbidden = (detail: string) => json({ error: "Forbidden", detail }, 403);
+
+/**
+ * Bans and timeouts apply to the native API exactly as they do on the website.
+ * Returns a 403 response when the caller may not write right now, else null.
+ */
+export async function moderationBlock(who: Caller): Promise<Response | null> {
+  const blocked = await postingBlock(who.username);
+  return blocked ? json({ error: blocked }, 403) : null;
+}
 
 type ProfileRow = {
   email: string;
@@ -180,6 +190,13 @@ export async function register(body: Record<string, unknown>) {
   }
   if (!password) return json({ error: "Pick a password." }, 400);
 
+  // Registration is throttled just like sign-in, so the API cannot be used to
+  // mass-create accounts.
+  const throttle = await throttleLogin(`register:${username}`);
+  if (throttle.blocked) {
+    return json({ error: throttle.error, retry_after: throttle.retryAfter }, 429);
+  }
+
   const supabase = await db();
   if (await profileFor(username)) return json({ error: "That username is taken." }, 409);
   const { data: clash } = await supabase
@@ -213,7 +230,11 @@ export async function registerWithCode() {
 
 export async function me(who: Caller) {
   const row = await profileFor(who.username);
+  const sanction = await sanctionState(who.username);
   return json({
+    banned: sanction.banned,
+    ban_reason: sanction.banReason,
+    muted_until: sanction.mutedUntil,
     username: who.username,
     tier: who.tier,
     scopes: who.scopes,
@@ -225,6 +246,8 @@ export async function me(who: Caller) {
 
 /** Update the caller's own display name / avatar. */
 export async function updateMe(who: Caller, body: Record<string, unknown>) {
+  const stop = await moderationBlock(who);
+  if (stop) return stop;
   const patch: Record<string, unknown> = {};
   const display = String(body["displayName"] ?? body["display_name"] ?? "").trim();
   const avatar = String(body["avatarUrl"] ?? body["avatar_url"] ?? "").trim();
@@ -328,6 +351,8 @@ export async function getPost(id: string, who: Caller | null) {
 }
 
 export async function createPost(who: Caller, body: Record<string, unknown>) {
+  const stop = await moderationBlock(who);
+  if (stop) return stop;
   if (!can(who, "forum:post")) return forbidden("Your key does not allow posting in the forum.");
   const title = String(body["title"] ?? "").trim().slice(0, 140);
   const text = String(body["body"] ?? "").trim().slice(0, 8000);
@@ -379,6 +404,8 @@ export async function createPost(who: Caller, body: Record<string, unknown>) {
 }
 
 export async function updatePost(id: string, who: Caller, body: Record<string, unknown>) {
+  const stop = await moderationBlock(who);
+  if (stop) return stop;
   const supabase = await db();
   const patch: Record<string, unknown> = {};
   if (body["title"] !== undefined) {
@@ -425,6 +452,8 @@ export async function deletePost(id: string, who: Caller) {
 }
 
 export async function votePost(id: string, who: Caller, body: Record<string, unknown>) {
+  const stop = await moderationBlock(who);
+  if (stop) return stop;
   const raw = Number(body["value"] ?? 0);
   const value = raw > 0 ? 1 : raw < 0 ? -1 : 0;
   const supabase = await db();
@@ -519,6 +548,8 @@ export async function listComments(request: Request, who: Caller | null) {
 }
 
 export async function createComment(who: Caller, body: Record<string, unknown>) {
+  const stop = await moderationBlock(who);
+  if (stop) return stop;
   const thread = String(
     body["thread"] ?? body["articleId"] ?? (body["postId"] ? `forum:${body["postId"]}` : ""),
   ).trim();
@@ -593,6 +624,8 @@ export async function createComment(who: Caller, body: Record<string, unknown>) 
 }
 
 export async function updateComment(id: string, who: Caller, body: Record<string, unknown>) {
+  const stop = await moderationBlock(who);
+  if (stop) return stop;
   const text = String(body["body"] ?? "").trim().slice(0, 4000);
   if (!text) return json({ error: "Write something first." }, 400);
   const supabase = await db();
