@@ -210,12 +210,14 @@ export async function tierForAccount(email: string): Promise<KeyTier> {
   const supabase = await db();
   const { data } = await supabase
     .from("user_roles")
-    .select("username")
+    .select("role")
     .eq("username", email)
-    .eq("role", "moderator")
-    .maybeSingle();
-  return data ? "green" : "blue";
+    .in("role", ["developer", "moderator"]);
+  const roles = ((data ?? []) as { role: string }[]).map((r) => r.role);
+  if (roles.includes("developer")) return "gold";
+  return roles.includes("moderator") ? "green" : "blue";
 }
+
 
 /**
  * Mint a bearer key for an account without touching the cookie session.

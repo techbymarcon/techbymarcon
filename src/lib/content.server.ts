@@ -55,8 +55,10 @@ export type Identity = { developer: boolean; email: string | null };
 export async function currentIdentity(): Promise<Identity> {
   const session = await getGateSession();
   if (session.data.developer === true) return { developer: true, email: "developer" };
-  return { developer: false, email: session.data.email ?? null };
+  const email = session.data.email ?? null;
+  return { developer: await isDeveloperAccount(email), email };
 }
+
 
 export async function requireIdentity(): Promise<{ developer: boolean; email: string }> {
   const id = await currentIdentity();
@@ -65,26 +67,40 @@ export async function requireIdentity(): Promise<{ developer: boolean; email: st
 }
 
 /** Roles live in their own table — never on the profile row. */
-export async function isModerator(email: string | null | undefined) {
+export async function hasRole(email: string | null | undefined, role: string) {
   if (!email) return false;
   const supabase = await db();
   const { data } = await supabase
     .from("user_roles")
     .select("username")
     .eq("username", email)
-    .eq("role", "moderator")
+    .eq("role", role)
     .maybeSingle();
   return Boolean(data);
+}
+
+/** Accounts granted the developer role act exactly like the built-in developer. */
+export async function isDeveloperAccount(email: string | null | undefined) {
+  if (!email) return false;
+  if (email === "developer") return true;
+  return hasRole(email, "developer");
+}
+
+export async function isModerator(email: string | null | undefined) {
+  if (!email) return false;
+  if (await isDeveloperAccount(email)) return true;
+  return hasRole(email, "moderator");
 }
 
 /** Return the badge tier that should be shown for a member.
  *  Developers keep gold; moderators get green; everyone else keeps their stored tier. */
 export async function effectiveTier(email: string | null | undefined, storedTier?: string | null) {
   if (!email) return storedTier ?? "blue";
-  if (email === "developer") return "gold";
+  if (await isDeveloperAccount(email)) return "gold";
   if (await isModerator(email)) return "green";
   return storedTier ?? "blue";
 }
+
 
 export type Staff = { email: string; developer: boolean; moderator: boolean };
 
