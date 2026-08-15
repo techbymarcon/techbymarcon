@@ -389,3 +389,15 @@
     animation: none;
   }
 }
+
+.brand-letter.tier-name {
+  animation:
+    letter-bounce 1.2s ease-in-out infinite,
+    tier-name-shift 3s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand-letter.tier-name {
+    animation: none;
+  }
+}
