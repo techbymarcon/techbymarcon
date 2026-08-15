@@ -221,7 +221,12 @@
 @utility text-gradient {
   background-image: var(--gradient-brand);
   background-clip: text;
-  color: transparent;
+}
+
+@supports (background-clip: text) or (-webkit-background-clip: text) {
+  .brand-letter-gradient {
+    color: transparent;
+  }
 }
 
 @utility glow-ring {
@@ -325,6 +330,7 @@
 }
 
 .brand-letter-gradient {
+  color: var(--primary);
   background-image: var(--gradient-brand);
   background-repeat: no-repeat;
   -webkit-background-clip: text;
