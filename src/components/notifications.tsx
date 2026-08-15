@@ -91,7 +91,7 @@ export function NotificationsButton() {
   };
 
   return (
-    <div ref={wrap} className="fixed right-[5.5rem] top-5 z-50 flex flex-col items-end gap-2 md:right-5">
+    <div ref={wrap} className="fixed right-5 top-5 z-50 flex flex-col items-end gap-2">
       <button
         type="button"
         onClick={() => void toggle()}
