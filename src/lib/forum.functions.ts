@@ -301,9 +301,11 @@ export const listMembers = createServerFn({ method: "GET" }).handler(async () =>
     .order("created_at", { ascending: false });
   const { data: roles } = await supabase
     .from("user_roles")
-    .select("username")
-    .eq("role", "moderator");
-  const mods = new Set((roles ?? []).map((r) => (r as { username: string }).username));
+    .select("username, role")
+    .in("role", ["moderator", "developer"]);
+  const rows = (roles ?? []) as { username: string; role: string }[];
+  const mods = new Set(rows.filter((r) => r.role === "moderator").map((r) => r.username));
+  const devs = new Set(rows.filter((r) => r.role === "developer").map((r) => r.username));
   return await Promise.all(
     (profiles ?? []).map(async (p) => ({
       username: p.email as string,
@@ -311,10 +313,12 @@ export const listMembers = createServerFn({ method: "GET" }).handler(async () =>
       display_name: p.display_name as string,
       avatar_url: (p.avatar_url as string) ?? "",
       tier: await effectiveTier(p.email as string, p.tier as string),
+      developer: devs.has(p.email as string) || p.email === "developer",
       moderator: mods.has(p.email as string),
     })),
   );
 });
+
 
 export const setModerator = createServerFn({ method: "POST" })
   .inputValidator((data: { username: string; moderator: boolean }) => data)
