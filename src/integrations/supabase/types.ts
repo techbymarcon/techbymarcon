@@ -50,6 +50,69 @@ export type Database = {
         }
         Relationships: []
       }
+      article_requests: {
+        Row: {
+          body: string
+          category: string
+          cover: string
+          created_at: string
+          description: string
+          download_name: string
+          download_size: number
+          download_url: string
+          id: string
+          reading_time: string
+          requester_email: string
+          requester_handle: string
+          review_note: string
+          reviewed_at: string | null
+          reviewed_by: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          body?: string
+          category?: string
+          cover?: string
+          created_at?: string
+          description?: string
+          download_name?: string
+          download_size?: number
+          download_url?: string
+          id?: string
+          reading_time?: string
+          requester_email: string
+          requester_handle?: string
+          review_note?: string
+          reviewed_at?: string | null
+          reviewed_by?: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string
+          category?: string
+          cover?: string
+          created_at?: string
+          description?: string
+          download_name?: string
+          download_size?: number
+          download_url?: string
+          id?: string
+          reading_time?: string
+          requester_email?: string
+          requester_handle?: string
+          review_note?: string
+          reviewed_at?: string | null
+          reviewed_by?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       articles: {
         Row: {
           body: string
