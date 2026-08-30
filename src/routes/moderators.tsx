@@ -76,8 +76,15 @@ function Moderators() {
       </h1>
       <p className="mt-3 text-[17px] text-muted-foreground">
         Moderators can edit, lock, pin and delete forum posts and comments. They cannot publish
-        articles.
+        articles directly — they send article requests for your approval.
       </p>
+
+      <Link to="/article-requests" className="mt-5 inline-block">
+        <M3Button variant="tonal">
+          <Icon name="post_add" className="text-[20px]" />
+          Article requests
+        </M3Button>
+      </Link>
 
       {error ? <p className="mt-5 text-[15px] text-destructive">{error}</p> : null}
 
