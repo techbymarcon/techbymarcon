@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArticleCard } from "@/components/article-card";
 import { ArticleEditor } from "@/components/article-editor";
 import { Icon, M3Button } from "@/components/m3";
@@ -25,7 +25,7 @@ export const Route = createFileRoute("/articles/")({
 
 function Articles() {
   const { articles, save } = useArticles();
-  const { isDeveloper } = useAuth();
+  const { isDeveloper, isModerator } = useAuth();
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("All");
   const [editing, setEditing] = useState(false);
@@ -74,6 +74,13 @@ function Articles() {
               <Icon name="add" className="text-[20px]" />
               New
             </M3Button>
+          ) : isModerator ? (
+            <Link to="/article-requests" className="shrink-0">
+              <M3Button variant="tonal">
+                <Icon name="post_add" className="text-[20px]" />
+                Request
+              </M3Button>
+            </Link>
           ) : null}
         </div>
       </Reveal>

@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.15"
+    PostgrestVersion: "14.5"
   }
   public: {
     Tables: {
@@ -47,6 +47,69 @@ export type Database = {
           reason?: string
           updated_at?: string
           username?: string
+        }
+        Relationships: []
+      }
+      article_requests: {
+        Row: {
+          body: string
+          category: string
+          cover: string
+          created_at: string
+          description: string
+          download_name: string
+          download_size: number
+          download_url: string
+          id: string
+          reading_time: string
+          requester_email: string
+          requester_handle: string
+          review_note: string
+          reviewed_at: string | null
+          reviewed_by: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          body?: string
+          category?: string
+          cover?: string
+          created_at?: string
+          description?: string
+          download_name?: string
+          download_size?: number
+          download_url?: string
+          id?: string
+          reading_time?: string
+          requester_email: string
+          requester_handle?: string
+          review_note?: string
+          reviewed_at?: string | null
+          reviewed_by?: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string
+          category?: string
+          cover?: string
+          created_at?: string
+          description?: string
+          download_name?: string
+          download_size?: number
+          download_url?: string
+          id?: string
+          reading_time?: string
+          requester_email?: string
+          requester_handle?: string
+          review_note?: string
+          reviewed_at?: string | null
+          reviewed_by?: string
+          status?: string
+          title?: string
+          updated_at?: string
         }
         Relationships: []
       }
