@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AccountsRouteImport } from './routes/accounts'
+import { Route as ArticleRequestsRouteImport } from './routes/article-requests'
 import { Route as LlmsDottxtRouteImport } from './routes/llms[.]txt'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ModeratorsRouteImport } from './routes/moderators'
@@ -44,6 +45,11 @@ const IndexRoute = IndexRouteImport.update({
 const AccountsRoute = AccountsRouteImport.update({
   id: '/accounts',
   path: '/accounts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ArticleRequestsRoute = ArticleRequestsRouteImport.update({
+  id: '/article-requests',
+  path: '/article-requests',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LlmsDottxtRoute = LlmsDottxtRouteImport.update({
@@ -171,6 +177,7 @@ const ApiPublicForumPostIdVoteRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/accounts': typeof AccountsRoute
+  '/article-requests': typeof ArticleRequestsRoute
   '/llms.txt': typeof LlmsDottxtRoute
   '/login': typeof LoginRoute
   '/moderators': typeof ModeratorsRoute
@@ -199,6 +206,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/accounts': typeof AccountsRoute
+  '/article-requests': typeof ArticleRequestsRoute
   '/llms.txt': typeof LlmsDottxtRoute
   '/login': typeof LoginRoute
   '/moderators': typeof ModeratorsRoute
@@ -228,6 +236,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/accounts': typeof AccountsRoute
+  '/article-requests': typeof ArticleRequestsRoute
   '/llms.txt': typeof LlmsDottxtRoute
   '/login': typeof LoginRoute
   '/moderators': typeof ModeratorsRoute
@@ -258,6 +267,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/accounts'
+    | '/article-requests'
     | '/llms.txt'
     | '/login'
     | '/moderators'
@@ -286,6 +296,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/accounts'
+    | '/article-requests'
     | '/llms.txt'
     | '/login'
     | '/moderators'
@@ -314,6 +325,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/accounts'
+    | '/article-requests'
     | '/llms.txt'
     | '/login'
     | '/moderators'
@@ -343,6 +355,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AccountsRoute: typeof AccountsRoute
+  ArticleRequestsRoute: typeof ArticleRequestsRoute
   LlmsDottxtRoute: typeof LlmsDottxtRoute
   LoginRoute: typeof LoginRoute
   ModeratorsRoute: typeof ModeratorsRoute
@@ -380,6 +393,13 @@ declare module '@tanstack/react-router' {
       path: '/accounts'
       fullPath: '/accounts'
       preLoaderRoute: typeof AccountsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/article-requests': {
+      id: '/article-requests'
+      path: '/article-requests'
+      fullPath: '/article-requests'
+      preLoaderRoute: typeof ArticleRequestsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/llms.txt': {
@@ -581,6 +601,7 @@ const ApiPublicForumRouteWithChildren = ApiPublicForumRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountsRoute: AccountsRoute,
+  ArticleRequestsRoute: ArticleRequestsRoute,
   LlmsDottxtRoute: LlmsDottxtRoute,
   LoginRoute: LoginRoute,
   ModeratorsRoute: ModeratorsRoute,
