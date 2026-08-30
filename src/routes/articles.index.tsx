@@ -74,6 +74,13 @@ function Articles() {
               <Icon name="add" className="text-[20px]" />
               New
             </M3Button>
+          ) : isModerator ? (
+            <Link to="/article-requests" className="shrink-0">
+              <M3Button variant="tonal">
+                <Icon name="post_add" className="text-[20px]" />
+                Request
+              </M3Button>
+            </Link>
           ) : null}
         </div>
       </Reveal>
