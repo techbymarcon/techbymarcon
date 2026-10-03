@@ -1,0 +1,30 @@
+name: Scheduled Auto Commit
+
+on:
+  schedule:
+    # This cron expression schedules the action to run every day at midnight (UTC)
+    - cron: '0 0 * * *'
+  workflow_dispatch: # Allows you to trigger the commit manually from the Actions tab
+
+jobs:
+  auto-commit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Double check permissions block is present
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Modify a File
+      run: |
+        # Appends the current date and time to a file named 'log.txt'
+        echo "Automated commit on $(date)" >> log.txt
+
+    - name: Commit and Push Changes
+      run: |
+        git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git add log.txt
+        git commit -m "chore: automated daily update [skip ci]" || echo "No changes to commit"
+        git push
