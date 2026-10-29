@@ -260,6 +260,14 @@ export const lookupLegacyAccount = createServerFn({ method: "POST" })
 export const migrateLegacyAccount = createServerFn({ method: "POST" })
   .inputValidator((data: { handle: string; username: string; password: string }) => data)
   .handler(async ({ data }) => {
+    // Legacy login codes were deleted, so there is no way to prove ownership of
+    // an unclaimed account. Self-service claiming is disabled to stop takeovers.
+    if (data) {
+      return {
+        ok: false as const,
+        error: "Claiming old accounts is disabled for security. Ask the developer to restore your account.",
+      };
+    }
     try {
       const handle = slugHandle(data.handle ?? "");
       const username = normalizeUsername(data.username ?? "");
