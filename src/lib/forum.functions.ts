@@ -242,8 +242,10 @@ export const updateForumPost = createServerFn({ method: "POST" })
       const supabase = await db();
       let del = supabase.from("forum_posts").delete().eq("id", data.id);
       if (!me.developer && !me.moderator) del = del.eq("author_email", me.email);
-      await del;
-      await supabase.from("comments").delete().eq("article_id", `forum:${data.id}`);
+      const { data: removed } = await del.select("id");
+      if (removed?.length) {
+        await supabase.from("comments").delete().eq("article_id", `forum:${data.id}`);
+      }
       return { ok: false as const, error: PROFANITY_REJECTION, deleted: true as const };
     }
     const supabase = await db();
@@ -270,8 +272,9 @@ export const deleteForumPost = createServerFn({ method: "POST" })
     let query = supabase.from("forum_posts").delete().eq("id", data.id);
     // Only green and gold keys can remove someone else's post.
     if (!(await keyAllows("forum:delete:any"))) query = query.eq("author_email", me.email);
-    const { error } = await query;
+    const { data: removed, error } = await query.select("id");
     if (error) return { ok: false as const, error: "Could not delete that post." };
+    if (!removed?.length) return { ok: false as const, error: "That post is not yours." };
     await supabase.from("comments").delete().eq("article_id", `forum:${data.id}`);
     return { ok: true as const };
   });
