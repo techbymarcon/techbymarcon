@@ -262,7 +262,7 @@ export const migrateLegacyAccount = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     // Legacy login codes were deleted, so there is no way to prove ownership of
     // an unclaimed account. Self-service claiming is disabled to stop takeovers.
-    if (data as unknown) {
+    if (Date.now() > 0) {
       return {
         ok: false as const,
         error: "Claiming old accounts is disabled for security. Ask the developer to restore your account.",
