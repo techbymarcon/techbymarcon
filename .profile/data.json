@@ -1,0 +1,211 @@
+{
+ "key": "c64c0401",
+ "stars": 1,
+ "contributions": 481,
+ "repos": 6,
+ "followers": 12,
+ "languages": [
+  [
+   "Java",
+   6214795
+  ],
+  [
+   "TypeScript",
+   921507
+  ],
+  [
+   "Python",
+   726384
+  ],
+  [
+   "HTML",
+   81446
+  ],
+  [
+   "Kotlin",
+   61151
+  ],
+  [
+   "CSS",
+   43947
+  ],
+  [
+   "PLpgSQL",
+   10390
+  ]
+ ],
+ "days": [
+  [
+   {
+    "c": 0,
+    "day": 11,
+    "today": false
+   },
+   {
+    "c": 0,
+    "day": 12,
+    "today": false
+   },
+   {
+    "c": 0,
+    "day": 13,
+    "today": false
+   },
+   {
+    "c": 0,
+    "day": 14,
+    "today": false
+   },
+   {
+    "c": 0,
+    "day": 15,
+    "today": false
+   },
+   {
+    "c": 4,
+    "day": 16,
+    "today": false
+   },
+   {
+    "c": 0,
+    "day": 17,
+    "today": false
+   }
+  ],
+  [
+   {
+    "c": 0,
+    "day": 18,
+    "today": false
+   },
+   {
+    "c": 0,
+    "day": 19,
+    "today": false
+   },
+   {
+    "c": 0,
+    "day": 20,
+    "today": false
+   },
+   {
+    "c": 0,
+    "day": 21,
+    "today": false
+   },
+   {
+    "c": 0,
+    "day": 22,
+    "today": false
+   },
+   {
+    "c": 0,
+    "day": 23,
+    "today": false
+   },
+   {
+    "c": 0,
+    "day": 24,
+    "today": false
+   }
+  ],
+  [
+   {
+    "c": 7,
+    "day": 25,
+    "today": false
+   },
+   {
+    "c": 1,
+    "day": 26,
+    "today": false
+   },
+   {
+    "c": 0,
+    "day": 27,
+    "today": false
+   },
+   {
+    "c": 0,
+    "day": 28,
+    "today": false
+   },
+   {
+    "c": 0,
+    "day": 29,
+    "today": false
+   },
+   {
+    "c": 3,
+    "day": 30,
+    "today": false
+   },
+   {
+    "c": 1,
+    "day": 31,
+    "today": true
+   }
+  ]
+ ],
+ "streak": {
+  "current": 2,
+  "longest": 6
+ },
+ "pins": [],
+ "all": [
+  {
+   "name": "CustomRom.World",
+   "url": "https://github.com/techbymarcon/CustomRom.World",
+   "text": "",
+   "fork": false,
+   "stars": 1,
+   "language": "TypeScript",
+   "topics": []
+  },
+  {
+   "name": "comettube",
+   "url": "https://github.com/techbymarcon/comettube",
+   "text": "Custom and ad-free YouTube client made for CometOS.",
+   "fork": false,
+   "stars": 0,
+   "language": "Java",
+   "topics": []
+  },
+  {
+   "name": "Root-My-Pixel-Payloads",
+   "url": "https://github.com/techbymarcon/Root-My-Pixel-Payloads",
+   "text": "licensed version",
+   "fork": true,
+   "stars": 0,
+   "language": "C",
+   "topics": []
+  },
+  {
+   "name": "Root-My-Pixel",
+   "url": "https://github.com/techbymarcon/Root-My-Pixel",
+   "text": "licensed version",
+   "fork": true,
+   "stars": 0,
+   "language": "Kotlin",
+   "topics": []
+  },
+  {
+   "name": "UniRoot",
+   "url": "https://github.com/techbymarcon/UniRoot",
+   "text": "",
+   "fork": true,
+   "stars": 0,
+   "language": "Kotlin",
+   "topics": []
+  },
+  {
+   "name": "techbymarcon",
+   "url": "https://github.com/techbymarcon/techbymarcon",
+   "text": "Tech by Marcon website",
+   "fork": false,
+   "stars": 0,
+   "language": "TypeScript",
+   "topics": []
+  }
+ ]
+}

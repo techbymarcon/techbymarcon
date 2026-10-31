@@ -8,10 +8,6 @@
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="assets/stack-dark.svg"><img src="assets/stack-light.svg" width="100%" alt="Tech stack"></picture>
 
-<a href="https://github.com/techbymarcon/CustomRom.World"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/project-customrom-world-dark.svg"><img src="assets/project-customrom-world-light.svg" width="49%" alt="CustomRom.World"></picture></a>&nbsp;<a href="https://github.com/techbymarcon/techbymarcon"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/project-techbymarcon-dark.svg"><img src="assets/project-techbymarcon-light.svg" width="49%" alt="techbymarcon"></picture></a>
-
-<a href="https://github.com/techbymarcon/comettube"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/project-comettube-dark.svg"><img src="assets/project-comettube-light.svg" width="49%" alt="comettube"></picture></a>
-
 <picture><source media="(prefers-color-scheme: dark)" srcset="assets/stats-dark.svg"><img src="assets/stats-light.svg" width="100%" alt="GitHub activity"></picture>
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="assets/streak-dark.svg"><img src="assets/streak-light.svg" width="100%" alt="Streak"></picture>
