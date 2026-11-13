@@ -1,6 +1,6 @@
 {
- "key": "ae80cd08",
- "stars": 2,
+ "key": "ac69c1d0",
+ "stars": 3,
  "contributions": 483,
  "repos": 6,
  "followers": 16,
@@ -159,6 +159,15 @@
    "topics": []
   },
   {
+   "name": "techbymarcon",
+   "url": "https://github.com/techbymarcon/techbymarcon",
+   "text": "Tech by Marcon website",
+   "fork": false,
+   "stars": 1,
+   "language": "TypeScript",
+   "topics": []
+  },
+  {
    "name": "comettube",
    "url": "https://github.com/techbymarcon/comettube",
    "text": "Custom and ad-free YouTube client made for CometOS.",
@@ -192,15 +201,6 @@
    "fork": true,
    "stars": 0,
    "language": "Kotlin",
-   "topics": []
-  },
-  {
-   "name": "techbymarcon",
-   "url": "https://github.com/techbymarcon/techbymarcon",
-   "text": "Tech by Marcon website",
-   "fork": false,
-   "stars": 0,
-   "language": "TypeScript",
    "topics": []
   }
  ]
