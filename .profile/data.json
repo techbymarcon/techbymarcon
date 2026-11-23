@@ -1,5 +1,5 @@
 {
- "key": "91305e2f",
+ "key": "ac4fab30",
  "stars": 3,
  "contributions": 483,
  "repos": 6,
@@ -113,9 +113,13 @@
    {
     "c": 0,
     "day": 22,
+    "today": false
+   },
+   {
+    "c": 0,
+    "day": 23,
     "today": true
    },
-   null,
    null,
    null,
    null,
