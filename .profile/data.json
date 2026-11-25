@@ -1,9 +1,9 @@
 {
- "key": "c76ef831",
+ "key": "99a9db73",
  "stars": 3,
  "contributions": 483,
  "repos": 6,
- "followers": 17,
+ "followers": 18,
  "languages": [
   [
    "Java",
@@ -123,9 +123,13 @@
    {
     "c": 0,
     "day": 24,
+    "today": false
+   },
+   {
+    "c": 0,
+    "day": 25,
     "today": true
    },
-   null,
    null,
    null,
    null
